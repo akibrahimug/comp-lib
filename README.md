@@ -1,4 +1,4 @@
-# @kasomaibrahim/comp-lib
+# @kasoma/comp-lib
 
 A Tailwind-first, variant-driven, polymorphic React component library built for modern web applications.
 
@@ -16,7 +16,7 @@ A Tailwind-first, variant-driven, polymorphic React component library built for 
 ## Installation
 
 ```bash
-npm install @kasomaibrahim/comp-lib react react-dom tailwindcss
+npm install @kasoma/comp-lib react react-dom tailwindcss
 ```
 
 ### Peer Dependencies
@@ -28,7 +28,7 @@ npm install @kasomaibrahim/comp-lib react react-dom tailwindcss
 ## Quick Start
 
 ```tsx
-import { Button, Input, Dialog } from '@kasomaibrahim/comp-lib';
+import { Button, Input, Dialog } from '@kasoma/comp-lib';
 
 function App() {
   return (
@@ -56,7 +56,7 @@ Add the library to your Tailwind content paths:
 module.exports = {
   content: [
     './src/**/*.{js,ts,jsx,tsx}',
-    './node_modules/@kasomaibrahim/comp-lib/dist/**/*.{js,ts,jsx,tsx}',
+    './node_modules/@kasoma/comp-lib/dist/**/*.{js,ts,jsx,tsx}',
   ],
   theme: {
     extend: {
@@ -102,7 +102,7 @@ module.exports = {
 Create variant-driven className composers:
 
 ```tsx
-import { tv } from '@kasomaibrahim/comp-lib';
+import { tv } from '@kasoma/comp-lib';
 
 const button = tv({
   base: 'px-4 py-2 rounded font-medium',
@@ -133,7 +133,7 @@ const button = tv({
 Build polymorphic components with variant support:
 
 ```tsx
-import { createComponent } from '@kasomaibrahim/comp-lib';
+import { createComponent } from '@kasoma/comp-lib';
 
 const Badge = createComponent({
   as: 'span',
@@ -159,7 +159,7 @@ const Badge = createComponent({
 Create compound components with shared context:
 
 ```tsx
-import { createSlots } from '@kasomaibrahim/comp-lib';
+import { createSlots } from '@kasoma/comp-lib';
 
 const Alert = createSlots({
   root: { base: 'p-4 rounded-lg border border-gray-200' },
