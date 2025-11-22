@@ -3,15 +3,17 @@
 A Tailwind-first, variant-driven, polymorphic component creator — easy like shadcn, flexible like MUI slots.
 
 ## Install
+
 ```bash
-npm i @kasomaibrahim/tw-component-library
+npm i @kasomaibrahim/comp-lib
 # peer deps
 npm i -D react react-dom tailwindcss
 ```
 
 ## Usage
+
 ```tsx
-import { Button, Card } from '@kasomaibrahim/tw-component-library';
+import { Button, Card } from '@kasomaibrahim/comp-lib';
 
 <Button intent="primary" size="md">Save</Button>
 <Button intent="secondary" tw="rounded-full">Cancel</Button>
@@ -30,6 +32,7 @@ import { Button, Card } from '@kasomaibrahim/tw-component-library';
 ```
 
 ## Build
+
 - Rollup (ESM + CJS + DTS)
 - Storybook 8 + Chromatic CI
 - Semantic Release (optional configuration required)
