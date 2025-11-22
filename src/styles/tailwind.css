@@ -1,0 +1,25 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Custom base styles for accessibility */
+@layer base {
+  *:focus-visible {
+    @apply outline-none ring-2 ring-offset-2 ring-brand-600;
+  }
+
+  /* Respect prefers-reduced-motion */
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+}
+
+/* Storybook docs styles */
+.sbdocs .docs-story { background: white; }
+.component-docs-grid { display: grid; grid-template-columns: 260px 1fr; gap: 2rem; }

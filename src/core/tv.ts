@@ -1,10 +1,10 @@
-type VariantConfig = Record<string, Record<string | number | boolean, string>>;
+type VariantConfig = Record<string, Record<string, string>>;
 
 export type InferVariantProps<Cfg extends VariantConfig> = {
   [K in keyof Cfg]?: keyof Cfg[K] extends string | number | boolean
     ? keyof Cfg[K]
     : never;
-} & { [key: string]: string | number | boolean | undefined };
+};
 
 export interface TVOptions<Cfg extends VariantConfig> {
   base?: string;

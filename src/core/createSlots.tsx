@@ -3,17 +3,17 @@ import { tv, type TVOptions } from './tv';
 import { mergeTw } from './mergeTw';
 
 type SlotConfig = { [slotName: string]: TVOptions<any> };
-type SlotMap = Record<string, ReturnType<typeof tv>>;
+type SlotMap = Record<string, (args?: any) => string>;
 const SlotsCtx = createContext<Record<string, string>>({});
 
 export function createSlots<SCfg extends SlotConfig>(slots: SCfg, opts?: { displayName?: string; as?: ElementType }) {
-  const fns: SlotMap = Object.fromEntries(Object.entries(slots).map(([n, cfg]) => [n, tv(cfg)]));
+  const fns: SlotMap = Object.fromEntries(Object.entries(slots).map(([n, cfg]) => [n, tv(cfg)])) as SlotMap;
 
   const Root = forwardRef<any, any>(function Root({ as: As = opts?.as || 'div', className, tw, children, ...rest }, ref) {
     const cls = fns['root'] ? fns['root']({ className, tw, ...(rest as any) }) : mergeTw(className, tw);
     const ctxVal = Object.fromEntries(Object.entries(fns).map(([n, fn]) => [n, fn(rest)]));
-    // @ts-expect-error polymorphic
-    return <As ref={ref} className={cls} {...rest}><SlotsCtx.Provider value={ctxVal}>{children}</SlotsCtx.Provider></As>;
+    const Element = As as React.ElementType;
+    return <Element ref={ref} className={cls} {...rest}><SlotsCtx.Provider value={ctxVal}>{children}</SlotsCtx.Provider></Element>;
   });
 
   const makeSlot = (slotName: string) => {
@@ -21,8 +21,8 @@ export function createSlots<SCfg extends SlotConfig>(slots: SCfg, opts?: { displ
       const ctx = useContext(SlotsCtx);
       const baseCls = ctx[slotName] || '';
       const cls = mergeTw(baseCls, className, tw);
-      // @ts-expect-error polymorphic
-      return <As ref={ref} className={cls} {...rest}>{children}</As>;
+      const Element = As as React.ElementType;
+      return <Element ref={ref} className={cls} {...rest}>{children}</Element>;
     });
     (S as any).displayName = `Slot.${slotName}`;
     return S;

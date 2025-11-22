@@ -1,0 +1,65 @@
+import { Meta } from '@storybook/blocks';
+
+<Meta title="Intro/Welcome" />
+
+# Component Library
+
+A Tailwind-first, variant-driven, polymorphic React component library built for modern web applications.
+
+## Features
+
+- **Tailwind-First**: All components use Tailwind CSS for styling
+- **Variant System**: Powerful `tv()` function for composable variants
+- **Polymorphic Components**: Use the `as` prop to render as different elements
+- **TypeScript**: Full type safety with IntelliSense support
+- **Accessible**: WCAG AA compliant with proper ARIA attributes
+- **Tree-Shakable**: Only bundle what you use
+- **SSR-Safe**: Works seamlessly with Next.js and other SSR frameworks
+
+## Installation
+
+```bash
+npm install @kasomaibrahim/comp-lib react react-dom tailwindcss
+```
+
+## Quick Start
+
+```tsx
+import { Button, Input } from '@kasomaibrahim/comp-lib';
+
+function App() {
+  return (
+    <>
+      <Button intent="primary">Click me</Button>
+      <Input label="Email" type="email" />
+    </>
+  );
+}
+```
+
+## Design Tokens
+
+Design tokens are configured in **tailwind.config.cjs**:
+
+- **Brand**: Primary brand color (#005BBB)
+- **Accent**: Accent color (#FFB703)
+- **Gray**: Full gray scale from 25 to 900
+- **Danger/Success/Info**: Semantic colors
+
+## Core API
+
+### tv() - Tailwind Variants
+
+Create variant-driven className composers with `tv()`.
+
+### createComponent()
+
+Build polymorphic components with the `tw` prop for ad-hoc styling.
+
+### createSlots()
+
+Create compound components (e.g., Card.Root, Card.Header, Card.Content).
+
+## Accessibility
+
+All components follow WCAG 2.1 AA guidelines with proper keyboard navigation, ARIA attributes, and focus management.

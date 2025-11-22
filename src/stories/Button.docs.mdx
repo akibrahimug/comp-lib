@@ -1,0 +1,25 @@
+import { Meta, Story, Canvas, ArgsTable } from '@storybook/blocks';
+import * as ButtonStories from './Button.stories';
+import { Button } from './Button';
+
+<Meta of={ButtonStories} />
+
+# Button
+
+Versatile action button supporting intents, sizes, loading, and full-width.
+
+## Usage
+```tsx
+import { Button } from '@kasomaibrahim/tw-component-library';
+<Button intent="primary">Save</Button>
+<Button intent="secondary" tw="rounded-full">Cancel</Button>
+<Button as="a" href="#" intent="ghost">As link</Button>
+```
+
+## Playground
+<Canvas>
+  <Story id="components-button--primary" />
+</Canvas>
+
+## Props
+<ArgsTable of={Button} />

@@ -27,8 +27,8 @@ export function createComponent<Cfg extends Record<string, any>, D extends Eleme
   const getClass = tv(opts as any);
   const Comp = forwardRef<any, any>(function Comp({ as: As = (as as any) || 'div', className, tw, children, ...rest }, ref) {
     const cls = mergeTw(getClass({ ...(rest as any), className, tw }));
-    // @ts-expect-error polymorphic
-    return <As ref={ref} className={cls} {...rest}>{children}</As>;
+    const Element = As as React.ElementType;
+    return <Element ref={ref} className={cls} {...rest}>{children}</Element>;
   });
   (Comp as any).displayName = displayName || 'Component';
   return Comp as any;
