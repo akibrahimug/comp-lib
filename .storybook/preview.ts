@@ -1,7 +1,6 @@
-import type { Preview } from '@storybook/react-vite';
-import '../src/styles/tailwind.css';
+import "../src/styles/tailwind.css";
 
-const preview: Preview = {
+const preview = {
   parameters: {
     controls: {
       matchers: {
@@ -10,15 +9,15 @@ const preview: Preview = {
       },
     },
     backgrounds: {
-      default: 'White',
+      default: "White",
       values: [
-        { name: 'White', value: '#FFFFFF' },
-        { name: 'App', value: '#F9FAFB' },
+        { name: "White", value: "#FFFFFF" },
+        { name: "App", value: "#F9FAFB" },
       ],
     },
     options: {
       storySort: {
-        order: ['Intro', 'Guides', 'Components', 'Utilities'],
+        order: ["Intro", "Guides", "Components", "Utilities"],
       },
     },
   },

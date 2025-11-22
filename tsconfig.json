@@ -15,6 +15,13 @@
     "baseUrl": ".",
     "paths": {}
   },
-  "include": ["src/**/*.ts", "src/**/*.tsx", ".storybook/*.ts"],
-  "exclude": ["node_modules", "dist", "build", "**/*.stories.tsx", "**/*.test.tsx", "**/*.test.ts"]
+  "include": ["src"],
+  "exclude": [
+    "node_modules",
+    "dist",
+    "build",
+    "**/*.stories.tsx",
+    "**/*.test.tsx",
+    "**/*.test.ts"
+  ]
 }
