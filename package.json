@@ -26,7 +26,8 @@
     "build-storybook": "storybook build",
     "test": "vitest run",
     "release": "semantic-release",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "chromatic": "npx chromatic --project-token=chpt_282ce463b67934d"
   },
   "peerDependencies": {
     "react": ">=18",
@@ -50,6 +51,7 @@
     "@types/react": "^18.2.0",
     "@types/react-dom": "^18.2.0",
     "autoprefixer": "^10.4.22",
+    "chromatic": "^13.3.4",
     "jsdom": "^23.0.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
