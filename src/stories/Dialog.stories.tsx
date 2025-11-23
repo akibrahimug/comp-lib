@@ -6,7 +6,106 @@ import { useState } from 'react';
 const meta: Meta<typeof Dialog.Root> = {
   title: 'Components/Dialog',
   component: Dialog.Root,
-  parameters: { docs: { source: { type: 'dynamic' } } },
+  parameters: {
+    docs: {
+      description: {
+        component: `
+# Dialog (Modal)
+
+Centered modal dialog with overlay, focus trap, and scroll lock. Perfect for confirmations, forms, and important messages.
+
+## Import
+\`\`\`tsx
+import { Dialog } from '@kasomaibrahim/comp-lib';
+// Or use Modal alias
+import { Modal } from '@kasomaibrahim/comp-lib';
+\`\`\`
+
+## Components
+
+- **Dialog.Root** / **Modal.Root** - Context provider with state management
+- **Dialog.Overlay** / **Modal.Overlay** - Semi-transparent backdrop
+- **Dialog.Content** / **Modal.Content** - Main dialog container
+- **Dialog.Header** / **Modal.Header** - Header section
+- **Dialog.Title** / **Modal.Title** - Dialog title
+- **Dialog.Description** / **Modal.Description** - Dialog description
+- **Dialog.Footer** / **Modal.Footer** - Footer with actions
+- **Dialog.Close** / **Modal.Close** - Close button (X icon)
+
+## Dialog.Root Props
+
+- **open**: boolean - Controlled open state
+- **defaultOpen**: boolean - Initial open state (uncontrolled)
+- **onOpenChange**: (open: boolean) => void - Open state change callback
+
+## Examples
+
+\`\`\`tsx
+// Basic Dialog
+const [open, setOpen] = useState(false);
+
+<Dialog.Root open={open} onOpenChange={setOpen}>
+  <Dialog.Overlay />
+  <Dialog.Content>
+    <Dialog.Close />
+    <Dialog.Header>
+      <Dialog.Title>Confirm Action</Dialog.Title>
+      <Dialog.Description>Are you sure you want to continue?</Dialog.Description>
+    </Dialog.Header>
+    <Dialog.Footer>
+      <Button intent="secondary" onClick={() => setOpen(false)}>Cancel</Button>
+      <Button onClick={() => setOpen(false)}>Confirm</Button>
+    </Dialog.Footer>
+  </Dialog.Content>
+</Dialog.Root>
+
+// With Form
+<Dialog.Root open={open} onOpenChange={setOpen}>
+  <Dialog.Overlay />
+  <Dialog.Content>
+    <Dialog.Close />
+    <Dialog.Header>
+      <Dialog.Title>Add User</Dialog.Title>
+      <Dialog.Description>Fill in the details below</Dialog.Description>
+    </Dialog.Header>
+    <form>
+      <Input label="Name" required />
+      <Input label="Email" type="email" required />
+    </form>
+    <Dialog.Footer>
+      <Button type="submit">Save</Button>
+    </Dialog.Footer>
+  </Dialog.Content>
+</Dialog.Root>
+
+// Uncontrolled
+<Dialog.Root defaultOpen={false}>
+  <Dialog.Content>...</Dialog.Content>
+</Dialog.Root>
+\`\`\`
+
+## Accessibility
+
+- Proper ARIA labels (aria-modal, aria-labelledby, aria-describedby)
+- Focus trap keeps focus inside dialog
+- ESC key closes dialog
+- Click overlay to close
+- Focus returns to trigger on close
+- Body scroll lock when open
+
+## Use Cases
+
+- Confirmation dialogs
+- Alert messages
+- Form modals
+- Details/info popups
+- Delete confirmations
+- Multi-step wizards
+        `
+      }
+    }
+  },
+  tags: ['autodocs']
 };
 
 export default meta;

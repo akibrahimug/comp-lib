@@ -64,7 +64,7 @@ describe('Button', () => {
   it('handles disabled state', () => {
     render(<Button disabled>Disabled</Button>);
     const button = screen.getByText('Disabled');
-    expect(button).toBeDisabled();
+    expect(button).toHaveProperty('disabled', true);
     expect(button.className).toContain('opacity-60');
   });
 });

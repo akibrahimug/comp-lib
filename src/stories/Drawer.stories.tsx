@@ -29,20 +29,21 @@ export const RightDrawer: Story = {
     return (
       <>
         <Button onClick={() => setOpen(true)}>Open Right Drawer</Button>
-        <Drawer.Root open={open} onOpenChange={setOpen}>
+        <Drawer.Root open={open} onOpenChange={setOpen} position="right">
           <Drawer.Overlay />
           <Drawer.Content>
+            <Drawer.Close />
             <Drawer.Header>
               <Drawer.Title>Right Drawer</Drawer.Title>
               <Drawer.Description>
                 This drawer slides in from the right side
               </Drawer.Description>
             </Drawer.Header>
-            <Drawer.Body>
+            <div>
               <p className="text-gray-700">
                 This is the drawer content. You can add any content here.
               </p>
-            </Drawer.Body>
+            </div>
             <Drawer.Footer>
               <Button intent="secondary" onClick={() => setOpen(false)}>
                 Close
@@ -65,20 +66,19 @@ export const LeftDrawer: Story = {
     return (
       <>
         <Button onClick={() => setOpen(true)}>Open Left Drawer</Button>
-        <Drawer.Root open={open} onOpenChange={setOpen}>
+        <Drawer.Root open={open} onOpenChange={setOpen} position="left">
           <Drawer.Overlay />
-          <Drawer.Content position="left">
+          <Drawer.Content>
+            <Drawer.Close />
             <Drawer.Header>
               <Drawer.Title>Navigation</Drawer.Title>
             </Drawer.Header>
-            <Drawer.Body>
-              <nav className="space-y-2">
-                <a href="#" className="block px-3 py-2 rounded-md hover:bg-gray-100">Home</a>
-                <a href="#" className="block px-3 py-2 rounded-md hover:bg-gray-100">Products</a>
-                <a href="#" className="block px-3 py-2 rounded-md hover:bg-gray-100">About</a>
-                <a href="#" className="block px-3 py-2 rounded-md hover:bg-gray-100">Contact</a>
-              </nav>
-            </Drawer.Body>
+            <nav className="space-y-2">
+              <a href="#" className="block px-3 py-2 rounded-md hover:bg-gray-100">Home</a>
+              <a href="#" className="block px-3 py-2 rounded-md hover:bg-gray-100">Products</a>
+              <a href="#" className="block px-3 py-2 rounded-md hover:bg-gray-100">About</a>
+              <a href="#" className="block px-3 py-2 rounded-md hover:bg-gray-100">Contact</a>
+            </nav>
           </Drawer.Content>
         </Drawer.Root>
       </>
@@ -96,20 +96,19 @@ export const TopDrawer: Story = {
     return (
       <>
         <Button onClick={() => setOpen(true)}>Open Top Drawer</Button>
-        <Drawer.Root open={open} onOpenChange={setOpen}>
+        <Drawer.Root open={open} onOpenChange={setOpen} position="top">
           <Drawer.Overlay />
-          <Drawer.Content position="top">
+          <Drawer.Content>
+            <Drawer.Close />
             <Drawer.Header>
               <Drawer.Title>Announcement</Drawer.Title>
               <Drawer.Description>
                 Check out our latest updates
               </Drawer.Description>
             </Drawer.Header>
-            <Drawer.Body>
-              <p className="text-gray-700">
-                We've released new features! Click below to learn more.
-              </p>
-            </Drawer.Body>
+            <p className="text-gray-700">
+              We've released new features! Click below to learn more.
+            </p>
             <Drawer.Footer>
               <Button onClick={() => setOpen(false)}>Got it</Button>
             </Drawer.Footer>
@@ -130,19 +129,18 @@ export const BottomDrawer: Story = {
     return (
       <>
         <Button onClick={() => setOpen(true)}>Open Bottom Drawer</Button>
-        <Drawer.Root open={open} onOpenChange={setOpen}>
+        <Drawer.Root open={open} onOpenChange={setOpen} position="bottom">
           <Drawer.Overlay />
-          <Drawer.Content position="bottom">
+          <Drawer.Content>
+            <Drawer.Close />
             <Drawer.Header>
               <Drawer.Title>Quick Actions</Drawer.Title>
             </Drawer.Header>
-            <Drawer.Body>
-              <div className="grid grid-cols-3 gap-3">
-                <Button fullWidth intent="secondary">Action 1</Button>
-                <Button fullWidth intent="secondary">Action 2</Button>
-                <Button fullWidth intent="secondary">Action 3</Button>
-              </div>
-            </Drawer.Body>
+            <div className="grid grid-cols-3 gap-3">
+              <Button fullWidth intent="secondary">Action 1</Button>
+              <Button fullWidth intent="secondary">Action 2</Button>
+              <Button fullWidth intent="secondary">Action 3</Button>
+            </div>
           </Drawer.Content>
         </Drawer.Root>
       </>
@@ -160,38 +158,37 @@ export const WithForm: Story = {
     return (
       <>
         <Button onClick={() => setOpen(true)}>Add New Item</Button>
-        <Drawer.Root open={open} onOpenChange={setOpen}>
+        <Drawer.Root open={open} onOpenChange={setOpen} position="right">
           <Drawer.Overlay />
           <Drawer.Content>
+            <Drawer.Close />
             <Drawer.Header>
               <Drawer.Title>Add New Item</Drawer.Title>
               <Drawer.Description>
                 Fill out the form below to add a new item
               </Drawer.Description>
             </Drawer.Header>
-            <Drawer.Body>
-              <div className="space-y-4">
-                <Input
-                  label="Item Name"
-                  placeholder="Enter item name"
-                  required
-                />
-                <Input
-                  label="Description"
-                  placeholder="Enter description"
-                />
-                <Input
-                  label="Price"
-                  type="number"
-                  placeholder="0.00"
-                  required
-                />
-                <Input
-                  label="Category"
-                  placeholder="Select category"
-                />
-              </div>
-            </Drawer.Body>
+            <div className="space-y-4">
+              <Input
+                label="Item Name"
+                placeholder="Enter item name"
+                required
+              />
+              <Input
+                label="Description"
+                placeholder="Enter description"
+              />
+              <Input
+                label="Price"
+                type="number"
+                placeholder="0.00"
+                required
+              />
+              <Input
+                label="Category"
+                placeholder="Select category"
+              />
+            </div>
             <Drawer.Footer>
               <Button intent="secondary" onClick={() => setOpen(false)}>
                 Cancel
@@ -217,45 +214,44 @@ export const SettingsPanel: Story = {
     return (
       <>
         <Button onClick={() => setOpen(true)}>Open Settings</Button>
-        <Drawer.Root open={open} onOpenChange={setOpen}>
+        <Drawer.Root open={open} onOpenChange={setOpen} position="right">
           <Drawer.Overlay />
           <Drawer.Content>
+            <Drawer.Close />
             <Drawer.Header>
               <Drawer.Title>Settings</Drawer.Title>
               <Drawer.Description>
                 Manage your account settings and preferences
               </Drawer.Description>
             </Drawer.Header>
-            <Drawer.Body>
-              <div className="space-y-6">
-                <div>
-                  <h3 className="text-sm font-semibold text-gray-900 mb-3">Account</h3>
-                  <div className="space-y-3">
-                    <Input label="Name" defaultValue="John Doe" />
-                    <Input label="Email" type="email" defaultValue="john@example.com" />
-                  </div>
-                </div>
-
-                <div className="border-t border-gray-200 pt-6">
-                  <h3 className="text-sm font-semibold text-gray-900 mb-3">Preferences</h3>
-                  <div className="space-y-3">
-                    <div className="flex items-center justify-between">
-                      <span className="text-sm text-gray-700">Email notifications</span>
-                      <input type="checkbox" defaultChecked />
-                    </div>
-                    <div className="flex items-center justify-between">
-                      <span className="text-sm text-gray-700">Dark mode</span>
-                      <input type="checkbox" />
-                    </div>
-                  </div>
-                </div>
-
-                <div className="border-t border-gray-200 pt-6">
-                  <h3 className="text-sm font-semibold text-gray-900 mb-3">Danger Zone</h3>
-                  <Button intent="danger" size="sm">Delete Account</Button>
+            <div className="space-y-6">
+              <div>
+                <h3 className="text-sm font-semibold text-gray-900 mb-3">Account</h3>
+                <div className="space-y-3">
+                  <Input label="Name" defaultValue="John Doe" />
+                  <Input label="Email" type="email" defaultValue="john@example.com" />
                 </div>
               </div>
-            </Drawer.Body>
+
+              <div className="border-t border-gray-200 pt-6">
+                <h3 className="text-sm font-semibold text-gray-900 mb-3">Preferences</h3>
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm text-gray-700">Email notifications</span>
+                    <input type="checkbox" defaultChecked />
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm text-gray-700">Dark mode</span>
+                    <input type="checkbox" />
+                  </div>
+                </div>
+              </div>
+
+              <div className="border-t border-gray-200 pt-6">
+                <h3 className="text-sm font-semibold text-gray-900 mb-3">Danger Zone</h3>
+                <Button intent="danger" size="sm">Delete Account</Button>
+              </div>
+            </div>
             <Drawer.Footer>
               <Button intent="secondary" onClick={() => setOpen(false)}>
                 Cancel
@@ -287,35 +283,34 @@ export const ShoppingCart: Story = {
     return (
       <>
         <Button onClick={() => setOpen(true)}>View Cart (2)</Button>
-        <Drawer.Root open={open} onOpenChange={setOpen}>
+        <Drawer.Root open={open} onOpenChange={setOpen} position="right">
           <Drawer.Overlay />
           <Drawer.Content>
+            <Drawer.Close />
             <Drawer.Header>
               <Drawer.Title>Shopping Cart</Drawer.Title>
               <Drawer.Description>
                 {items.length} items in your cart
               </Drawer.Description>
             </Drawer.Header>
-            <Drawer.Body>
-              <div className="space-y-4">
-                {items.map((item) => (
-                  <div key={item.id} className="flex items-center justify-between p-3 border border-gray-200 rounded-lg">
-                    <div>
-                      <div className="font-medium text-gray-900">{item.name}</div>
-                      <div className="text-sm text-gray-500">Qty: {item.quantity}</div>
-                    </div>
-                    <div className="font-semibold text-gray-900">
-                      ${(item.price * item.quantity).toFixed(2)}
-                    </div>
+            <div className="space-y-4">
+              {items.map((item) => (
+                <div key={item.id} className="flex items-center justify-between p-3 border border-gray-200 rounded-lg">
+                  <div>
+                    <div className="font-medium text-gray-900">{item.name}</div>
+                    <div className="text-sm text-gray-500">Qty: {item.quantity}</div>
                   </div>
-                ))}
-
-                <div className="border-t border-gray-200 pt-4 flex items-center justify-between">
-                  <span className="font-semibold text-gray-900">Total</span>
-                  <span className="text-xl font-bold text-gray-900">${total.toFixed(2)}</span>
+                  <div className="font-semibold text-gray-900">
+                    ${(item.price * item.quantity).toFixed(2)}
+                  </div>
                 </div>
+              ))}
+
+              <div className="border-t border-gray-200 pt-4 flex items-center justify-between">
+                <span className="font-semibold text-gray-900">Total</span>
+                <span className="text-xl font-bold text-gray-900">${total.toFixed(2)}</span>
               </div>
-            </Drawer.Body>
+            </div>
             <Drawer.Footer>
               <Button intent="secondary" onClick={() => setOpen(false)}>
                 Continue Shopping
@@ -347,18 +342,17 @@ export const AllPositions: Story = {
           <Button onClick={() => setPosition('bottom')}>Bottom</Button>
         </div>
 
-        <Drawer.Root open={position !== null} onOpenChange={(open) => !open && setPosition(null)}>
+        <Drawer.Root open={position !== null} onOpenChange={(open) => !open && setPosition(null)} position={position || 'right'}>
           <Drawer.Overlay />
-          <Drawer.Content position={position || 'right'}>
+          <Drawer.Content>
+            <Drawer.Close />
             <Drawer.Header>
               <Drawer.Title>{position} Drawer</Drawer.Title>
               <Drawer.Description>
                 This drawer slides in from the {position}
               </Drawer.Description>
             </Drawer.Header>
-            <Drawer.Body>
-              <p className="text-gray-700">Drawer content here</p>
-            </Drawer.Body>
+            <p className="text-gray-700">Drawer content here</p>
             <Drawer.Footer>
               <Button onClick={() => setPosition(null)}>Close</Button>
             </Drawer.Footer>

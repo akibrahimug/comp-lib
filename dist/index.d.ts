@@ -214,7 +214,7 @@ declare const Toggle: React.ForwardRefExoticComponent<ToggleProps & React.RefAtt
 
 declare const Card: {
     Root: any;
-} & Record<"Description" | "Title" | "Content" | "Footer" | "Header", any>;
+} & Record<"Description" | "Footer" | "Header" | "Title" | "Content", any>;
 
 interface TabsRootProps {
     /** Currently selected tab value */
@@ -631,5 +631,5 @@ declare function useCarousel(totalSlides: number, options?: {
     canGoNext: boolean;
 };
 
-export { Avatar, Badge, Button, Card, Carousel, CarouselImage, CarouselSlide, Checkbox, Dialog, Drawer, Gallery, GalleryImage, GalleryLightbox, Input, LoadingOverlay, Radio, Select, Spinner, Tabs, Textarea, ToastProvider, Toggle, Tooltip, createComponent, createSlots, cx, mergeTw, tv, useCarousel, useFocusReturn, useFocusTrap, useGalleryLightbox, useIsomorphicLayoutEffect, useLockScroll, useStableId, useToast };
+export { Avatar, Badge, Button, Card, Carousel, CarouselImage, CarouselSlide, Checkbox, Dialog, Drawer, Gallery, GalleryImage, GalleryLightbox, Input, LoadingOverlay, Dialog as Modal, Radio, Select, Spinner, Tabs, Textarea, ToastProvider, Toggle, Tooltip, createComponent, createSlots, cx, mergeTw, tv, useCarousel, useFocusReturn, useFocusTrap, useGalleryLightbox, useIsomorphicLayoutEffect, useLockScroll, useStableId, useToast };
 export type { CarouselImageProps, CarouselProps, CarouselSlideProps, CheckboxProps, CreateComponentOptions, DialogCloseProps, DialogContentProps, DialogDescriptionProps, DialogFooterProps, DialogHeaderProps, DialogOverlayProps, DialogRootProps, DialogTitleProps, DrawerCloseProps, DrawerContentProps, DrawerDescriptionProps, DrawerFooterProps, DrawerHeaderProps, DrawerOverlayProps, DrawerRootProps, DrawerTitleProps, GalleryImageProps, GalleryLightboxProps, InferVariantProps, InputProps, PolymorphicComponent, RadioProps, SelectProps, TVOptions, TabListProps, TabPanelProps, TabPanelsProps, TabProps, TabsRootProps, TextareaProps, ToastProviderProps, ToggleProps, TooltipContentProps, TooltipRootProps, TooltipTriggerProps };

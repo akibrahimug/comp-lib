@@ -10,10 +10,93 @@ const meta: Meta<typeof Gallery> = {
     layout: 'padded',
     docs: {
       description: {
-        component: 'Gallery component for displaying images in various grid layouts with lightbox support. Uses placeholder images from Picsum Photos.'
+        component: `
+# Gallery
+
+Image gallery component with grid layouts and lightbox support. Perfect for photo portfolios, product catalogs, and image collections.
+
+## Import
+\`\`\`tsx
+import { Gallery, GalleryImage, GalleryLightbox, useGalleryLightbox } from '@kasomaibrahim/comp-lib';
+\`\`\`
+
+## Components
+
+- **Gallery** - Container with grid layout
+- **GalleryImage** - Individual image component
+- **GalleryLightbox** - Fullscreen image viewer
+- **useGalleryLightbox** - Hook for lightbox state management
+
+## Gallery Props
+
+- **columns**: '1' | '2' | '3' | '4' | '5' | '6' (default: '3')
+- **gap**: 'none' | 'sm' | 'md' | 'lg' | 'xl' (default: 'md')
+- **tw**: string - Additional Tailwind classes
+
+## GalleryImage Props
+
+- **src**: string - Image URL
+- **alt**: string - Image alt text
+- **aspectRatio**: 'square' | 'video' | 'portrait' | 'auto' (default: 'square')
+- **objectFit**: 'cover' | 'contain' | 'fill' (default: 'cover')
+- **onClick**: () => void - Click handler (for lightbox)
+
+## Examples
+
+\`\`\`tsx
+// Basic gallery
+<Gallery columns="3" gap="md" tw="grid">
+  {images.map((img, i) => (
+    <GalleryImage key={i} src={img.src} alt={img.alt} />
+  ))}
+</Gallery>
+
+// With lightbox
+const { isOpen, currentIndex, open, close, next, previous } =
+  useGalleryLightbox(images);
+
+<Gallery columns="3" gap="md" tw="grid">
+  {images.map((img, i) => (
+    <GalleryImage
+      key={i}
+      src={img.src}
+      alt={img.alt}
+      onClick={() => open(i)}
+    />
+  ))}
+</Gallery>
+
+{isOpen && (
+  <GalleryLightbox
+    images={images}
+    currentIndex={currentIndex}
+    onClose={close}
+    onNext={next}
+    onPrevious={previous}
+  />
+)}
+\`\`\`
+
+## Accessibility
+
+- Proper alt text for all images
+- Keyboard navigation in lightbox (ESC, Arrow keys)
+- Focus trap when lightbox is open
+- Body scroll lock in lightbox
+- Lazy loading for images
+
+## Use Cases
+
+- Photo portfolios
+- Product galleries
+- Image grids
+- Instagram-style layouts
+- Masonry layouts
+        `
       }
     }
-  }
+  },
+  tags: ['autodocs']
 };
 export default meta;
 type Story = StoryObj<typeof Gallery>;

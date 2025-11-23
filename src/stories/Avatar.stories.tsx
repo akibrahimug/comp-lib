@@ -7,10 +7,50 @@ const meta: Meta<typeof Avatar> = {
   parameters: {
     docs: {
       description: {
-        component: 'Profile image component with automatic fallback to initials. Supports 6 sizes from xs to 2xl.'
+        component: `
+# Avatar
+
+Profile image component with automatic fallback to initials. Supports 6 sizes from xs to 2xl.
+
+## Import
+\`\`\`tsx
+import { Avatar } from '@kasomaibrahim/comp-lib';
+\`\`\`
+
+## Props
+- **src**: string - Image URL
+- **alt**: string - Image alt text
+- **name**: string - Name for initials fallback
+- **size**: 'xs' | 'sm' | 'md' | 'lg' | 'xl' | '2xl' (default: 'md')
+- **tw**: string - Additional Tailwind classes
+
+## Sizes
+- **xs** (24px) - Compact lists, mentions
+- **sm** (32px) - Dense tables
+- **md** (40px) - Default size
+- **lg** (48px) - User profiles
+- **xl** (64px) - Profile headers
+- **2xl** (80px) - Large profile pages
+
+## Examples
+\`\`\`tsx
+// With image
+<Avatar src="/user.jpg" alt="John Doe" />
+
+// Initials fallback
+<Avatar name="John Doe" />  // Shows "JD"
+
+// Custom size
+<Avatar src="/user.jpg" size="xl" />
+
+// With ring
+<Avatar src="/user.jpg" tw="ring-4 ring-brand-600" />
+\`\`\`
+        `
       }
     }
-  }
+  },
+  tags: ['autodocs']
 };
 export default meta;
 type Story = StoryObj<typeof Avatar>;

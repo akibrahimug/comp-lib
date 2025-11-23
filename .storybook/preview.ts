@@ -13,11 +13,17 @@ const preview = {
       values: [
         { name: "White", value: "#FFFFFF" },
         { name: "App", value: "#F9FAFB" },
+        { name: "Dark", value: "#1a1a1a" },
       ],
     },
     options: {
       storySort: {
         order: ["Intro", "Guides", "Components", "Utilities"],
+      },
+    },
+    docs: {
+      source: {
+        dark: true,
       },
     },
   },

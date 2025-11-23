@@ -10,10 +10,103 @@ const meta: Meta<typeof Card.Root> = {
     layout: 'centered',
     docs: {
       description: {
-        component: 'Container component with compound slots (Root, Header, Title, Description, Content, Footer) for structured content display.'
+        component: `
+# Card
+
+Flexible container component with compound slots for structured content display. Perfect for dashboards, profiles, and content grouping.
+
+## Import
+\`\`\`tsx
+import { Card } from '@kasomaibrahim/comp-lib';
+\`\`\`
+
+## Components
+
+- **Card.Root** - Main container with border and shadow
+- **Card.Header** - Header section with padding
+- **Card.Title** - Card title (h3)
+- **Card.Description** - Card description/subtitle
+- **Card.Content** - Main content area
+- **Card.Footer** - Footer with actions/buttons
+
+## Props
+
+All components accept:
+- **tw**: string - Additional Tailwind classes
+- **className**: string - Additional CSS classes
+- Standard HTML attributes for their respective elements
+
+## Examples
+
+\`\`\`tsx
+// Basic Card
+<Card.Root>
+  <Card.Content>
+    <p>Simple card content</p>
+  </Card.Content>
+</Card.Root>
+
+// Card with Header
+<Card.Root>
+  <Card.Header>
+    <Card.Title>Profile</Card.Title>
+    <Card.Description>Manage your profile settings</Card.Description>
+  </Card.Header>
+  <Card.Content>
+    <Input label="Name" />
+    <Input label="Email" />
+  </Card.Content>
+</Card.Root>
+
+// Complete Card
+<Card.Root>
+  <Card.Header>
+    <Card.Title>Confirm</Card.Title>
+    <Card.Description>Are you sure?</Card.Description>
+  </Card.Header>
+  <Card.Content>
+    <p>Content here</p>
+  </Card.Content>
+  <Card.Footer>
+    <Button intent="secondary">Cancel</Button>
+    <Button>Confirm</Button>
+  </Card.Footer>
+</Card.Root>
+
+// Custom Width
+<Card.Root tw="w-96">
+  <Card.Content>Fixed width card</Card.Content>
+</Card.Root>
+\`\`\`
+
+## Theme Configuration
+
+\`\`\`js
+colors: {
+  gray: {
+    50: '#F9FAFB',
+    200: '#EAECF0',
+    500: '#667085',
+    700: '#344054',
+    900: '#101828'
+  }
+}
+\`\`\`
+
+## Use Cases
+
+- Dashboard widgets
+- Profile cards
+- Settings panels
+- Product cards
+- Stats displays
+- Team member lists
+- Notification cards
+        `
       }
     }
-  }
+  },
+  tags: ['autodocs']
 };
 export default meta;
 type Story = StoryObj<typeof Card.Root>;
