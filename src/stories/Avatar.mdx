@@ -1,0 +1,410 @@
+import { Meta, Canvas, Controls } from '@storybook/blocks';
+import * as AvatarStories from './Avatar.stories';
+
+<Meta of={AvatarStories} />
+
+# Avatar
+
+Profile image component with automatic fallback to initials. Supports 6 sizes from xs to 2xl.
+
+## Installation
+
+```bash
+npm install @kasomaibrahim/comp-lib
+```
+
+## Import
+
+```tsx
+import { Avatar } from '@kasomaibrahim/comp-lib';
+```
+
+## Basic Usage
+
+<Canvas of={AvatarStories.Playground} />
+
+## Props
+
+<Controls of={AvatarStories.Playground} />
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `src` | `string` | - | Image URL |
+| `alt` | `string` | - | Image alt text |
+| `name` | `string` | - | Name for initials fallback |
+| `size` | `'xs' \| 'sm' \| 'md' \| 'lg' \| 'xl' \| '2xl'` | `'md'` | Avatar size |
+| `tw` | `string` | - | Additional Tailwind classes |
+
+## Size Variants
+
+Six sizes available: `xs`, `sm`, `md` (default), `lg`, `xl`, `2xl`
+
+<Canvas of={AvatarStories.SizeComparison} />
+
+<Canvas of={AvatarStories.SizeVariants} />
+
+### Size Guide
+
+- **xs (24px)** - Compact lists, mentions, small badges
+- **sm (32px)** - Dense tables, inline references
+- **md (40px)** - Default, most common use case
+- **lg (48px)** - User profiles, settings
+- **xl (64px)** - Profile headers, cards
+- **2xl (80px)** - Large profile pages, about sections
+
+```tsx
+<Avatar src="/user.jpg" size="xs" />  // 24x24
+<Avatar src="/user.jpg" size="sm" />  // 32x32
+<Avatar src="/user.jpg" size="md" />  // 40x40 (default)
+<Avatar src="/user.jpg" size="lg" />  // 48x48
+<Avatar src="/user.jpg" size="xl" />  // 64x64
+<Avatar src="/user.jpg" size="2xl" /> // 80x80
+```
+
+## With Images
+
+Display profile images:
+
+<Canvas of={AvatarStories.WithImages} />
+
+```tsx
+<Avatar
+  src="https://i.pravatar.cc/150?img=1"
+  alt="John Doe"
+/>
+```
+
+## Initials Fallback
+
+When no image is provided, Avatar automatically generates initials from the name:
+
+<Canvas of={AvatarStories.InitialsFallback} />
+
+```tsx
+// Full name → "JD"
+<Avatar name="John Doe" />
+
+// First name only → "J"
+<Avatar name="John" />
+
+// Three names → "JD" (first + last)
+<Avatar name="John Middle Doe" />
+```
+
+### Fallback Rules
+
+- **Two+ words**: First letter of first and last word
+- **One word**: First letter only
+- **Empty/null**: Shows placeholder background
+
+## User List Example
+
+Common pattern in user lists:
+
+<Canvas of={AvatarStories.UserListExample} />
+
+```tsx
+<div className="flex items-center gap-3">
+  <Avatar src="/user.jpg" alt="John Doe" />
+  <div>
+    <p className="font-medium">John Doe</p>
+    <p className="text-sm text-gray-500">john@example.com</p>
+  </div>
+</div>
+```
+
+## Avatar Group
+
+Overlapping avatars for groups:
+
+<Canvas of={AvatarStories.AvatarGroup} />
+
+```tsx
+// Overlapping group
+<div className="flex -space-x-2">
+  <Avatar src="/user1.jpg" tw="ring-2 ring-white" />
+  <Avatar src="/user2.jpg" tw="ring-2 ring-white" />
+  <Avatar src="/user3.jpg" tw="ring-2 ring-white" />
+  <Avatar name="+5" tw="ring-2 ring-white bg-gray-300" />
+</div>
+```
+
+## Custom Styling
+
+Use the `tw` prop for custom styles:
+
+<Canvas of={AvatarStories.CustomStyling} />
+
+```tsx
+// Brand ring
+<Avatar src="/user.jpg" tw="ring-4 ring-brand-600" />
+
+// Success indicator
+<Avatar src="/user.jpg" tw="ring-4 ring-success-600" />
+
+// Danger state
+<Avatar src="/user.jpg" tw="ring-4 ring-danger-600" />
+
+// Square avatar
+<Avatar src="/user.jpg" tw="rounded-lg" />
+```
+
+## Default Theme Configuration
+
+```js
+// tailwind.config.cjs
+module.exports = {
+  theme: {
+    extend: {
+      colors: {
+        gray: {
+          200: '#EAECF0',  // Background
+          700: '#344054',  // Text color
+        }
+      }
+    }
+  }
+};
+
+// Avatar sizes
+const sizes = {
+  xs: 'w-6 h-6 text-xs',    // 24px
+  sm: 'w-8 h-8 text-sm',    // 32px
+  md: 'w-10 h-10 text-base',// 40px
+  lg: 'w-12 h-12 text-lg',  // 48px
+  xl: 'w-16 h-16 text-xl',  // 64px
+  '2xl': 'w-20 h-20 text-2xl' // 80px
+};
+```
+
+## Accessibility
+
+### Alt Text
+Always provide meaningful alt text for images:
+
+```tsx
+// Good
+<Avatar src="/user.jpg" alt="John Doe's profile picture" />
+
+// Avoid
+<Avatar src="/user.jpg" alt="avatar" />
+```
+
+### Initials
+Initials are automatically generated and readable by screen readers:
+
+```tsx
+<Avatar name="John Doe" />
+// Screen reader: "JD"
+```
+
+### Decorative Images
+For purely decorative avatars, use empty alt:
+
+```tsx
+<Avatar src="/decoration.jpg" alt="" />
+```
+
+## Best Practices
+
+### Do's ✅
+
+- Provide descriptive alt text
+- Use consistent sizes across similar contexts
+- Add rings/borders for better separation in groups
+- Use initials fallback for missing images
+- Load optimized image sizes
+- Handle loading states
+- Provide meaningful names for fallback
+
+### Don'ts ❌
+
+- Don't use avatars for non-people entities (use icons instead)
+- Don't make avatars too small (respect 24px minimum)
+- Don't use low-resolution images
+- Don't forget alt text
+- Don't use placeholder text as alt
+- Don't make clickable avatars without proper affordance
+
+## Common Patterns
+
+### User Profile Header
+```tsx
+<div className="flex items-center gap-4">
+  <Avatar
+    src="/user.jpg"
+    alt="John Doe"
+    size="2xl"
+  />
+  <div>
+    <h1 className="text-2xl font-bold">John Doe</h1>
+    <p className="text-gray-600">Software Engineer</p>
+  </div>
+</div>
+```
+
+### Comment List
+```tsx
+{comments.map((comment) => (
+  <div key={comment.id} className="flex gap-3">
+    <Avatar
+      src={comment.author.avatar}
+      alt={comment.author.name}
+      size="sm"
+    />
+    <div>
+      <p className="font-medium">{comment.author.name}</p>
+      <p className="text-sm text-gray-600">{comment.text}</p>
+    </div>
+  </div>
+))}
+```
+
+### Team Members Grid
+```tsx
+<div className="grid grid-cols-4 gap-4">
+  {team.map((member) => (
+    <div key={member.id} className="text-center">
+      <Avatar
+        src={member.avatar}
+        alt={member.name}
+        size="lg"
+        tw="mx-auto"
+      />
+      <p className="mt-2 font-medium">{member.name}</p>
+      <p className="text-sm text-gray-500">{member.role}</p>
+    </div>
+  ))}
+</div>
+```
+
+### Online Status Indicator
+```tsx
+<div className="relative inline-block">
+  <Avatar src="/user.jpg" alt="John Doe" />
+  <span className="absolute bottom-0 right-0 w-3 h-3 bg-success-600 border-2 border-white rounded-full" />
+</div>
+```
+
+### With Badge
+```tsx
+<div className="relative inline-block">
+  <Avatar src="/user.jpg" alt="Admin" />
+  <Badge
+    variant="primary"
+    size="sm"
+    tw="absolute -bottom-1 -right-1"
+  >
+    Admin
+  </Badge>
+</div>
+```
+
+### Avatar Stack
+```tsx
+function AvatarStack({ users, max = 3 }) {
+  const visible = users.slice(0, max);
+  const remaining = users.length - max;
+
+  return (
+    <div className="flex -space-x-2">
+      {visible.map((user) => (
+        <Avatar
+          key={user.id}
+          src={user.avatar}
+          alt={user.name}
+          size="md"
+          tw="ring-2 ring-white"
+        />
+      ))}
+      {remaining > 0 && (
+        <Avatar
+          name={`+${remaining}`}
+          size="md"
+          tw="ring-2 ring-white bg-gray-300"
+        />
+      )}
+    </div>
+  );
+}
+```
+
+### Clickable Avatar
+```tsx
+<button
+  onClick={viewProfile}
+  className="rounded-full focus:outline-none focus:ring-2 focus:ring-brand-600"
+>
+  <Avatar src="/user.jpg" alt="View John Doe's profile" />
+</button>
+```
+
+## Image Loading
+
+### Handle Loading States
+```tsx
+function AvatarWithLoading({ src, alt, name }) {
+  const [loaded, setLoaded] = useState(false);
+  const [error, setError] = useState(false);
+
+  return (
+    <Avatar
+      src={!error ? src : undefined}
+      alt={alt}
+      name={name}
+      onLoad={() => setLoaded(true)}
+      onError={() => setError(true)}
+    />
+  );
+}
+```
+
+### Lazy Loading
+```tsx
+<Avatar
+  src="/user.jpg"
+  alt="John Doe"
+  loading="lazy"
+/>
+```
+
+## TypeScript
+
+```tsx
+import { Avatar } from '@kasomaibrahim/comp-lib';
+
+// All props typed
+<Avatar
+  src="/user.jpg"
+  alt="John Doe"
+  size="md"  // Type: 'xs' | 'sm' | 'md' | 'lg' | 'xl' | '2xl'
+  name="John Doe"
+  tw="ring-4 ring-brand-600"
+/>
+
+// Custom wrapper
+interface UserAvatarProps {
+  user: {
+    avatar?: string;
+    name: string;
+  };
+  size?: 'xs' | 'sm' | 'md' | 'lg' | 'xl' | '2xl';
+}
+
+function UserAvatar({ user, size }: UserAvatarProps) {
+  return (
+    <Avatar
+      src={user.avatar}
+      name={user.name}
+      alt={`${user.name}'s avatar`}
+      size={size}
+    />
+  );
+}
+```
+
+## Related Components
+
+- **Badge** - Add status badges to avatars
+- **Card** - Display avatars in cards
+- **Tooltip** - Add tooltips to show user info

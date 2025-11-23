@@ -1,0 +1,388 @@
+import { Meta, Canvas, Controls, Story } from '@storybook/blocks';
+import * as ButtonStories from './Button.stories';
+
+<Meta of={ButtonStories} />
+
+# Button
+
+Interactive button component with multiple variants, sizes, and states. Supports polymorphic rendering and custom styling.
+
+## Installation
+
+```bash
+npm install @kasomaibrahim/comp-lib
+```
+
+## Import
+
+```tsx
+import { Button } from '@kasomaibrahim/comp-lib';
+```
+
+## Basic Usage
+
+The Button component provides a flexible and accessible button that can be customized with different intents, sizes, and states.
+
+<Canvas of={ButtonStories.Playground} />
+
+## Props
+
+<Controls of={ButtonStories.Playground} />
+
+## Intent Variants
+
+The Button supports four intent variants to convey different meanings and actions:
+
+- **primary** (default) - Main call-to-action buttons
+- **secondary** - Secondary actions
+- **danger** - Destructive or dangerous actions
+- **ghost** - Minimal styling for tertiary actions
+
+<Canvas of={ButtonStories.IntentVariants} />
+
+### When to Use Each Intent
+
+**Primary**: Use for the main action on a page or in a section. There should typically be only one primary button visible at a time.
+
+```tsx
+<Button intent="primary">Save Changes</Button>
+<Button intent="primary">Create Account</Button>
+<Button intent="primary">Submit</Button>
+```
+
+**Secondary**: Use for less important actions or when you need multiple buttons of equal importance.
+
+```tsx
+<Button intent="secondary">Cancel</Button>
+<Button intent="secondary">Learn More</Button>
+<Button intent="secondary">Export</Button>
+```
+
+**Danger**: Use for destructive actions that require user caution.
+
+```tsx
+<Button intent="danger">Delete Account</Button>
+<Button intent="danger">Remove Item</Button>
+<Button intent="danger">Unsubscribe</Button>
+```
+
+**Ghost**: Use for tertiary actions or when you need a button with minimal visual weight.
+
+```tsx
+<Button intent="ghost">Close</Button>
+<Button intent="ghost">Skip</Button>
+<Button intent="ghost">Dismiss</Button>
+```
+
+## Size Variants
+
+Three sizes are available: `sm`, `md` (default), and `lg`.
+
+<Canvas of={ButtonStories.SizeVariants} />
+
+### Size Guidelines
+
+- **Small (sm)**: Use in compact UIs, tables, or when space is limited
+- **Medium (md)**: Default size, suitable for most use cases
+- **Large (lg)**: Use for prominent actions or on larger screens
+
+## State Variants
+
+Buttons support loading, disabled, and full-width states.
+
+<Canvas of={ButtonStories.StateVariants} />
+
+### Loading State
+
+Show a loading state during asynchronous operations:
+
+```tsx
+const [isLoading, setIsLoading] = useState(false);
+
+<Button
+  loading={isLoading}
+  onClick={async () => {
+    setIsLoading(true);
+    await saveData();
+    setIsLoading(false);
+  }}
+>
+  Save
+</Button>
+```
+
+### Disabled State
+
+Disable buttons when an action is not available:
+
+```tsx
+<Button disabled>
+  Cannot Click
+</Button>
+```
+
+### Full Width
+
+Make buttons span the full width of their container:
+
+```tsx
+<Button fullWidth>
+  Full Width Button
+</Button>
+```
+
+## Default Theme Configuration
+
+The Button uses the following Tailwind theme tokens:
+
+```js
+// tailwind.config.cjs
+module.exports = {
+  theme: {
+    extend: {
+      colors: {
+        brand: {
+          600: '#005BBB',  // Primary background
+          700: '#004E9F',  // Primary hover
+        },
+        gray: {
+          100: '#F2F4F7',  // Secondary background
+          200: '#EAECF0',  // Secondary hover
+          900: '#101828',  // Secondary text
+        },
+        danger: {
+          600: '#DC2626',  // Danger background
+          700: '#B91C1C',  // Danger hover
+        },
+      },
+    },
+  },
+};
+```
+
+## Polymorphic Rendering
+
+Use the `as` prop to render the Button as any HTML element or React component:
+
+<Canvas of={ButtonStories.Polymorphic} />
+
+### Examples
+
+**Render as Link**:
+```tsx
+<Button as="a" href="/dashboard">
+  Go to Dashboard
+</Button>
+```
+
+**With React Router**:
+```tsx
+import { Link } from 'react-router-dom';
+
+<Button as={Link} to="/profile">
+  View Profile
+</Button>
+```
+
+## Custom Styling
+
+Use the `tw` prop to add custom Tailwind classes:
+
+<Canvas of={ButtonStories.CustomStyling} />
+
+```tsx
+// Add shadow
+<Button tw="shadow-xl">
+  Shadow Button
+</Button>
+
+// Rounded full
+<Button tw="rounded-full">
+  Pill Button
+</Button>
+
+// Custom padding
+<Button tw="px-8 py-4">
+  Large Padding
+</Button>
+```
+
+## Complete Variant Matrix
+
+See all combinations of intents and sizes:
+
+<Canvas of={ButtonStories.VariantMatrix} />
+
+## Accessibility
+
+The Button component is fully accessible and follows WAI-ARIA best practices:
+
+### Keyboard Navigation
+- **Tab**: Move focus to the button
+- **Enter/Space**: Activate the button
+- **Disabled buttons**: Cannot receive focus
+
+### ARIA Attributes
+- Supports all native `<button>` ARIA attributes
+- Loading state can be enhanced with `aria-busy="true"`
+- Disabled state automatically applies `aria-disabled="true"`
+
+### Focus Management
+- Clear focus indicator with `focus:ring-2`
+- Focus visible styling
+- Proper tab order
+
+### Screen Reader Support
+```tsx
+// Add descriptive labels
+<Button aria-label="Close dialog">
+  <CloseIcon />
+</Button>
+
+// Loading state
+<Button loading aria-label="Saving changes">
+  Save
+</Button>
+```
+
+## Best Practices
+
+### Do's ✅
+
+- Use clear, action-oriented labels ("Save", "Submit", "Delete")
+- Provide only one primary button per section
+- Use loading states for async operations
+- Disable buttons when actions are unavailable
+- Use appropriate intents (danger for destructive actions)
+- Keep button text concise (1-3 words)
+
+### Don'ts ❌
+
+- Don't use multiple primary buttons in the same context
+- Don't use vague labels like "Click Here" or "OK"
+- Don't make buttons too small (respect minimum touch targets)
+- Don't override disabled styling (users need to know it's disabled)
+- Don't use ghost buttons for important actions
+
+## Common Patterns
+
+### Form Actions
+```tsx
+<div className="flex gap-2 justify-end">
+  <Button intent="secondary" type="button">
+    Cancel
+  </Button>
+  <Button intent="primary" type="submit">
+    Save
+  </Button>
+</div>
+```
+
+### Confirmation Dialog
+```tsx
+<div className="flex gap-2">
+  <Button intent="secondary" onClick={onCancel}>
+    Cancel
+  </Button>
+  <Button intent="danger" onClick={onConfirm}>
+    Delete
+  </Button>
+</div>
+```
+
+### With Icon
+```tsx
+<Button>
+  <SaveIcon className="w-4 h-4" />
+  Save Changes
+</Button>
+```
+
+### Loading Button
+```tsx
+function SaveButton() {
+  const [loading, setLoading] = useState(false);
+
+  const handleSave = async () => {
+    setLoading(true);
+    try {
+      await api.save();
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <Button loading={loading} onClick={handleSave}>
+      {loading ? 'Saving...' : 'Save'}
+    </Button>
+  );
+}
+```
+
+## TypeScript
+
+The Button component is fully typed:
+
+```tsx
+import { Button } from '@kasomaibrahim/comp-lib';
+
+// All props have full type checking
+<Button
+  intent="primary"  // Type: 'primary' | 'secondary' | 'danger' | 'ghost'
+  size="md"         // Type: 'sm' | 'md' | 'lg'
+  loading={false}   // Type: boolean
+  fullWidth={false} // Type: boolean
+  onClick={(e) => {
+    // e is properly typed as React.MouseEvent
+  }}
+>
+  Button Text
+</Button>
+
+// Polymorphic props are inferred
+<Button as="a" href="/path">  // 'href' is available
+  Link Button
+</Button>
+```
+
+## Examples
+
+### Call to Action Section
+```tsx
+<div className="text-center space-y-4">
+  <h1>Get Started Today</h1>
+  <p>Sign up for a free trial</p>
+  <div className="flex gap-3 justify-center">
+    <Button intent="primary" size="lg">
+      Start Free Trial
+    </Button>
+    <Button intent="secondary" size="lg">
+      Learn More
+    </Button>
+  </div>
+</div>
+```
+
+### Card Actions
+```tsx
+<Card>
+  <Card.Header>
+    <Card.Title>Delete Account</Card.Title>
+    <Card.Description>
+      This action cannot be undone
+    </Card.Description>
+  </Card.Header>
+  <Card.Footer>
+    <Button intent="secondary">Cancel</Button>
+    <Button intent="danger">Delete</Button>
+  </Card.Footer>
+</Card>
+```
+
+## Related Components
+
+- **Input** - Form input fields
+- **Card** - Container for content and actions
+- **Dialog** - Modal dialogs with button actions
+- **Tooltip** - Add tooltips to buttons

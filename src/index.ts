@@ -33,3 +33,7 @@ export * from './components/Spinner';
 // Utility Components
 export * from './components/Avatar';
 export * from './components/Badge';
+
+// Media Components
+export * from './components/Gallery';
+export * from './components/Carousel';

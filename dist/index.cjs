@@ -1,7 +1,7 @@
 'use strict';
 
 var tailwindMerge = require('tailwind-merge');
-var require$$0 = require('react');
+var React = require('react');
 var reactDom = require('react-dom');
 
 function cx(...parts) {
@@ -49,7 +49,7 @@ var hasRequiredReactJsxRuntime_production_min;
 function requireReactJsxRuntime_production_min () {
 	if (hasRequiredReactJsxRuntime_production_min) return reactJsxRuntime_production_min;
 	hasRequiredReactJsxRuntime_production_min = 1;
-var f=require$$0,k=Symbol.for("react.element"),l=Symbol.for("react.fragment"),m=Object.prototype.hasOwnProperty,n=f.__SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED.ReactCurrentOwner,p={key:true,ref:true,__self:true,__source:true};
+var f=React,k=Symbol.for("react.element"),l=Symbol.for("react.fragment"),m=Object.prototype.hasOwnProperty,n=f.__SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED.ReactCurrentOwner,p={key:true,ref:true,__self:true,__source:true};
 	function q(c,a,g){var b,d={},e=null,h=null;void 0!==g&&(e=""+g);void 0!==a.key&&(e=""+a.key);void 0!==a.ref&&(h=a.ref);for(b in a)m.call(a,b)&&!p.hasOwnProperty(b)&&(d[b]=a[b]);if(c&&c.defaultProps)for(b in a=c.defaultProps,a) void 0===d[b]&&(d[b]=a[b]);return {$$typeof:k,type:c,key:e,ref:h,props:d,_owner:n.current}}reactJsxRuntime_production_min.Fragment=l;reactJsxRuntime_production_min.jsx=q;reactJsxRuntime_production_min.jsxs=q;
 	return reactJsxRuntime_production_min;
 }
@@ -63,7 +63,7 @@ var jsxRuntimeExports = jsxRuntime.exports;
 function createComponent(opts) {
     const { as, displayName } = opts;
     const getClass = tv(opts);
-    const Comp = require$$0.forwardRef(function Comp({ as: As = as || 'div', className, tw, children, ...rest }, ref) {
+    const Comp = React.forwardRef(function Comp({ as: As = as || 'div', className, tw, children, ...rest }, ref) {
         const cls = mergeTw(getClass({ ...rest, className, tw }));
         const Element = As;
         return jsxRuntimeExports.jsx(Element, { ref: ref, className: cls, ...rest, children: children });
@@ -72,18 +72,18 @@ function createComponent(opts) {
     return Comp;
 }
 
-const SlotsCtx = require$$0.createContext({});
+const SlotsCtx = React.createContext({});
 function createSlots(slots, opts) {
     const fns = Object.fromEntries(Object.entries(slots).map(([n, cfg]) => [n, tv(cfg)]));
-    const Root = require$$0.forwardRef(function Root({ as: As = opts?.as || 'div', className, tw, children, ...rest }, ref) {
+    const Root = React.forwardRef(function Root({ as: As = opts?.as || 'div', className, tw, children, ...rest }, ref) {
         const cls = fns['root'] ? fns['root']({ className, tw, ...rest }) : mergeTw(className, tw);
         const ctxVal = Object.fromEntries(Object.entries(fns).map(([n, fn]) => [n, fn(rest)]));
         const Element = As;
         return jsxRuntimeExports.jsx(Element, { ref: ref, className: cls, ...rest, children: jsxRuntimeExports.jsx(SlotsCtx.Provider, { value: ctxVal, children: children }) });
     });
     const makeSlot = (slotName) => {
-        const S = require$$0.forwardRef(function Slot({ as: As = 'div', className, tw, children, ...rest }, ref) {
-            const ctx = require$$0.useContext(SlotsCtx);
+        const S = React.forwardRef(function Slot({ as: As = 'div', className, tw, children, ...rest }, ref) {
+            const ctx = React.useContext(SlotsCtx);
             const baseCls = ctx[slotName] || '';
             const cls = mergeTw(baseCls, className, tw);
             const Element = As;
@@ -103,7 +103,7 @@ function createSlots(slots, opts) {
 /**
  * SSR-safe layout effect hook. Uses useLayoutEffect on the client and useEffect on the server.
  */
-const useIsomorphicLayoutEffect = typeof window !== 'undefined' ? require$$0.useLayoutEffect : require$$0.useEffect;
+const useIsomorphicLayoutEffect = typeof window !== 'undefined' ? React.useLayoutEffect : React.useEffect;
 
 /**
  * Generates a stable, hydration-safe ID.
@@ -111,7 +111,7 @@ const useIsomorphicLayoutEffect = typeof window !== 'undefined' ? require$$0.use
  * @param prefix - Optional prefix for the ID
  */
 function useStableId(prefix) {
-    const id = require$$0.useId();
+    const id = React.useId();
     return prefix ? `${prefix}-${id}` : id;
 }
 
@@ -142,7 +142,7 @@ function useLockScroll(lock) {
  * @param active - Whether the focus trap is active
  */
 function useFocusTrap(containerRef, active) {
-    require$$0.useEffect(() => {
+    React.useEffect(() => {
         if (!active || !containerRef.current)
             return;
         const container = containerRef.current;
@@ -183,8 +183,8 @@ function useFocusTrap(containerRef, active) {
  * Useful for dialogs and modals.
  */
 function useFocusReturn() {
-    const previousFocus = require$$0.useRef(null);
-    require$$0.useEffect(() => {
+    const previousFocus = React.useRef(null);
+    React.useEffect(() => {
         previousFocus.current = document.activeElement;
         return () => {
             if (previousFocus.current && typeof previousFocus.current.focus === 'function') {
@@ -225,7 +225,7 @@ const Button = createComponent({
  * Input component with label, description, error states, and prefix/suffix support.
  * Fully accessible with proper ARIA attributes.
  */
-const Input = require$$0.forwardRef(function Input({ label, description, error, prefix, suffix, invalid, size = 'md', disabled, className, tw, id: providedId, ...props }, ref) {
+const Input = React.forwardRef(function Input({ label, description, error, prefix, suffix, invalid, size = 'md', disabled, className, tw, id: providedId, ...props }, ref) {
     const generatedId = useStableId('input');
     const id = providedId || generatedId;
     const descriptionId = description ? `${id}-description` : undefined;
@@ -238,7 +238,7 @@ const Input = require$$0.forwardRef(function Input({ label, description, error, 
     };
     const inputClasses = mergeTw('w-full rounded-md border font-medium transition-colors', 'placeholder:text-gray-400', 'focus:outline-none focus:ring-2 focus:ring-offset-2', sizeClasses[size], isInvalid
         ? 'border-danger-600 focus:ring-danger-600 focus:border-danger-600'
-        : 'border-gray-300 focus:ring-brand-600 focus:border-brand-600', disabled && 'bg-gray-50 cursor-not-allowed opacity-60', prefix && 'pl-10', suffix && 'pr-10', className, tw);
+        : 'border-gray-300 focus:ring-brand-600 focus:border-brand-600', disabled ? 'bg-gray-50 cursor-not-allowed opacity-60' : '', prefix ? 'pl-10' : '', suffix ? 'pr-10' : '', className, tw);
     return (jsxRuntimeExports.jsxs("div", { className: "w-full", children: [label && (jsxRuntimeExports.jsx("label", { htmlFor: id, className: "block text-sm font-medium text-gray-700 mb-1", children: label })), description && !error && (jsxRuntimeExports.jsx("p", { id: descriptionId, className: "text-sm text-gray-600 mb-2", children: description })), jsxRuntimeExports.jsxs("div", { className: "relative", children: [prefix && (jsxRuntimeExports.jsx("div", { className: "absolute left-3 top-1/2 -translate-y-1/2 text-gray-500", children: prefix })), jsxRuntimeExports.jsx("input", { ref: ref, id: id, disabled: disabled, "aria-invalid": isInvalid || undefined, "aria-describedby": cx(descriptionId, errorId), className: inputClasses, ...props }), suffix && (jsxRuntimeExports.jsx("div", { className: "absolute right-3 top-1/2 -translate-y-1/2 text-gray-500", children: suffix }))] }), error && (jsxRuntimeExports.jsx("p", { id: errorId, className: "mt-1 text-sm text-danger-600", role: "alert", children: error }))] }));
 });
 
@@ -246,16 +246,16 @@ const Input = require$$0.forwardRef(function Input({ label, description, error, 
  * Textarea component with label, description, error states, auto-resize, and character counter.
  * Fully accessible with proper ARIA attributes.
  */
-const Textarea = require$$0.forwardRef(function Textarea({ label, description, error, invalid, autoSize, showCounter, disabled, className, tw, id: providedId, maxLength, value, defaultValue, onChange, ...props }, ref) {
+const Textarea = React.forwardRef(function Textarea({ label, description, error, invalid, autoSize, showCounter, disabled, className, tw, id: providedId, maxLength, value, defaultValue, onChange, ...props }, ref) {
     const generatedId = useStableId('textarea');
     const id = providedId || generatedId;
     const descriptionId = description ? `${id}-description` : undefined;
     const errorId = error ? `${id}-error` : undefined;
-    const internalRef = require$$0.useRef(null);
-    const [charCount, setCharCount] = require$$0.useState(0);
+    const internalRef = React.useRef(null);
+    const [charCount, setCharCount] = React.useState(0);
     const isInvalid = invalid || !!error;
     // Handle auto-resize
-    require$$0.useEffect(() => {
+    React.useEffect(() => {
         if (!autoSize)
             return;
         const textarea = internalRef.current;
@@ -268,7 +268,7 @@ const Textarea = require$$0.forwardRef(function Textarea({ label, description, e
         adjustHeight();
     }, [value, autoSize]);
     // Track character count
-    require$$0.useEffect(() => {
+    React.useEffect(() => {
         if (!showCounter)
             return;
         const currentValue = value ?? defaultValue ?? '';
@@ -299,7 +299,7 @@ const Textarea = require$$0.forwardRef(function Textarea({ label, description, e
  * Select component with label, description, and error states.
  * Native select with custom styling for maximum compatibility and accessibility.
  */
-const Select = require$$0.forwardRef(function Select({ label, description, error, invalid, size = 'md', disabled, className, tw, id: providedId, children, ...props }, ref) {
+const Select = React.forwardRef(function Select({ label, description, error, invalid, size = 'md', disabled, className, tw, id: providedId, children, ...props }, ref) {
     const generatedId = useStableId('select');
     const id = providedId || generatedId;
     const descriptionId = description ? `${id}-description` : undefined;
@@ -322,12 +322,12 @@ const Select = require$$0.forwardRef(function Select({ label, description, error
  * Checkbox component with label, description, and indeterminate state support.
  * Fully accessible with proper keyboard navigation and focus handling.
  */
-const Checkbox = require$$0.forwardRef(function Checkbox({ label, description, indeterminate, disabled, className, tw, id: providedId, ...props }, ref) {
+const Checkbox = React.forwardRef(function Checkbox({ label, description, indeterminate, disabled, className, tw, id: providedId, ...props }, ref) {
     const generatedId = useStableId('checkbox');
     const id = providedId || generatedId;
-    const internalRef = require$$0.useRef(null);
+    const internalRef = React.useRef(null);
     // Handle indeterminate state
-    require$$0.useEffect(() => {
+    React.useEffect(() => {
         if (internalRef.current) {
             internalRef.current.indeterminate = !!indeterminate;
         }
@@ -349,7 +349,7 @@ const Checkbox = require$$0.forwardRef(function Checkbox({ label, description, i
  * Radio button component with label and description support.
  * Fully accessible with proper keyboard navigation and focus handling.
  */
-const Radio = require$$0.forwardRef(function Radio({ label, description, disabled, className, tw, id: providedId, ...props }, ref) {
+const Radio = React.forwardRef(function Radio({ label, description, disabled, className, tw, id: providedId, ...props }, ref) {
     const generatedId = useStableId('radio');
     const id = providedId || generatedId;
     const radioClasses = mergeTw('h-4 w-4 border-gray-300 text-brand-600', 'focus:ring-2 focus:ring-brand-600 focus:ring-offset-2', 'transition-colors', disabled && 'cursor-not-allowed opacity-60', 'cursor-pointer');
@@ -360,7 +360,7 @@ const Radio = require$$0.forwardRef(function Radio({ label, description, disable
  * Toggle/Switch component with label and description support.
  * Implements ARIA switch pattern for accessibility.
  */
-const Toggle = require$$0.forwardRef(function Toggle({ label, description, size = 'md', disabled, checked, className, tw, id: providedId, ...props }, ref) {
+const Toggle = React.forwardRef(function Toggle({ label, description, size = 'md', disabled, checked, className, tw, id: providedId, ...props }, ref) {
     const generatedId = useStableId('toggle');
     const id = providedId || generatedId;
     const sizeClasses = {
@@ -389,16 +389,16 @@ const Card = createSlots({
     footer: { base: 'px-6 py-4 border-t border-gray-100' }
 }, { as: 'section'});
 
-const TabsContext = require$$0.createContext(null);
+const TabsContext = React.createContext(null);
 function useTabsContext() {
-    const context = require$$0.useContext(TabsContext);
+    const context = React.useContext(TabsContext);
     if (!context) {
         throw new Error('Tabs compound components must be used within Tabs.Root');
     }
     return context;
 }
-const TabsRoot = require$$0.forwardRef(function TabsRoot({ value: controlledValue, defaultValue, onValueChange, orientation = 'horizontal', children, className, tw }, ref) {
-    const [uncontrolledValue, setUncontrolledValue] = require$$0.useState(defaultValue || '');
+const TabsRoot = React.forwardRef(function TabsRoot({ value: controlledValue, defaultValue, onValueChange, orientation = 'horizontal', children, className, tw }, ref) {
+    const [uncontrolledValue, setUncontrolledValue] = React.useState(defaultValue || '');
     const isControlled = controlledValue !== undefined;
     const value = isControlled ? controlledValue : uncontrolledValue;
     const tabsId = useStableId('tabs');
@@ -410,9 +410,9 @@ const TabsRoot = require$$0.forwardRef(function TabsRoot({ value: controlledValu
     };
     return (jsxRuntimeExports.jsx(TabsContext.Provider, { value: { value, onChange, orientation, tabsId }, children: jsxRuntimeExports.jsx("div", { ref: ref, className: mergeTw('w-full', className, tw), children: children }) }));
 });
-const TabList = require$$0.forwardRef(function TabList({ children, className, tw, ...props }, ref) {
+const TabList = React.forwardRef(function TabList({ children, className, tw, ...props }, ref) {
     const { orientation } = useTabsContext();
-    const listRef = require$$0.useRef(null);
+    const listRef = React.useRef(null);
     const handleKeyDown = (e) => {
         const tabs = Array.from(listRef.current?.querySelectorAll('[role="tab"]:not([disabled])') || []);
         const currentIndex = tabs.findIndex((tab) => tab === document.activeElement);
@@ -456,7 +456,7 @@ const TabList = require$$0.forwardRef(function TabList({ children, className, tw
     };
     return (jsxRuntimeExports.jsx("div", { ref: handleRef, role: "tablist", "aria-orientation": orientation, onKeyDown: handleKeyDown, className: mergeTw('flex border-b border-gray-200', orientation === 'vertical' && 'flex-col border-b-0 border-r', className, tw), ...props, children: children }));
 });
-const Tab = require$$0.forwardRef(function Tab({ value: tabValue, disabled, children, className, tw, ...props }, ref) {
+const Tab = React.forwardRef(function Tab({ value: tabValue, disabled, children, className, tw, ...props }, ref) {
     const { value, onChange, orientation, tabsId } = useTabsContext();
     const isSelected = value === tabValue;
     const handleClick = () => {
@@ -468,10 +468,10 @@ const Tab = require$$0.forwardRef(function Tab({ value: tabValue, disabled, chil
             ? 'border-b-2 border-brand-600 text-brand-600'
             : 'text-gray-600 hover:text-gray-900', disabled && 'cursor-not-allowed opacity-50', orientation === 'vertical' && isSelected && 'border-b-0 border-r-2', className, tw), ...props, children: children }));
 });
-const TabPanels = require$$0.forwardRef(function TabPanels({ children, className, tw, ...props }, ref) {
+const TabPanels = React.forwardRef(function TabPanels({ children, className, tw, ...props }, ref) {
     return (jsxRuntimeExports.jsx("div", { ref: ref, className: mergeTw('mt-4', className, tw), ...props, children: children }));
 });
-const TabPanel = require$$0.forwardRef(function TabPanel({ value: panelValue, children, className, tw, ...props }, ref) {
+const TabPanel = React.forwardRef(function TabPanel({ value: panelValue, children, className, tw, ...props }, ref) {
     const { value, tabsId } = useTabsContext();
     const isSelected = value === panelValue;
     if (!isSelected)
@@ -503,20 +503,20 @@ const Tabs = {
     TabPanel,
 };
 
-const TooltipContext = require$$0.createContext(null);
+const TooltipContext = React.createContext(null);
 function useTooltipContext() {
-    const context = require$$0.useContext(TooltipContext);
+    const context = React.useContext(TooltipContext);
     if (!context) {
         throw new Error('Tooltip compound components must be used within Tooltip.Root');
     }
     return context;
 }
 const TooltipRoot = ({ children, position = 'top' }) => {
-    const [open, setOpen] = require$$0.useState(false);
+    const [open, setOpen] = React.useState(false);
     const tooltipId = useStableId('tooltip');
     return (jsxRuntimeExports.jsx(TooltipContext.Provider, { value: { open, setOpen, tooltipId, position }, children: children }));
 };
-const TooltipTrigger = require$$0.forwardRef(function TooltipTrigger({ children, as: Component = 'button', className, tw, ...props }, ref) {
+const TooltipTrigger = React.forwardRef(function TooltipTrigger({ children, as: Component = 'button', className, tw, ...props }, ref) {
     const { setOpen, tooltipId } = useTooltipContext();
     const handleMouseEnter = () => setOpen(true);
     const handleMouseLeave = () => setOpen(false);
@@ -525,9 +525,9 @@ const TooltipTrigger = require$$0.forwardRef(function TooltipTrigger({ children,
     const Element = Component;
     return (jsxRuntimeExports.jsx(Element, { ref: ref, onMouseEnter: handleMouseEnter, onMouseLeave: handleMouseLeave, onFocus: handleFocus, onBlur: handleBlur, "aria-describedby": tooltipId, className: mergeTw(className, tw), ...props, children: children }));
 });
-const TooltipContent = require$$0.forwardRef(function TooltipContent({ children, className, tw, ...props }, ref) {
+const TooltipContent = React.forwardRef(function TooltipContent({ children, className, tw, ...props }, ref) {
     const { open, tooltipId, position } = useTooltipContext();
-    const contentRef = require$$0.useRef(null);
+    const contentRef = React.useRef(null);
     if (!open)
         return null;
     const positionClasses = {
@@ -570,16 +570,16 @@ const Tooltip = {
     Content: TooltipContent,
 };
 
-const DialogContext = require$$0.createContext(null);
+const DialogContext = React.createContext(null);
 function useDialogContext() {
-    const context = require$$0.useContext(DialogContext);
+    const context = React.useContext(DialogContext);
     if (!context) {
         throw new Error('Dialog compound components must be used within Dialog.Root');
     }
     return context;
 }
 const DialogRoot = ({ open: controlledOpen, defaultOpen, onOpenChange, children }) => {
-    const [uncontrolledOpen, setUncontrolledOpen] = require$$0.useState(defaultOpen || false);
+    const [uncontrolledOpen, setUncontrolledOpen] = React.useState(defaultOpen || false);
     const isControlled = controlledOpen !== undefined;
     const open = isControlled ? controlledOpen : uncontrolledOpen;
     const titleId = useStableId('dialog-title');
@@ -592,19 +592,19 @@ const DialogRoot = ({ open: controlledOpen, defaultOpen, onOpenChange, children 
     };
     return (jsxRuntimeExports.jsx(DialogContext.Provider, { value: { open, onOpenChange: handleOpenChange, titleId, descriptionId }, children: children }));
 };
-const DialogOverlay = require$$0.forwardRef(function DialogOverlay({ className, tw, ...props }, ref) {
+const DialogOverlay = React.forwardRef(function DialogOverlay({ className, tw, ...props }, ref) {
     const { open } = useDialogContext();
     if (!open)
         return null;
     return reactDom.createPortal(jsxRuntimeExports.jsx("div", { ref: ref, className: mergeTw('fixed inset-0 z-50 bg-gray-900/50 backdrop-blur-sm', 'animate-fade-in', className, tw), ...props }), document.body);
 });
-const DialogContent = require$$0.forwardRef(function DialogContent({ children, className, tw, ...props }, ref) {
+const DialogContent = React.forwardRef(function DialogContent({ children, className, tw, ...props }, ref) {
     const { open, onOpenChange, titleId, descriptionId } = useDialogContext();
-    const contentRef = require$$0.useRef(null);
+    const contentRef = React.useRef(null);
     useLockScroll(open);
     useFocusTrap(contentRef, open);
     useFocusReturn();
-    require$$0.useEffect(() => {
+    React.useEffect(() => {
         if (!open)
             return;
         const handleEscape = (e) => {
@@ -633,21 +633,21 @@ const DialogContent = require$$0.forwardRef(function DialogContent({ children, c
         return null;
     return reactDom.createPortal(jsxRuntimeExports.jsx("div", { className: "fixed inset-0 z-50 flex items-center justify-center p-4", onClick: handleBackdropClick, children: jsxRuntimeExports.jsx("div", { ref: handleRef, role: "dialog", "aria-modal": "true", "aria-labelledby": titleId, "aria-describedby": descriptionId, className: mergeTw('relative w-full max-w-lg rounded-2xl bg-white p-6 shadow-card', 'animate-zoom-in-95', className, tw), ...props, children: children }) }), document.body);
 });
-const DialogHeader = require$$0.forwardRef(function DialogHeader({ children, className, tw, ...props }, ref) {
+const DialogHeader = React.forwardRef(function DialogHeader({ children, className, tw, ...props }, ref) {
     return (jsxRuntimeExports.jsx("div", { ref: ref, className: mergeTw('mb-4', className, tw), ...props, children: children }));
 });
-const DialogTitle = require$$0.forwardRef(function DialogTitle({ children, className, tw, ...props }, ref) {
+const DialogTitle = React.forwardRef(function DialogTitle({ children, className, tw, ...props }, ref) {
     const { titleId } = useDialogContext();
     return (jsxRuntimeExports.jsx("h2", { ref: ref, id: titleId, className: mergeTw('text-lg font-semibold text-gray-900', className, tw), ...props, children: children }));
 });
-const DialogDescription = require$$0.forwardRef(function DialogDescription({ children, className, tw, ...props }, ref) {
+const DialogDescription = React.forwardRef(function DialogDescription({ children, className, tw, ...props }, ref) {
     const { descriptionId } = useDialogContext();
     return (jsxRuntimeExports.jsx("p", { ref: ref, id: descriptionId, className: mergeTw('text-sm text-gray-600 mt-1', className, tw), ...props, children: children }));
 });
-const DialogFooter = require$$0.forwardRef(function DialogFooter({ children, className, tw, ...props }, ref) {
+const DialogFooter = React.forwardRef(function DialogFooter({ children, className, tw, ...props }, ref) {
     return (jsxRuntimeExports.jsx("div", { ref: ref, className: mergeTw('mt-6 flex items-center justify-end gap-3', className, tw), ...props, children: children }));
 });
-const DialogClose = require$$0.forwardRef(function DialogClose({ children, className, tw, onClick, ...props }, ref) {
+const DialogClose = React.forwardRef(function DialogClose({ children, className, tw, onClick, ...props }, ref) {
     const { onOpenChange } = useDialogContext();
     const handleClick = (e) => {
         onOpenChange(false);
@@ -687,16 +687,16 @@ const Dialog = {
     Close: DialogClose,
 };
 
-const DrawerContext = require$$0.createContext(null);
+const DrawerContext = React.createContext(null);
 function useDrawerContext() {
-    const context = require$$0.useContext(DrawerContext);
+    const context = React.useContext(DrawerContext);
     if (!context) {
         throw new Error('Drawer compound components must be used within Drawer.Root');
     }
     return context;
 }
 const DrawerRoot = ({ open: controlledOpen, defaultOpen, onOpenChange, position = 'right', children, }) => {
-    const [uncontrolledOpen, setUncontrolledOpen] = require$$0.useState(defaultOpen || false);
+    const [uncontrolledOpen, setUncontrolledOpen] = React.useState(defaultOpen || false);
     const isControlled = controlledOpen !== undefined;
     const open = isControlled ? controlledOpen : uncontrolledOpen;
     const titleId = useStableId('drawer-title');
@@ -709,19 +709,19 @@ const DrawerRoot = ({ open: controlledOpen, defaultOpen, onOpenChange, position 
     };
     return (jsxRuntimeExports.jsx(DrawerContext.Provider, { value: { open, onOpenChange: handleOpenChange, titleId, descriptionId, position }, children: children }));
 };
-const DrawerOverlay = require$$0.forwardRef(function DrawerOverlay({ className, tw, ...props }, ref) {
+const DrawerOverlay = React.forwardRef(function DrawerOverlay({ className, tw, ...props }, ref) {
     const { open } = useDrawerContext();
     if (!open)
         return null;
     return reactDom.createPortal(jsxRuntimeExports.jsx("div", { ref: ref, className: mergeTw('fixed inset-0 z-50 bg-gray-900/50 backdrop-blur-sm', 'animate-fade-in', className, tw), ...props }), document.body);
 });
-const DrawerContent = require$$0.forwardRef(function DrawerContent({ children, className, tw, ...props }, ref) {
+const DrawerContent = React.forwardRef(function DrawerContent({ children, className, tw, ...props }, ref) {
     const { open, onOpenChange, titleId, descriptionId, position } = useDrawerContext();
-    const contentRef = require$$0.useRef(null);
+    const contentRef = React.useRef(null);
     useLockScroll(open);
     useFocusTrap(contentRef, open);
     useFocusReturn();
-    require$$0.useEffect(() => {
+    React.useEffect(() => {
         if (!open)
             return;
         const handleEscape = (e) => {
@@ -756,21 +756,21 @@ const DrawerContent = require$$0.forwardRef(function DrawerContent({ children, c
     };
     return reactDom.createPortal(jsxRuntimeExports.jsx("div", { className: "fixed inset-0 z-50", onClick: handleBackdropClick, children: jsxRuntimeExports.jsx("div", { ref: handleRef, role: "dialog", "aria-modal": "true", "aria-labelledby": titleId, "aria-describedby": descriptionId, className: mergeTw('fixed bg-white p-6 shadow-card', positionClasses[position], className, tw), ...props, children: children }) }), document.body);
 });
-const DrawerHeader = require$$0.forwardRef(function DrawerHeader({ children, className, tw, ...props }, ref) {
+const DrawerHeader = React.forwardRef(function DrawerHeader({ children, className, tw, ...props }, ref) {
     return (jsxRuntimeExports.jsx("div", { ref: ref, className: mergeTw('mb-4', className, tw), ...props, children: children }));
 });
-const DrawerTitle = require$$0.forwardRef(function DrawerTitle({ children, className, tw, ...props }, ref) {
+const DrawerTitle = React.forwardRef(function DrawerTitle({ children, className, tw, ...props }, ref) {
     const { titleId } = useDrawerContext();
     return (jsxRuntimeExports.jsx("h2", { ref: ref, id: titleId, className: mergeTw('text-lg font-semibold text-gray-900', className, tw), ...props, children: children }));
 });
-const DrawerDescription = require$$0.forwardRef(function DrawerDescription({ children, className, tw, ...props }, ref) {
+const DrawerDescription = React.forwardRef(function DrawerDescription({ children, className, tw, ...props }, ref) {
     const { descriptionId } = useDrawerContext();
     return (jsxRuntimeExports.jsx("p", { ref: ref, id: descriptionId, className: mergeTw('text-sm text-gray-600 mt-1', className, tw), ...props, children: children }));
 });
-const DrawerFooter = require$$0.forwardRef(function DrawerFooter({ children, className, tw, ...props }, ref) {
+const DrawerFooter = React.forwardRef(function DrawerFooter({ children, className, tw, ...props }, ref) {
     return (jsxRuntimeExports.jsx("div", { ref: ref, className: mergeTw('mt-6 flex items-center justify-end gap-3', className, tw), ...props, children: children }));
 });
-const DrawerClose = require$$0.forwardRef(function DrawerClose({ children, className, tw, onClick, ...props }, ref) {
+const DrawerClose = React.forwardRef(function DrawerClose({ children, className, tw, onClick, ...props }, ref) {
     const { onOpenChange } = useDrawerContext();
     const handleClick = (e) => {
         onOpenChange(false);
@@ -810,11 +810,11 @@ const Drawer = {
     Close: DrawerClose,
 };
 
-const ToastContext = require$$0.createContext(null);
+const ToastContext = React.createContext(null);
 let toastCounter = 0;
 function ToastProvider({ children, max = 5 }) {
-    const [toasts, setToasts] = require$$0.useState([]);
-    const addToast = require$$0.useCallback((message, variant = 'info', duration = 5000) => {
+    const [toasts, setToasts] = React.useState([]);
+    const addToast = React.useCallback((message, variant = 'info', duration = 5000) => {
         const id = `toast-${++toastCounter}`;
         const newToast = { id, message, variant, duration };
         setToasts((prev) => {
@@ -822,7 +822,7 @@ function ToastProvider({ children, max = 5 }) {
             return updated.slice(-max);
         });
     }, [max]);
-    const removeToast = require$$0.useCallback((id) => {
+    const removeToast = React.useCallback((id) => {
         setToasts((prev) => prev.filter((t) => t.id !== id));
     }, []);
     return (jsxRuntimeExports.jsxs(ToastContext.Provider, { value: { toasts, addToast, removeToast }, children: [children, jsxRuntimeExports.jsx(ToastContainer, {})] }));
@@ -833,7 +833,7 @@ function ToastProvider({ children, max = 5 }) {
  * Must be used within ToastProvider.
  */
 function useToast() {
-    const context = require$$0.useContext(ToastContext);
+    const context = React.useContext(ToastContext);
     if (!context) {
         throw new Error('useToast must be used within ToastProvider');
     }
@@ -846,16 +846,16 @@ function useToast() {
 }
 /* ----------------------------- ToastContainer ----------------------------- */
 function ToastContainer() {
-    const context = require$$0.useContext(ToastContext);
+    const context = React.useContext(ToastContext);
     if (!context)
         return null;
     const { toasts } = context;
     return reactDom.createPortal(jsxRuntimeExports.jsx("div", { className: "fixed top-4 right-4 z-50 flex flex-col gap-2 pointer-events-none", "aria-live": "polite", "aria-atomic": "true", children: toasts.map((toast) => (jsxRuntimeExports.jsx(ToastItem, { toast: toast }, toast.id))) }), document.body);
 }
 function ToastItem({ toast }) {
-    const context = require$$0.useContext(ToastContext);
-    const [isHovered, setIsHovered] = require$$0.useState(false);
-    require$$0.useEffect(() => {
+    const context = React.useContext(ToastContext);
+    const [isHovered, setIsHovered] = React.useState(false);
+    React.useEffect(() => {
         if (!toast.duration || isHovered)
             return;
         const timer = setTimeout(() => {
@@ -970,13 +970,251 @@ const Badge = createComponent({
     },
 });
 
+/**
+ * Gallery component for displaying images in various grid layouts.
+ */
+const Gallery = createComponent({
+    as: 'div',
+    displayName: 'Gallery',
+    base: 'w-full',
+    variants: {
+        columns: {
+            '1': 'grid-cols-1',
+            '2': 'grid-cols-2',
+            '3': 'grid-cols-3',
+            '4': 'grid-cols-4',
+            '5': 'grid-cols-5',
+            '6': 'grid-cols-6',
+        },
+        gap: {
+            none: 'gap-0',
+            sm: 'gap-2',
+            md: 'gap-4',
+            lg: 'gap-6',
+            xl: 'gap-8',
+        },
+    },
+    defaultVariants: {
+        columns: '3',
+        gap: 'md',
+    },
+});
+/**
+ * GalleryImage component for individual images in the gallery.
+ */
+function GalleryImage({ src, alt, aspectRatio = 'square', objectFit = 'cover', onClick, className, tw, }) {
+    const aspectRatioClasses = {
+        square: 'aspect-square',
+        video: 'aspect-video',
+        portrait: 'aspect-[3/4]',
+        auto: '',
+    };
+    const objectFitClasses = {
+        cover: 'object-cover',
+        contain: 'object-contain',
+        fill: 'object-fill',
+    };
+    return (jsxRuntimeExports.jsx("div", { className: mergeTw('relative overflow-hidden rounded-lg bg-gray-100', aspectRatioClasses[aspectRatio], onClick && 'cursor-pointer hover:opacity-90 transition-opacity', className, tw), onClick: onClick, children: jsxRuntimeExports.jsx("img", { src: src, alt: alt, className: mergeTw('w-full h-full', objectFitClasses[objectFit]), loading: "lazy" }) }));
+}
+/**
+ * Lightbox component for viewing images in full screen.
+ */
+function GalleryLightbox({ images, currentIndex, onClose, onPrevious, onNext, }) {
+    const currentImage = images[currentIndex];
+    const hasPrevious = currentIndex > 0;
+    const hasNext = currentIndex < images.length - 1;
+    React.useEffect(() => {
+        const handleKeyDown = (e) => {
+            if (e.key === 'Escape')
+                onClose();
+            if (e.key === 'ArrowLeft' && hasPrevious && onPrevious)
+                onPrevious();
+            if (e.key === 'ArrowRight' && hasNext && onNext)
+                onNext();
+        };
+        document.addEventListener('keydown', handleKeyDown);
+        return () => document.removeEventListener('keydown', handleKeyDown);
+    }, [currentIndex, hasPrevious, hasNext, onClose, onPrevious, onNext]);
+    // Lock body scroll
+    React.useEffect(() => {
+        document.body.style.overflow = 'hidden';
+        return () => {
+            document.body.style.overflow = '';
+        };
+    }, []);
+    return (jsxRuntimeExports.jsxs("div", { className: "fixed inset-0 z-50 bg-black/95 flex items-center justify-center", onClick: onClose, children: [jsxRuntimeExports.jsx("button", { onClick: onClose, className: "absolute top-4 right-4 text-white hover:text-gray-300 transition-colors z-10", "aria-label": "Close lightbox", children: jsxRuntimeExports.jsx("svg", { width: "24", height: "24", fill: "none", viewBox: "0 0 24 24", stroke: "currentColor", children: jsxRuntimeExports.jsx("path", { strokeLinecap: "round", strokeLinejoin: "round", strokeWidth: 2, d: "M6 18L18 6M6 6l12 12" }) }) }), hasPrevious && onPrevious && (jsxRuntimeExports.jsx("button", { onClick: (e) => {
+                    e.stopPropagation();
+                    onPrevious();
+                }, className: "absolute left-4 top-1/2 -translate-y-1/2 text-white hover:text-gray-300 transition-colors z-10", "aria-label": "Previous image", children: jsxRuntimeExports.jsx("svg", { width: "32", height: "32", fill: "none", viewBox: "0 0 24 24", stroke: "currentColor", children: jsxRuntimeExports.jsx("path", { strokeLinecap: "round", strokeLinejoin: "round", strokeWidth: 2, d: "M15 19l-7-7 7-7" }) }) })), jsxRuntimeExports.jsxs("div", { className: "max-w-7xl max-h-[90vh] px-16", onClick: (e) => e.stopPropagation(), children: [jsxRuntimeExports.jsx("img", { src: currentImage.src, alt: currentImage.alt, className: "max-w-full max-h-[90vh] object-contain" }), jsxRuntimeExports.jsxs("div", { className: "text-white text-center mt-4", children: [currentIndex + 1, " / ", images.length] })] }), hasNext && onNext && (jsxRuntimeExports.jsx("button", { onClick: (e) => {
+                    e.stopPropagation();
+                    onNext();
+                }, className: "absolute right-4 top-1/2 -translate-y-1/2 text-white hover:text-gray-300 transition-colors z-10", "aria-label": "Next image", children: jsxRuntimeExports.jsx("svg", { width: "32", height: "32", fill: "none", viewBox: "0 0 24 24", stroke: "currentColor", children: jsxRuntimeExports.jsx("path", { strokeLinecap: "round", strokeLinejoin: "round", strokeWidth: 2, d: "M9 5l7 7-7 7" }) }) }))] }));
+}
+/**
+ * Hook for managing gallery lightbox state.
+ */
+function useGalleryLightbox(images) {
+    const [currentIndex, setCurrentIndex] = React.useState(null);
+    const open = (index) => setCurrentIndex(index);
+    const close = () => setCurrentIndex(null);
+    const next = () => {
+        if (currentIndex !== null && currentIndex < images.length - 1) {
+            setCurrentIndex(currentIndex + 1);
+        }
+    };
+    const previous = () => {
+        if (currentIndex !== null && currentIndex > 0) {
+            setCurrentIndex(currentIndex - 1);
+        }
+    };
+    return {
+        isOpen: currentIndex !== null,
+        currentIndex: currentIndex ?? 0,
+        open,
+        close,
+        next,
+        previous,
+    };
+}
+
+/**
+ * Carousel component for displaying content in a slideshow.
+ * Supports auto-play, navigation arrows, dots, and keyboard navigation.
+ */
+function Carousel({ children, autoPlay = false, interval = 3000, showDots = true, showArrows = true, loop = true, className, tw, }) {
+    const [currentIndex, setCurrentIndex] = React.useState(0);
+    const [isHovered, setIsHovered] = React.useState(false);
+    const timeoutRef = React.useRef(null);
+    const slides = React.Children.toArray(children);
+    const totalSlides = slides.length;
+    const goToSlide = (index) => {
+        setCurrentIndex(index);
+    };
+    const goToPrevious = () => {
+        if (currentIndex === 0) {
+            if (loop) {
+                setCurrentIndex(totalSlides - 1);
+            }
+        }
+        else {
+            setCurrentIndex(currentIndex - 1);
+        }
+    };
+    const goToNext = () => {
+        if (currentIndex === totalSlides - 1) {
+            if (loop) {
+                setCurrentIndex(0);
+            }
+        }
+        else {
+            setCurrentIndex(currentIndex + 1);
+        }
+    };
+    // Auto-play functionality
+    React.useEffect(() => {
+        if (!autoPlay || isHovered)
+            return;
+        timeoutRef.current = setTimeout(() => {
+            goToNext();
+        }, interval);
+        return () => {
+            if (timeoutRef.current) {
+                clearTimeout(timeoutRef.current);
+            }
+        };
+    }, [currentIndex, autoPlay, interval, isHovered]);
+    // Keyboard navigation
+    React.useEffect(() => {
+        const handleKeyDown = (e) => {
+            if (e.key === 'ArrowLeft')
+                goToPrevious();
+            if (e.key === 'ArrowRight')
+                goToNext();
+        };
+        window.addEventListener('keydown', handleKeyDown);
+        return () => window.removeEventListener('keydown', handleKeyDown);
+    }, [currentIndex]);
+    const canGoPrevious = loop || currentIndex > 0;
+    const canGoNext = loop || currentIndex < totalSlides - 1;
+    return (jsxRuntimeExports.jsxs("div", { className: mergeTw('relative w-full', className, tw), onMouseEnter: () => setIsHovered(true), onMouseLeave: () => setIsHovered(false), role: "region", "aria-label": "Carousel", children: [jsxRuntimeExports.jsx("div", { className: "relative overflow-hidden rounded-lg", children: jsxRuntimeExports.jsx("div", { className: "flex transition-transform duration-500 ease-out", style: { transform: `translateX(-${currentIndex * 100}%)` }, children: slides.map((slide, index) => (jsxRuntimeExports.jsx("div", { className: "min-w-full", "aria-hidden": index !== currentIndex, children: slide }, index))) }) }), showArrows && canGoPrevious && (jsxRuntimeExports.jsx("button", { onClick: goToPrevious, className: "absolute left-4 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white text-gray-800 rounded-full p-2 shadow-lg transition-all z-10", "aria-label": "Previous slide", children: jsxRuntimeExports.jsx("svg", { width: "24", height: "24", fill: "none", viewBox: "0 0 24 24", stroke: "currentColor", children: jsxRuntimeExports.jsx("path", { strokeLinecap: "round", strokeLinejoin: "round", strokeWidth: 2, d: "M15 19l-7-7 7-7" }) }) })), showArrows && canGoNext && (jsxRuntimeExports.jsx("button", { onClick: goToNext, className: "absolute right-4 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white text-gray-800 rounded-full p-2 shadow-lg transition-all z-10", "aria-label": "Next slide", children: jsxRuntimeExports.jsx("svg", { width: "24", height: "24", fill: "none", viewBox: "0 0 24 24", stroke: "currentColor", children: jsxRuntimeExports.jsx("path", { strokeLinecap: "round", strokeLinejoin: "round", strokeWidth: 2, d: "M9 5l7 7-7 7" }) }) })), showDots && (jsxRuntimeExports.jsx("div", { className: "absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2 z-10", children: slides.map((_, index) => (jsxRuntimeExports.jsx("button", { onClick: () => goToSlide(index), className: mergeTw('w-2 h-2 rounded-full transition-all', index === currentIndex
+                        ? 'w-8 bg-white'
+                        : 'bg-white/60 hover:bg-white/80'), "aria-label": `Go to slide ${index + 1}`, "aria-current": index === currentIndex }, index))) }))] }));
+}
+/**
+ * CarouselSlide component for individual slides.
+ */
+function CarouselSlide({ children, className, tw }) {
+    return (jsxRuntimeExports.jsx("div", { className: mergeTw('w-full', className, tw), children: children }));
+}
+/**
+ * CarouselImage component optimized for carousel slides.
+ */
+function CarouselImage({ src, alt, aspectRatio = 'video', objectFit = 'cover', className, tw, }) {
+    const aspectRatioClasses = {
+        square: 'aspect-square',
+        video: 'aspect-video',
+        portrait: 'aspect-[3/4]',
+        auto: '',
+    };
+    const objectFitClasses = {
+        cover: 'object-cover',
+        contain: 'object-contain',
+        fill: 'object-fill',
+    };
+    return (jsxRuntimeExports.jsx("div", { className: mergeTw('relative overflow-hidden bg-gray-100', aspectRatioClasses[aspectRatio], className, tw), children: jsxRuntimeExports.jsx("img", { src: src, alt: alt, className: mergeTw('w-full h-full', objectFitClasses[objectFit]) }) }));
+}
+/**
+ * Hook for managing carousel state externally.
+ */
+function useCarousel(totalSlides, options) {
+    const [currentIndex, setCurrentIndex] = React.useState(0);
+    const { loop = true } = options || {};
+    const goToSlide = (index) => {
+        setCurrentIndex(index);
+    };
+    const goToPrevious = () => {
+        if (currentIndex === 0) {
+            if (loop) {
+                setCurrentIndex(totalSlides - 1);
+            }
+        }
+        else {
+            setCurrentIndex(currentIndex - 1);
+        }
+    };
+    const goToNext = () => {
+        if (currentIndex === totalSlides - 1) {
+            if (loop) {
+                setCurrentIndex(0);
+            }
+        }
+        else {
+            setCurrentIndex(currentIndex + 1);
+        }
+    };
+    return {
+        currentIndex,
+        goToSlide,
+        goToPrevious,
+        goToNext,
+        canGoPrevious: loop || currentIndex > 0,
+        canGoNext: loop || currentIndex < totalSlides - 1,
+    };
+}
+
 exports.Avatar = Avatar;
 exports.Badge = Badge;
 exports.Button = Button;
 exports.Card = Card;
+exports.Carousel = Carousel;
+exports.CarouselImage = CarouselImage;
+exports.CarouselSlide = CarouselSlide;
 exports.Checkbox = Checkbox;
 exports.Dialog = Dialog;
 exports.Drawer = Drawer;
+exports.Gallery = Gallery;
+exports.GalleryImage = GalleryImage;
+exports.GalleryLightbox = GalleryLightbox;
 exports.Input = Input;
 exports.LoadingOverlay = LoadingOverlay;
 exports.Radio = Radio;
@@ -992,8 +1230,10 @@ exports.createSlots = createSlots;
 exports.cx = cx;
 exports.mergeTw = mergeTw;
 exports.tv = tv;
+exports.useCarousel = useCarousel;
 exports.useFocusReturn = useFocusReturn;
 exports.useFocusTrap = useFocusTrap;
+exports.useGalleryLightbox = useGalleryLightbox;
 exports.useIsomorphicLayoutEffect = useIsomorphicLayoutEffect;
 exports.useLockScroll = useLockScroll;
 exports.useStableId = useStableId;

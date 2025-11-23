@@ -2,6 +2,12 @@
 
 A Tailwind-first, variant-driven, polymorphic React component library built for modern web applications.
 
+## Documentation
+
+- **[Complete Component Documentation](./COMPONENT_DOCS.md)** - Comprehensive docs with examples, theme config, and all variants for each component
+- **[Implementation Guide](./COMPONENT_GUIDE.md)** - Patterns and architecture for building new components
+- **Storybook** - Run `npm run storybook` to view interactive examples
+
 ## Features
 
 - **Tailwind-First**: All components styled with Tailwind CSS
@@ -69,31 +75,43 @@ module.exports = {
 };
 ```
 
-## Components
+## Components (17 Total)
 
-### Form Components
+> For complete documentation with all variants, sizes, and examples, see [COMPONENT_DOCS.md](./COMPONENT_DOCS.md)
 
-- **Button** - Polymorphic button with variants (primary, secondary, danger, ghost)
-- **Input** - Text input with label, description, error states, prefix/suffix
-- **Textarea** - Multi-line input with auto-resize and character counter
-- **Select** - Native select with custom styling
-- **Checkbox** - Checkbox with indeterminate state support
-- **Radio** - Radio button with label
-- **Toggle** - Switch/toggle component with ARIA switch role
+### Form Components (7)
 
-### Layout Components
+- **[Button](./COMPONENT_DOCS.md#button)** - Polymorphic button with variants (primary, secondary, danger, ghost) and 3 sizes
+- **[Input](./COMPONENT_DOCS.md#input)** - Text input with label, description, error states, prefix/suffix icons
+- **[Textarea](./COMPONENT_DOCS.md#textarea)** - Multi-line input with auto-resize and character counter
+- **[Select](./COMPONENT_DOCS.md#select)** - Native select with custom styling
+- **[Checkbox](./COMPONENT_DOCS.md#checkbox)** - Checkbox with indeterminate state support
+- **[Radio](./COMPONENT_DOCS.md#radio)** - Radio button with label and description
+- **[Toggle](./COMPONENT_DOCS.md#toggle)** - Switch/toggle component with ARIA switch role
 
-- **Card** - Compound component (Root, Header, Title, Description, Content, Footer)
-- **Tabs** - Accessible tabs with roving tabindex and keyboard navigation
-- **Dialog** - Modal with focus trap, scroll lock, and keyboard handling
-- **Drawer** - Slide-in panel (left, right, top, bottom)
-- **Tooltip** - Hover/focus tooltip with positioning
+### Layout Components (5)
 
-### Feedback Components
+- **[Card](./COMPONENT_DOCS.md#card)** - Compound component (Root, Header, Title, Description, Content, Footer)
+- **[Tabs](./COMPONENT_DOCS.md#tabs)** - Accessible tabs with roving tabindex and keyboard navigation
+- **[Dialog](./COMPONENT_DOCS.md#dialog)** - Modal with focus trap, scroll lock, and ESC to close
+- **[Drawer](./COMPONENT_DOCS.md#drawer)** - Slide-in panel from any direction (left, right, top, bottom)
+- **[Tooltip](./COMPONENT_DOCS.md#tooltip)** - Hover/focus tooltip with 4 positions
 
-- **Toast** - Toast notifications with manager (success, error, warning, info)
-- **Spinner** - Loading spinner with sizes and colors
-- **LoadingOverlay** - Full-page loading overlay with spinner
+### Feedback Components (3)
+
+- **[Toast](./COMPONENT_DOCS.md#toast)** - Toast notifications with manager (success, error, warning, info)
+- **[Spinner](./COMPONENT_DOCS.md#spinner)** - Loading spinner with 3 sizes and multiple colors
+- **[LoadingOverlay](./COMPONENT_DOCS.md#loadingoverlay)** - Full-page loading overlay with spinner
+
+### Display Components (2)
+
+- **[Avatar](./COMPONENT_DOCS.md#avatar)** - Profile images with 6 sizes (xs-2xl) and initials fallback
+- **[Badge](./COMPONENT_DOCS.md#badge)** - Labels and status indicators with 5 variants and 3 sizes
+
+### Media Components (2)
+
+- **[Gallery](./COMPONENT_DOCS.md#gallery)** - Image gallery with grid layouts and lightbox support
+- **[Carousel](./COMPONENT_DOCS.md#carousel)** - Slideshow component with auto-play and navigation
 
 ## Core API
 

@@ -214,7 +214,7 @@ declare const Toggle: React.ForwardRefExoticComponent<ToggleProps & React.RefAtt
 
 declare const Card: {
     Root: any;
-} & Record<"Description" | "Footer" | "Header" | "Title" | "Content", any>;
+} & Record<"Description" | "Title" | "Content" | "Footer" | "Header", any>;
 
 interface TabsRootProps {
     /** Currently selected tab value */
@@ -535,5 +535,101 @@ declare const Avatar: PolymorphicComponent<InferVariantProps<any>, "div">;
  */
 declare const Badge: PolymorphicComponent<InferVariantProps<any>, "span">;
 
-export { Avatar, Badge, Button, Card, Checkbox, Dialog, Drawer, Input, LoadingOverlay, Radio, Select, Spinner, Tabs, Textarea, ToastProvider, Toggle, Tooltip, createComponent, createSlots, cx, mergeTw, tv, useFocusReturn, useFocusTrap, useIsomorphicLayoutEffect, useLockScroll, useStableId, useToast };
-export type { CheckboxProps, CreateComponentOptions, DialogCloseProps, DialogContentProps, DialogDescriptionProps, DialogFooterProps, DialogHeaderProps, DialogOverlayProps, DialogRootProps, DialogTitleProps, DrawerCloseProps, DrawerContentProps, DrawerDescriptionProps, DrawerFooterProps, DrawerHeaderProps, DrawerOverlayProps, DrawerRootProps, DrawerTitleProps, InferVariantProps, InputProps, PolymorphicComponent, RadioProps, SelectProps, TVOptions, TabListProps, TabPanelProps, TabPanelsProps, TabProps, TabsRootProps, TextareaProps, ToastProviderProps, ToggleProps, TooltipContentProps, TooltipRootProps, TooltipTriggerProps };
+/**
+ * Gallery component for displaying images in various grid layouts.
+ */
+declare const Gallery: PolymorphicComponent<InferVariantProps<any>, "div">;
+interface GalleryImageProps {
+    src: string;
+    alt: string;
+    aspectRatio?: 'square' | 'video' | 'portrait' | 'auto';
+    objectFit?: 'cover' | 'contain' | 'fill';
+    onClick?: () => void;
+    className?: string;
+    tw?: string;
+}
+/**
+ * GalleryImage component for individual images in the gallery.
+ */
+declare function GalleryImage({ src, alt, aspectRatio, objectFit, onClick, className, tw, }: GalleryImageProps): react_jsx_runtime.JSX.Element;
+interface GalleryLightboxProps {
+    images: Array<{
+        src: string;
+        alt: string;
+    }>;
+    currentIndex: number;
+    onClose: () => void;
+    onPrevious?: () => void;
+    onNext?: () => void;
+}
+/**
+ * Lightbox component for viewing images in full screen.
+ */
+declare function GalleryLightbox({ images, currentIndex, onClose, onPrevious, onNext, }: GalleryLightboxProps): react_jsx_runtime.JSX.Element;
+/**
+ * Hook for managing gallery lightbox state.
+ */
+declare function useGalleryLightbox(images: Array<{
+    src: string;
+    alt: string;
+}>): {
+    isOpen: boolean;
+    currentIndex: number;
+    open: (index: number) => void;
+    close: () => void;
+    next: () => void;
+    previous: () => void;
+};
+
+interface CarouselProps {
+    children: React.ReactNode[];
+    autoPlay?: boolean;
+    interval?: number;
+    showDots?: boolean;
+    showArrows?: boolean;
+    loop?: boolean;
+    className?: string;
+    tw?: string;
+}
+/**
+ * Carousel component for displaying content in a slideshow.
+ * Supports auto-play, navigation arrows, dots, and keyboard navigation.
+ */
+declare function Carousel({ children, autoPlay, interval, showDots, showArrows, loop, className, tw, }: CarouselProps): react_jsx_runtime.JSX.Element;
+interface CarouselSlideProps {
+    children: React.ReactNode;
+    className?: string;
+    tw?: string;
+}
+/**
+ * CarouselSlide component for individual slides.
+ */
+declare function CarouselSlide({ children, className, tw }: CarouselSlideProps): react_jsx_runtime.JSX.Element;
+interface CarouselImageProps {
+    src: string;
+    alt: string;
+    aspectRatio?: 'square' | 'video' | 'portrait' | 'auto';
+    objectFit?: 'cover' | 'contain' | 'fill';
+    className?: string;
+    tw?: string;
+}
+/**
+ * CarouselImage component optimized for carousel slides.
+ */
+declare function CarouselImage({ src, alt, aspectRatio, objectFit, className, tw, }: CarouselImageProps): react_jsx_runtime.JSX.Element;
+/**
+ * Hook for managing carousel state externally.
+ */
+declare function useCarousel(totalSlides: number, options?: {
+    loop?: boolean;
+}): {
+    currentIndex: number;
+    goToSlide: (index: number) => void;
+    goToPrevious: () => void;
+    goToNext: () => void;
+    canGoPrevious: boolean;
+    canGoNext: boolean;
+};
+
+export { Avatar, Badge, Button, Card, Carousel, CarouselImage, CarouselSlide, Checkbox, Dialog, Drawer, Gallery, GalleryImage, GalleryLightbox, Input, LoadingOverlay, Radio, Select, Spinner, Tabs, Textarea, ToastProvider, Toggle, Tooltip, createComponent, createSlots, cx, mergeTw, tv, useCarousel, useFocusReturn, useFocusTrap, useGalleryLightbox, useIsomorphicLayoutEffect, useLockScroll, useStableId, useToast };
+export type { CarouselImageProps, CarouselProps, CarouselSlideProps, CheckboxProps, CreateComponentOptions, DialogCloseProps, DialogContentProps, DialogDescriptionProps, DialogFooterProps, DialogHeaderProps, DialogOverlayProps, DialogRootProps, DialogTitleProps, DrawerCloseProps, DrawerContentProps, DrawerDescriptionProps, DrawerFooterProps, DrawerHeaderProps, DrawerOverlayProps, DrawerRootProps, DrawerTitleProps, GalleryImageProps, GalleryLightboxProps, InferVariantProps, InputProps, PolymorphicComponent, RadioProps, SelectProps, TVOptions, TabListProps, TabPanelProps, TabPanelsProps, TabProps, TabsRootProps, TextareaProps, ToastProviderProps, ToggleProps, TooltipContentProps, TooltipRootProps, TooltipTriggerProps };
