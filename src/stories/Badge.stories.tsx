@@ -7,10 +7,70 @@ const meta: Meta<typeof Badge> = {
   parameters: {
     docs: {
       description: {
-        component: 'Label or status indicator component with multiple variants and sizes. Perfect for tags, counts, and status indicators.'
+        component: `
+# Badge
+
+Label or status indicator component with multiple variants and sizes. Perfect for tags, counts, and status indicators.
+
+## Import
+\`\`\`tsx
+import { Badge } from '@kasomaibrahim/comp-lib';
+\`\`\`
+
+## Props
+
+- **variant**: 'default' | 'success' | 'warning' | 'danger' | 'info' (default: 'default')
+- **size**: 'sm' | 'md' | 'lg' (default: 'md')
+- **tw**: string - Additional Tailwind classes
+
+## Examples
+
+\`\`\`tsx
+// Basic badge
+<Badge>New</Badge>
+
+// Success status
+<Badge variant="success">Active</Badge>
+
+// Danger status
+<Badge variant="danger">Error</Badge>
+
+// Warning
+<Badge variant="warning">Pending</Badge>
+
+// Info
+<Badge variant="info">Beta</Badge>
+
+// Different sizes
+<Badge size="sm">Small</Badge>
+<Badge size="md">Medium</Badge>
+<Badge size="lg">Large</Badge>
+
+// With counts
+<Badge variant="danger">5</Badge>
+<Badge variant="info">New: 12</Badge>
+\`\`\`
+
+## Variants
+
+- **default** - Gray badge for general use
+- **success** - Green for positive states
+- **warning** - Yellow for warnings
+- **danger** - Red for errors/critical
+- **info** - Blue for informational
+
+## Use Cases
+
+- Status indicators
+- Tags and categories
+- Notification counts
+- Feature badges
+- Version labels
+        `
       }
     }
-  }
+  },
+  tags: ['autodocs']
 };
 export default meta;
 type Story = StoryObj<typeof Badge>;

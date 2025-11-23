@@ -12,7 +12,63 @@ const meta: Meta<typeof Button> = {
   },
   parameters: {
     docs: {
-      page: () => import('./Button.mdx')
+      description: {
+        component: `
+# Button
+
+Interactive button component with multiple variants, sizes, and states. Supports polymorphic rendering and custom styling.
+
+## Installation
+
+\`\`\`bash
+npm install @kasomaibrahim/comp-lib
+\`\`\`
+
+## Import
+
+\`\`\`tsx
+import { Button } from '@kasomaibrahim/comp-lib';
+\`\`\`
+
+## Props
+
+- **intent**: 'primary' | 'secondary' | 'danger' | 'ghost' (default: 'primary')
+- **size**: 'sm' | 'md' | 'lg' (default: 'md')
+- **loading**: boolean (default: false) - Shows loading state
+- **fullWidth**: boolean (default: false) - Makes button full width
+- **disabled**: boolean (default: false) - Disables the button
+- **as**: React.ElementType - Polymorphic rendering
+- **tw**: string - Additional Tailwind classes
+
+## Default Theme Configuration
+
+\`\`\`js
+colors: {
+  brand: { 600: '#005BBB', 700: '#004E9F' },
+  gray: { 100: '#F2F4F7', 200: '#EAECF0', 900: '#101828' },
+  danger: { 600: '#DC2626', 700: '#B91C1C' }
+}
+\`\`\`
+
+## Accessibility
+
+- Keyboard navigation with Tab, Enter, Space
+- Clear focus indicators
+- Supports all native button ARIA attributes
+- Disabled state prevents interaction
+
+## Best Practices
+
+✅ Use clear, action-oriented labels
+✅ One primary button per section
+✅ Show loading states for async operations
+✅ Use appropriate intents (danger for destructive actions)
+
+❌ Don't use multiple primary buttons
+❌ Don't use vague labels like "Click Here"
+❌ Don't make buttons too small
+        `
+      }
     }
   },
   tags: ['autodocs']

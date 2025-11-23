@@ -89,7 +89,7 @@ const DialogOverlay = forwardRef<HTMLDivElement, DialogOverlayProps>(function Di
     <div
       ref={ref}
       className={mergeTw(
-        'fixed inset-0 z-50 bg-gray-900/50 backdrop-blur-sm',
+        'fixed inset-0 z-40 bg-gray-900/50 backdrop-blur-sm',
         'animate-fade-in',
         className,
         tw

@@ -17,6 +17,7 @@ interface TooltipContextValue {
   setOpen: (open: boolean) => void;
   tooltipId: string;
   position: Position;
+  triggerRef: React.RefObject<HTMLElement>;
 }
 
 const TooltipContext = createContext<TooltipContextValue | null>(null);
@@ -43,10 +44,13 @@ export interface TooltipRootProps {
 const TooltipRoot = ({ children, position = 'top' }: TooltipRootProps) => {
   const [open, setOpen] = useState(false);
   const tooltipId = useStableId('tooltip');
+  const triggerRef = useRef<HTMLElement>(null);
 
   return (
-    <TooltipContext.Provider value={{ open, setOpen, tooltipId, position }}>
-      {children}
+    <TooltipContext.Provider value={{ open, setOpen, tooltipId, position, triggerRef }}>
+      <div className="relative inline-block">
+        {children}
+      </div>
     </TooltipContext.Provider>
   );
 };
@@ -65,10 +69,10 @@ export interface TooltipTriggerProps extends HTMLAttributes<HTMLElement> {
 }
 
 const TooltipTrigger = forwardRef<any, TooltipTriggerProps>(function TooltipTrigger(
-  { children, as: Component = 'button', className, tw, ...props },
+  { children, as: Component = 'span', className, tw, ...props },
   ref
 ) {
-  const { setOpen, tooltipId } = useTooltipContext();
+  const { setOpen, tooltipId, triggerRef } = useTooltipContext();
 
   const handleMouseEnter = () => setOpen(true);
   const handleMouseLeave = () => setOpen(false);
@@ -77,9 +81,18 @@ const TooltipTrigger = forwardRef<any, TooltipTriggerProps>(function TooltipTrig
 
   const Element = Component as React.ElementType;
 
+  const handleRef = (node: any) => {
+    (triggerRef as React.MutableRefObject<any>).current = node;
+    if (typeof ref === 'function') {
+      ref(node);
+    } else if (ref) {
+      (ref as React.MutableRefObject<any>).current = node;
+    }
+  };
+
   return (
     <Element
-      ref={ref}
+      ref={handleRef}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
       onFocus={handleFocus}
@@ -106,24 +119,51 @@ const TooltipContent = forwardRef<HTMLDivElement, TooltipContentProps>(function 
   { children, className, tw, ...props },
   ref
 ) {
-  const { open, tooltipId, position } = useTooltipContext();
+  const { open, tooltipId, position, triggerRef } = useTooltipContext();
   const contentRef = useRef<HTMLDivElement | null>(null);
+  const [coords, setCoords] = useState({ top: 0, left: 0 });
 
-  if (!open) return null;
+  useEffect(() => {
+    if (!open || !triggerRef.current || !contentRef.current) return;
 
-  const positionClasses = {
-    top: 'bottom-full left-1/2 -translate-x-1/2 mb-2',
-    bottom: 'top-full left-1/2 -translate-x-1/2 mt-2',
-    left: 'right-full top-1/2 -translate-y-1/2 mr-2',
-    right: 'left-full top-1/2 -translate-y-1/2 ml-2',
-  };
+    const updatePosition = () => {
+      const trigger = triggerRef.current!.getBoundingClientRect();
+      const tooltip = contentRef.current!.getBoundingClientRect();
 
-  const arrowClasses = {
-    top: 'top-full left-1/2 -translate-x-1/2 border-l-transparent border-r-transparent border-b-transparent border-t-gray-900',
-    bottom: 'bottom-full left-1/2 -translate-x-1/2 border-l-transparent border-r-transparent border-t-transparent border-b-gray-900',
-    left: 'left-full top-1/2 -translate-y-1/2 border-t-transparent border-b-transparent border-r-transparent border-l-gray-900',
-    right: 'right-full top-1/2 -translate-y-1/2 border-t-transparent border-b-transparent border-l-transparent border-r-gray-900',
-  };
+      let top = 0;
+      let left = 0;
+
+      switch (position) {
+        case 'top':
+          top = trigger.top - tooltip.height - 8;
+          left = trigger.left + trigger.width / 2 - tooltip.width / 2;
+          break;
+        case 'bottom':
+          top = trigger.bottom + 8;
+          left = trigger.left + trigger.width / 2 - tooltip.width / 2;
+          break;
+        case 'left':
+          top = trigger.top + trigger.height / 2 - tooltip.height / 2;
+          left = trigger.left - tooltip.width - 8;
+          break;
+        case 'right':
+          top = trigger.top + trigger.height / 2 - tooltip.height / 2;
+          left = trigger.right + 8;
+          break;
+      }
+
+      setCoords({ top, left });
+    };
+
+    updatePosition();
+    window.addEventListener('scroll', updatePosition, true);
+    window.addEventListener('resize', updatePosition);
+
+    return () => {
+      window.removeEventListener('scroll', updatePosition, true);
+      window.removeEventListener('resize', updatePosition);
+    };
+  }, [open, position, triggerRef]);
 
   const handleRef = (node: HTMLDivElement | null) => {
     contentRef.current = node;
@@ -134,15 +174,29 @@ const TooltipContent = forwardRef<HTMLDivElement, TooltipContentProps>(function 
     }
   };
 
+  if (!open) return null;
+
+  const arrowClasses = {
+    top: 'bottom-[-4px] left-1/2 -translate-x-1/2 border-l-transparent border-r-transparent border-b-transparent border-t-gray-900',
+    bottom: 'top-[-4px] left-1/2 -translate-x-1/2 border-l-transparent border-r-transparent border-t-transparent border-b-gray-900',
+    left: 'right-[-4px] top-1/2 -translate-y-1/2 border-t-transparent border-b-transparent border-r-transparent border-l-gray-900',
+    right: 'left-[-4px] top-1/2 -translate-y-1/2 border-t-transparent border-b-transparent border-l-transparent border-r-gray-900',
+  };
+
   return createPortal(
     <div
       ref={handleRef}
       id={tooltipId}
       role="tooltip"
+      style={{
+        position: 'fixed',
+        top: `${coords.top}px`,
+        left: `${coords.left}px`,
+      }}
       className={mergeTw(
-        'absolute z-50 px-3 py-1.5 text-sm text-white bg-gray-900 rounded-md shadow-lg',
-        'animate-zoom-in-95',
-        positionClasses[position],
+        'z-50 px-3 py-1.5 text-sm text-white bg-gray-900 rounded-md shadow-lg',
+        'animate-fade-in',
+        'max-w-xs whitespace-normal',
         className,
         tw
       )}

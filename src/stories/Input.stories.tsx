@@ -9,7 +9,78 @@ const meta: Meta<typeof Input> = {
     disabled: { control: 'boolean' },
     invalid: { control: 'boolean' },
   },
-  parameters: { docs: { source: { type: 'dynamic' } } },
+  parameters: {
+    docs: {
+      description: {
+        component: `
+# Input
+
+Text input field with label, description, error states, and icon support. Fully accessible with proper ARIA attributes.
+
+## Import
+\`\`\`tsx
+import { Input } from '@kasomaibrahim/comp-lib';
+\`\`\`
+
+## Props
+
+- **label**: string - Input label text
+- **description**: string - Helper text below input
+- **error**: string - Error message (shows error state)
+- **required**: boolean - Shows required asterisk
+- **prefix**: ReactNode - Icon or content before input
+- **suffix**: ReactNode - Icon or content after input
+- **size**: 'sm' | 'md' | 'lg' (default: 'md')
+- **disabled**: boolean - Disables the input
+- **type**: string - HTML input type (text, email, password, etc.)
+
+## Theme Configuration
+
+\`\`\`js
+colors: {
+  gray: { 200: '#EAECF0', 300: '#D0D5DD', 500: '#667085', 700: '#344054' },
+  brand: { 600: '#005BBB' },
+  danger: { 600: '#DC2626' }
+}
+\`\`\`
+
+## Accessibility
+
+- Labels properly associated with htmlFor
+- Error states use aria-invalid and aria-describedby
+- Description linked with aria-describedby
+- Required status indicated visually and semantically
+
+## Examples
+
+\`\`\`tsx
+// Basic
+<Input label="Email" placeholder="you@example.com" />
+
+// With description
+<Input
+  label="Password"
+  description="Must be 8+ characters"
+  type="password"
+/>
+
+// Error state
+<Input
+  label="Email"
+  error="Invalid email address"
+/>
+
+// With icons
+<Input
+  label="Search"
+  prefix={<SearchIcon />}
+/>
+\`\`\`
+        `
+      }
+    }
+  },
+  tags: ['autodocs']
 };
 
 export default meta;

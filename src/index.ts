@@ -26,6 +26,9 @@ export * from './components/Tooltip';
 export * from './components/Dialog';
 export * from './components/Drawer';
 
+// Modal alias for Dialog
+export { Dialog as Modal } from './components/Dialog';
+
 // Feedback Components
 export * from './components/Toast';
 export * from './components/Spinner';

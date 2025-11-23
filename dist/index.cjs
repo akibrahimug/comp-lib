@@ -514,34 +514,67 @@ function useTooltipContext() {
 const TooltipRoot = ({ children, position = 'top' }) => {
     const [open, setOpen] = React.useState(false);
     const tooltipId = useStableId('tooltip');
-    return (jsxRuntimeExports.jsx(TooltipContext.Provider, { value: { open, setOpen, tooltipId, position }, children: children }));
+    const triggerRef = React.useRef(null);
+    return (jsxRuntimeExports.jsx(TooltipContext.Provider, { value: { open, setOpen, tooltipId, position, triggerRef }, children: jsxRuntimeExports.jsx("div", { className: "relative inline-block", children: children }) }));
 };
-const TooltipTrigger = React.forwardRef(function TooltipTrigger({ children, as: Component = 'button', className, tw, ...props }, ref) {
-    const { setOpen, tooltipId } = useTooltipContext();
+const TooltipTrigger = React.forwardRef(function TooltipTrigger({ children, as: Component = 'span', className, tw, ...props }, ref) {
+    const { setOpen, tooltipId, triggerRef } = useTooltipContext();
     const handleMouseEnter = () => setOpen(true);
     const handleMouseLeave = () => setOpen(false);
     const handleFocus = () => setOpen(true);
     const handleBlur = () => setOpen(false);
     const Element = Component;
-    return (jsxRuntimeExports.jsx(Element, { ref: ref, onMouseEnter: handleMouseEnter, onMouseLeave: handleMouseLeave, onFocus: handleFocus, onBlur: handleBlur, "aria-describedby": tooltipId, className: mergeTw(className, tw), ...props, children: children }));
+    const handleRef = (node) => {
+        triggerRef.current = node;
+        if (typeof ref === 'function') {
+            ref(node);
+        }
+        else if (ref) {
+            ref.current = node;
+        }
+    };
+    return (jsxRuntimeExports.jsx(Element, { ref: handleRef, onMouseEnter: handleMouseEnter, onMouseLeave: handleMouseLeave, onFocus: handleFocus, onBlur: handleBlur, "aria-describedby": tooltipId, className: mergeTw(className, tw), ...props, children: children }));
 });
 const TooltipContent = React.forwardRef(function TooltipContent({ children, className, tw, ...props }, ref) {
-    const { open, tooltipId, position } = useTooltipContext();
+    const { open, tooltipId, position, triggerRef } = useTooltipContext();
     const contentRef = React.useRef(null);
-    if (!open)
-        return null;
-    const positionClasses = {
-        top: 'bottom-full left-1/2 -translate-x-1/2 mb-2',
-        bottom: 'top-full left-1/2 -translate-x-1/2 mt-2',
-        left: 'right-full top-1/2 -translate-y-1/2 mr-2',
-        right: 'left-full top-1/2 -translate-y-1/2 ml-2',
-    };
-    const arrowClasses = {
-        top: 'top-full left-1/2 -translate-x-1/2 border-l-transparent border-r-transparent border-b-transparent border-t-gray-900',
-        bottom: 'bottom-full left-1/2 -translate-x-1/2 border-l-transparent border-r-transparent border-t-transparent border-b-gray-900',
-        left: 'left-full top-1/2 -translate-y-1/2 border-t-transparent border-b-transparent border-r-transparent border-l-gray-900',
-        right: 'right-full top-1/2 -translate-y-1/2 border-t-transparent border-b-transparent border-l-transparent border-r-gray-900',
-    };
+    const [coords, setCoords] = React.useState({ top: 0, left: 0 });
+    React.useEffect(() => {
+        if (!open || !triggerRef.current || !contentRef.current)
+            return;
+        const updatePosition = () => {
+            const trigger = triggerRef.current.getBoundingClientRect();
+            const tooltip = contentRef.current.getBoundingClientRect();
+            let top = 0;
+            let left = 0;
+            switch (position) {
+                case 'top':
+                    top = trigger.top - tooltip.height - 8;
+                    left = trigger.left + trigger.width / 2 - tooltip.width / 2;
+                    break;
+                case 'bottom':
+                    top = trigger.bottom + 8;
+                    left = trigger.left + trigger.width / 2 - tooltip.width / 2;
+                    break;
+                case 'left':
+                    top = trigger.top + trigger.height / 2 - tooltip.height / 2;
+                    left = trigger.left - tooltip.width - 8;
+                    break;
+                case 'right':
+                    top = trigger.top + trigger.height / 2 - tooltip.height / 2;
+                    left = trigger.right + 8;
+                    break;
+            }
+            setCoords({ top, left });
+        };
+        updatePosition();
+        window.addEventListener('scroll', updatePosition, true);
+        window.addEventListener('resize', updatePosition);
+        return () => {
+            window.removeEventListener('scroll', updatePosition, true);
+            window.removeEventListener('resize', updatePosition);
+        };
+    }, [open, position, triggerRef]);
     const handleRef = (node) => {
         contentRef.current = node;
         if (typeof ref === 'function') {
@@ -551,7 +584,19 @@ const TooltipContent = React.forwardRef(function TooltipContent({ children, clas
             ref.current = node;
         }
     };
-    return reactDom.createPortal(jsxRuntimeExports.jsxs("div", { ref: handleRef, id: tooltipId, role: "tooltip", className: mergeTw('absolute z-50 px-3 py-1.5 text-sm text-white bg-gray-900 rounded-md shadow-lg', 'animate-zoom-in-95', positionClasses[position], className, tw), ...props, children: [children, jsxRuntimeExports.jsx("div", { className: mergeTw('absolute w-0 h-0 border-4', arrowClasses[position]), "aria-hidden": "true" })] }), document.body);
+    if (!open)
+        return null;
+    const arrowClasses = {
+        top: 'bottom-[-4px] left-1/2 -translate-x-1/2 border-l-transparent border-r-transparent border-b-transparent border-t-gray-900',
+        bottom: 'top-[-4px] left-1/2 -translate-x-1/2 border-l-transparent border-r-transparent border-t-transparent border-b-gray-900',
+        left: 'right-[-4px] top-1/2 -translate-y-1/2 border-t-transparent border-b-transparent border-r-transparent border-l-gray-900',
+        right: 'left-[-4px] top-1/2 -translate-y-1/2 border-t-transparent border-b-transparent border-l-transparent border-r-gray-900',
+    };
+    return reactDom.createPortal(jsxRuntimeExports.jsxs("div", { ref: handleRef, id: tooltipId, role: "tooltip", style: {
+            position: 'fixed',
+            top: `${coords.top}px`,
+            left: `${coords.left}px`,
+        }, className: mergeTw('z-50 px-3 py-1.5 text-sm text-white bg-gray-900 rounded-md shadow-lg', 'animate-fade-in', 'max-w-xs whitespace-normal', className, tw), ...props, children: [children, jsxRuntimeExports.jsx("div", { className: mergeTw('absolute w-0 h-0 border-4', arrowClasses[position]), "aria-hidden": "true" })] }), document.body);
 });
 /* --------------------------------- Export --------------------------------- */
 /**
@@ -596,7 +641,7 @@ const DialogOverlay = React.forwardRef(function DialogOverlay({ className, tw, .
     const { open } = useDialogContext();
     if (!open)
         return null;
-    return reactDom.createPortal(jsxRuntimeExports.jsx("div", { ref: ref, className: mergeTw('fixed inset-0 z-50 bg-gray-900/50 backdrop-blur-sm', 'animate-fade-in', className, tw), ...props }), document.body);
+    return reactDom.createPortal(jsxRuntimeExports.jsx("div", { ref: ref, className: mergeTw('fixed inset-0 z-40 bg-gray-900/50 backdrop-blur-sm', 'animate-fade-in', className, tw), ...props }), document.body);
 });
 const DialogContent = React.forwardRef(function DialogContent({ children, className, tw, ...props }, ref) {
     const { open, onOpenChange, titleId, descriptionId } = useDialogContext();
@@ -1217,6 +1262,7 @@ exports.GalleryImage = GalleryImage;
 exports.GalleryLightbox = GalleryLightbox;
 exports.Input = Input;
 exports.LoadingOverlay = LoadingOverlay;
+exports.Modal = Dialog;
 exports.Radio = Radio;
 exports.Select = Select;
 exports.Spinner = Spinner;

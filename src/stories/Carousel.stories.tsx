@@ -11,10 +11,99 @@ const meta: Meta<typeof Carousel> = {
     layout: 'padded',
     docs: {
       description: {
-        component: 'Carousel component for displaying content in a slideshow. Supports auto-play, navigation arrows, dots, and keyboard navigation. Uses placeholder images from Picsum Photos.'
+        component: `
+# Carousel
+
+Slideshow component with auto-play, navigation arrows, dot indicators, and keyboard support. Perfect for hero banners, product showcases, and image slideshows.
+
+## Import
+\`\`\`tsx
+import { Carousel, CarouselSlide, CarouselImage } from '@kasomaibrahim/comp-lib';
+\`\`\`
+
+## Components
+
+- **Carousel** - Main carousel container
+- **CarouselSlide** - Individual slide wrapper
+- **CarouselImage** - Image component optimized for carousel
+- **useCarousel** - Hook for external carousel control
+
+## Carousel Props
+
+- **autoPlay**: boolean (default: false) - Enable auto-play
+- **interval**: number (default: 3000) - Auto-play interval in ms
+- **showDots**: boolean (default: true) - Show dot indicators
+- **showArrows**: boolean (default: true) - Show navigation arrows
+- **loop**: boolean (default: true) - Enable infinite loop
+- **children**: React.ReactNode[] - Carousel slides
+
+## CarouselImage Props
+
+- **src**: string - Image URL
+- **alt**: string - Image alt text
+- **aspectRatio**: 'square' | 'video' | 'portrait' | 'auto' (default: 'video')
+- **objectFit**: 'cover' | 'contain' | 'fill' (default: 'cover')
+
+## Examples
+
+\`\`\`tsx
+// Basic carousel
+<Carousel>
+  <CarouselImage src="image1.jpg" alt="Slide 1" />
+  <CarouselImage src="image2.jpg" alt="Slide 2" />
+  <CarouselImage src="image3.jpg" alt="Slide 3" />
+</Carousel>
+
+// Auto-play carousel
+<Carousel autoPlay interval={3000}>
+  <CarouselImage src="image1.jpg" alt="Slide 1" />
+  <CarouselImage src="image2.jpg" alt="Slide 2" />
+</Carousel>
+
+// Hero banner with content
+<Carousel autoPlay>
+  <CarouselSlide>
+    <div className="relative">
+      <CarouselImage src="hero.jpg" alt="Hero" />
+      <div className="absolute inset-0 flex items-center justify-center">
+        <h1>Welcome</h1>
+      </div>
+    </div>
+  </CarouselSlide>
+</Carousel>
+\`\`\`
+
+## Features
+
+- ✅ Auto-play with configurable interval
+- ✅ Navigation arrows
+- ✅ Dot indicators
+- ✅ Keyboard navigation (arrow keys)
+- ✅ Pause on hover
+- ✅ Smooth transitions
+- ✅ Loop/no-loop modes
+- ✅ Touch-friendly
+
+## Accessibility
+
+- ARIA labels for navigation buttons
+- Keyboard navigation with arrow keys
+- aria-current for active slide
+- Pause on hover when auto-playing
+- Screen reader announcements
+
+## Use Cases
+
+- Hero banners
+- Product showcases
+- Image slideshows
+- Testimonial carousels
+- Content highlights
+        `
       }
     }
-  }
+  },
+  tags: ['autodocs']
 };
 export default meta;
 type Story = StoryObj<typeof Carousel>;
