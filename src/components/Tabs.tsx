@@ -3,7 +3,6 @@ import React, {
   useContext,
   useState,
   useRef,
-  useEffect,
   forwardRef,
   type ReactNode,
   type HTMLAttributes,

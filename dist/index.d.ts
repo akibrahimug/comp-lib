@@ -7,12 +7,14 @@ declare function mergeTw(...classes: Array<string | undefined | null | false>): 
 
 type VariantConfig = Record<string, Record<string, string>>;
 type InferVariantProps<Cfg extends VariantConfig> = {
-    [K in keyof Cfg]?: keyof Cfg[K] extends string | number | boolean ? keyof Cfg[K] : never;
+    [K in keyof Cfg]?: keyof Cfg[K];
 };
 interface TVOptions<Cfg extends VariantConfig> {
     base?: string;
     variants?: Cfg;
-    defaultVariants?: Partial<InferVariantProps<Cfg>>;
+    defaultVariants?: {
+        [K in keyof Cfg]?: keyof Cfg[K];
+    };
     compoundVariants?: Array<Partial<InferVariantProps<Cfg>> & {
         class: string;
     }>;
@@ -33,7 +35,7 @@ type PolymorphicProps<C extends ElementType, P> = PropsWithChildren<P & AsProp<C
 type PolymorphicComponent<P, D extends ElementType> = <C extends ElementType = D>(props: PolymorphicProps<C, P> & {
     ref?: any;
 }) => React.ReactElement | null;
-interface CreateComponentOptions<Cfg extends Record<string, any>, D extends ElementType> extends TVOptions<any> {
+interface CreateComponentOptions<_Cfg extends Record<string, any>, D extends ElementType> extends TVOptions<any> {
     as?: D;
     displayName?: string;
 }
@@ -214,7 +216,7 @@ declare const Toggle: React.ForwardRefExoticComponent<ToggleProps & React.RefAtt
 
 declare const Card: {
     Root: any;
-} & Record<"Description" | "Footer" | "Header" | "Title" | "Content", any>;
+} & Record<"Footer" | "Header" | "Title" | "Content" | "Description", any>;
 
 interface TabsRootProps {
     /** Currently selected tab value */
@@ -526,7 +528,7 @@ declare function LoadingOverlay({ message, show, }: {
 }): react_jsx_runtime.JSX.Element | null;
 
 /**
- * Avatar component for displaying user profile images or initials.
+ * Avatar component for displaying user profile images or initials..
  */
 declare const Avatar: PolymorphicComponent<InferVariantProps<any>, "div">;
 

@@ -1,15 +1,15 @@
 type VariantConfig = Record<string, Record<string, string>>;
 
 export type InferVariantProps<Cfg extends VariantConfig> = {
-  [K in keyof Cfg]?: keyof Cfg[K] extends string | number | boolean
-    ? keyof Cfg[K]
-    : never;
+  [K in keyof Cfg]?: keyof Cfg[K];
 };
 
 export interface TVOptions<Cfg extends VariantConfig> {
   base?: string;
   variants?: Cfg;
-  defaultVariants?: Partial<InferVariantProps<Cfg>>;
+  defaultVariants?: {
+    [K in keyof Cfg]?: keyof Cfg[K];
+  };
   compoundVariants?: Array<Partial<InferVariantProps<Cfg>> & { class: string }>;
 }
 

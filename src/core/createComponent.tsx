@@ -15,7 +15,7 @@ export type PolymorphicComponent<P, D extends ElementType> = <C extends ElementT
   props: PolymorphicProps<C, P> & { ref?: any }
 ) => React.ReactElement | null;
 
-export interface CreateComponentOptions<Cfg extends Record<string, any>, D extends ElementType> extends TVOptions<any> {
+export interface CreateComponentOptions<_Cfg extends Record<string, any>, D extends ElementType> extends TVOptions<any> {
   as?: D;
   displayName?: string;
 }

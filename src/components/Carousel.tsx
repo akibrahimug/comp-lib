@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { mergeTw } from '../core/mergeTw';
 
 export interface CarouselProps {
@@ -37,7 +37,7 @@ export function Carousel({
     setCurrentIndex(index);
   };
 
-  const goToPrevious = () => {
+  const goToPrevious = useCallback(() => {
     if (currentIndex === 0) {
       if (loop) {
         setCurrentIndex(totalSlides - 1);
@@ -45,9 +45,9 @@ export function Carousel({
     } else {
       setCurrentIndex(currentIndex - 1);
     }
-  };
+  }, [currentIndex, loop, totalSlides]);
 
-  const goToNext = () => {
+  const goToNext = useCallback(() => {
     if (currentIndex === totalSlides - 1) {
       if (loop) {
         setCurrentIndex(0);
@@ -55,7 +55,7 @@ export function Carousel({
     } else {
       setCurrentIndex(currentIndex + 1);
     }
-  };
+  }, [currentIndex, loop, totalSlides]);
 
   // Auto-play functionality
   useEffect(() => {
@@ -70,7 +70,7 @@ export function Carousel({
         clearTimeout(timeoutRef.current);
       }
     };
-  }, [currentIndex, autoPlay, interval, isHovered]);
+  }, [currentIndex, autoPlay, interval, isHovered, goToNext]);
 
   // Keyboard navigation
   useEffect(() => {
@@ -81,7 +81,7 @@ export function Carousel({
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [currentIndex]);
+  }, [currentIndex, goToNext, goToPrevious]);
 
   const canGoPrevious = loop || currentIndex > 0;
   const canGoNext = loop || currentIndex < totalSlides - 1;

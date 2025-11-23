@@ -964,24 +964,24 @@ function LoadingOverlay({ message = 'Loading...', show = true, }) {
 }
 
 /**
- * Avatar component for displaying user profile images or initials.
+ * Avatar component for displaying user profile images or initials..
  */
 const Avatar = createComponent({
-    as: 'div',
-    displayName: 'Avatar',
-    base: 'relative inline-flex items-center justify-center rounded-full bg-gray-200 font-medium text-gray-700 overflow-hidden flex-shrink-0',
+    as: "div",
+    displayName: "Avatar",
+    base: "relative inline-flex items-center justify-center rounded-full bg-gray-200 font-medium text-gray-700 overflow-hidden flex-shrink-0",
     variants: {
         size: {
-            xs: 'h-6 w-6 text-xs',
-            sm: 'h-8 w-8 text-sm',
-            md: 'h-10 w-10 text-base',
-            lg: 'h-12 w-12 text-lg',
-            xl: 'h-16 w-16 text-xl',
-            '2xl': 'h-20 w-20 text-2xl',
+            xs: "h-6 w-6 text-xs",
+            sm: "h-8 w-8 text-sm",
+            md: "h-10 w-10 text-base",
+            lg: "h-12 w-12 text-lg",
+            xl: "h-16 w-16 text-xl",
+            "2xl": "h-20 w-20 text-2xl",
         },
     },
     defaultVariants: {
-        size: 'md',
+        size: "md",
     },
 });
 
@@ -1133,7 +1133,7 @@ function Carousel({ children, autoPlay = false, interval = 3000, showDots = true
     const goToSlide = (index) => {
         setCurrentIndex(index);
     };
-    const goToPrevious = () => {
+    const goToPrevious = useCallback(() => {
         if (currentIndex === 0) {
             if (loop) {
                 setCurrentIndex(totalSlides - 1);
@@ -1142,8 +1142,8 @@ function Carousel({ children, autoPlay = false, interval = 3000, showDots = true
         else {
             setCurrentIndex(currentIndex - 1);
         }
-    };
-    const goToNext = () => {
+    }, [currentIndex, loop, totalSlides]);
+    const goToNext = useCallback(() => {
         if (currentIndex === totalSlides - 1) {
             if (loop) {
                 setCurrentIndex(0);
@@ -1152,7 +1152,7 @@ function Carousel({ children, autoPlay = false, interval = 3000, showDots = true
         else {
             setCurrentIndex(currentIndex + 1);
         }
-    };
+    }, [currentIndex, loop, totalSlides]);
     // Auto-play functionality
     useEffect(() => {
         if (!autoPlay || isHovered)
@@ -1165,7 +1165,7 @@ function Carousel({ children, autoPlay = false, interval = 3000, showDots = true
                 clearTimeout(timeoutRef.current);
             }
         };
-    }, [currentIndex, autoPlay, interval, isHovered]);
+    }, [currentIndex, autoPlay, interval, isHovered, goToNext]);
     // Keyboard navigation
     useEffect(() => {
         const handleKeyDown = (e) => {
@@ -1176,7 +1176,7 @@ function Carousel({ children, autoPlay = false, interval = 3000, showDots = true
         };
         window.addEventListener('keydown', handleKeyDown);
         return () => window.removeEventListener('keydown', handleKeyDown);
-    }, [currentIndex]);
+    }, [currentIndex, goToNext, goToPrevious]);
     const canGoPrevious = loop || currentIndex > 0;
     const canGoNext = loop || currentIndex < totalSlides - 1;
     return (jsxRuntimeExports.jsxs("div", { className: mergeTw('relative w-full', className, tw), onMouseEnter: () => setIsHovered(true), onMouseLeave: () => setIsHovered(false), role: "region", "aria-label": "Carousel", children: [jsxRuntimeExports.jsx("div", { className: "relative overflow-hidden rounded-lg", children: jsxRuntimeExports.jsx("div", { className: "flex transition-transform duration-500 ease-out", style: { transform: `translateX(-${currentIndex * 100}%)` }, children: slides.map((slide, index) => (jsxRuntimeExports.jsx("div", { className: "min-w-full", "aria-hidden": index !== currentIndex, children: slide }, index))) }) }), showArrows && canGoPrevious && (jsxRuntimeExports.jsx("button", { onClick: goToPrevious, className: "absolute left-4 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white text-gray-800 rounded-full p-2 shadow-lg transition-all z-10", "aria-label": "Previous slide", children: jsxRuntimeExports.jsx("svg", { width: "24", height: "24", fill: "none", viewBox: "0 0 24 24", stroke: "currentColor", children: jsxRuntimeExports.jsx("path", { strokeLinecap: "round", strokeLinejoin: "round", strokeWidth: 2, d: "M15 19l-7-7 7-7" }) }) })), showArrows && canGoNext && (jsxRuntimeExports.jsx("button", { onClick: goToNext, className: "absolute right-4 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white text-gray-800 rounded-full p-2 shadow-lg transition-all z-10", "aria-label": "Next slide", children: jsxRuntimeExports.jsx("svg", { width: "24", height: "24", fill: "none", viewBox: "0 0 24 24", stroke: "currentColor", children: jsxRuntimeExports.jsx("path", { strokeLinecap: "round", strokeLinejoin: "round", strokeWidth: 2, d: "M9 5l7 7-7 7" }) }) })), showDots && (jsxRuntimeExports.jsx("div", { className: "absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2 z-10", children: slides.map((_, index) => (jsxRuntimeExports.jsx("button", { onClick: () => goToSlide(index), className: mergeTw('w-2 h-2 rounded-full transition-all', index === currentIndex
