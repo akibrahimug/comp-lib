@@ -1,0 +1,454 @@
+import { Meta, Canvas } from '@storybook/blocks';
+import * as CardStories from './Card.stories';
+
+<Meta of={CardStories} />
+
+# Card
+
+Container component with compound slots (Root, Header, Title, Description, Content, Footer) for structured content display.
+
+## Installation
+
+```bash
+npm install @kasomaibrahim/comp-lib
+```
+
+## Import
+
+```tsx
+import { Card } from '@kasomaibrahim/comp-lib';
+```
+
+## Basic Usage
+
+<Canvas of={CardStories.Basic} />
+
+```tsx
+<Card.Root>
+  <Card.Content>
+    Basic card content
+  </Card.Content>
+</Card.Root>
+```
+
+## Compound Components
+
+Card uses a compound component pattern with the following slots:
+
+| Component | Description |
+|-----------|-------------|
+| `Card.Root` | Container wrapper |
+| `Card.Header` | Header section with bottom border |
+| `Card.Title` | Title text (large, semibold) |
+| `Card.Description` | Description text (smaller, muted) |
+| `Card.Content` | Main content area with padding |
+| `Card.Footer` | Footer section with top border and flex layout |
+
+## With Header
+
+<Canvas of={CardStories.WithHeader} />
+
+```tsx
+<Card.Root>
+  <Card.Header>
+    <Card.Title>Card Title</Card.Title>
+    <Card.Description>
+      Card description text
+    </Card.Description>
+  </Card.Header>
+  <Card.Content>
+    Main content
+  </Card.Content>
+</Card.Root>
+```
+
+## With Footer
+
+<Canvas of={CardStories.WithFooter} />
+
+```tsx
+<Card.Root>
+  <Card.Header>
+    <Card.Title>Confirm Action</Card.Title>
+    <Card.Description>
+      Are you sure?
+    </Card.Description>
+  </Card.Header>
+  <Card.Content>
+    Content here
+  </Card.Content>
+  <Card.Footer>
+    <Button intent="secondary">Cancel</Button>
+    <Button intent="primary">Confirm</Button>
+  </Card.Footer>
+</Card.Root>
+```
+
+## Complete Card
+
+All sections together:
+
+<Canvas of={CardStories.Complete} />
+
+```tsx
+<Card.Root>
+  <Card.Header>
+    <Card.Title>Profile Settings</Card.Title>
+    <Card.Description>
+      Update your profile information
+    </Card.Description>
+  </Card.Header>
+  <Card.Content>
+    <Input label="Name" />
+    <Input label="Email" />
+  </Card.Content>
+  <Card.Footer>
+    <Button intent="secondary">Cancel</Button>
+    <Button>Save</Button>
+  </Card.Footer>
+</Card.Root>
+```
+
+## Multiple Cards Layout
+
+<Canvas of={CardStories.MultipleCards} />
+
+```tsx
+<div className="grid grid-cols-2 gap-4">
+  <Card.Root>
+    <Card.Header>
+      <Card.Title>Statistics</Card.Title>
+    </Card.Header>
+    <Card.Content>
+      Stats content
+    </Card.Content>
+  </Card.Root>
+
+  <Card.Root>
+    <Card.Header>
+      <Card.Title>Activity</Card.Title>
+    </Card.Header>
+    <Card.Content>
+      Activity content
+    </Card.Content>
+  </Card.Root>
+</div>
+```
+
+## Nested Content
+
+<Canvas of={CardStories.NestedContent} />
+
+## Default Theme Configuration
+
+```js
+// tailwind.config.cjs
+module.exports = {
+  theme: {
+    extend: {
+      colors: {
+        gray: {
+          100: '#F2F4F7',  // Header background
+          200: '#EAECF0',  // Border
+          500: '#667085',  // Description text
+          700: '#344054',  // Title text
+        }
+      },
+      boxShadow: {
+        card: '0 1px 2px rgba(16,24,40,0.05), 0 4px 8px rgba(16,24,40,0.06)'
+      },
+      borderRadius: {
+        xl: '0.75rem'
+      }
+    }
+  }
+};
+
+// Card slot configuration
+{
+  root: 'bg-white border border-gray-200 rounded-xl shadow-card',
+  header: 'px-6 py-4 border-b border-gray-200',
+  title: 'text-lg font-semibold text-gray-900',
+  description: 'mt-1 text-sm text-gray-500',
+  content: 'px-6 py-5',
+  footer: 'px-6 py-4 border-t border-gray-200 flex gap-2 justify-end'
+}
+```
+
+## Customization
+
+Each slot accepts `tw` prop for custom styling:
+
+```tsx
+<Card.Root tw="max-w-2xl mx-auto">
+  <Card.Header tw="bg-brand-50">
+    <Card.Title tw="text-brand-900">Custom Header</Card.Title>
+  </Card.Header>
+  <Card.Content tw="p-8">
+    Custom padding
+  </Card.Content>
+  <Card.Footer tw="justify-start">
+    Left-aligned footer
+  </Card.Footer>
+</Card.Root>
+```
+
+## Accessibility
+
+### Semantic HTML
+Cards use semantic HTML structure:
+
+```tsx
+<Card.Root>     // <div>
+  <Card.Header> // <div>
+  <Card.Title>  // <h2> or similar
+```
+
+### ARIA Roles
+For clickable cards:
+
+```tsx
+<Card.Root
+  as="button"
+  onClick={handleClick}
+  role="button"
+  tabIndex={0}
+>
+  Card content
+</Card.Root>
+```
+
+### Focus Management
+```tsx
+<Card.Root
+  tabIndex={0}
+  tw="focus:ring-2 focus:ring-brand-600"
+>
+  Focusable card
+</Card.Root>
+```
+
+## Best Practices
+
+### Do's ✅
+
+- Use consistent card patterns across your app
+- Group related content in cards
+- Use appropriate header/footer for context
+- Keep card content focused on one topic
+- Use proper heading hierarchy (Title → h2 or h3)
+- Add hover states for clickable cards
+- Provide adequate padding and spacing
+
+### Don'ts ❌
+
+- Don't nest cards too deeply
+- Don't use cards for single pieces of text
+- Don't make cards too wide (max 600-800px typically)
+- Don't forget responsive layouts
+- Don't use multiple primary actions in footer
+- Don't overcrowd cards with content
+
+## Common Patterns
+
+### Settings Card
+```tsx
+<Card.Root>
+  <Card.Header>
+    <Card.Title>Account Settings</Card.Title>
+    <Card.Description>
+      Manage your account preferences
+    </Card.Description>
+  </Card.Header>
+  <Card.Content>
+    <div className="space-y-4">
+      <Input label="Username" />
+      <Input label="Email" />
+      <Toggle label="Email notifications" />
+    </div>
+  </Card.Content>
+  <Card.Footer>
+    <Button intent="secondary">Cancel</Button>
+    <Button>Save Changes</Button>
+  </Card.Footer>
+</Card.Root>
+```
+
+### Stat Card
+```tsx
+<Card.Root>
+  <Card.Content>
+    <div className="text-sm text-gray-500">Total Users</div>
+    <div className="text-3xl font-bold text-gray-900 mt-2">
+      1,234
+    </div>
+    <div className="text-sm text-success-600 mt-2">
+      +12% from last month
+    </div>
+  </Card.Content>
+</Card.Root>
+```
+
+### Confirmation Card
+```tsx
+<Card.Root>
+  <Card.Header>
+    <Card.Title>Delete Item?</Card.Title>
+    <Card.Description>
+      This action cannot be undone
+    </Card.Description>
+  </Card.Header>
+  <Card.Content>
+    <p className="text-gray-700">
+      Are you sure you want to delete "Item Name"?
+      All associated data will be permanently removed.
+    </p>
+  </Card.Content>
+  <Card.Footer>
+    <Button intent="secondary">Cancel</Button>
+    <Button intent="danger">Delete</Button>
+  </Card.Footer>
+</Card.Root>
+```
+
+### Product Card
+```tsx
+<Card.Root>
+  <Card.Content>
+    <img
+      src="/product.jpg"
+      alt="Product"
+      className="w-full h-48 object-cover rounded-lg"
+    />
+    <h3 className="mt-4 font-semibold text-gray-900">
+      Product Name
+    </h3>
+    <p className="mt-1 text-sm text-gray-500">
+      Product description
+    </p>
+    <div className="mt-4 flex items-center justify-between">
+      <span className="text-2xl font-bold text-gray-900">
+        $29.99
+      </span>
+      <Button size="sm">Add to Cart</Button>
+    </div>
+  </Card.Content>
+</Card.Root>
+```
+
+### User Profile Card
+```tsx
+<Card.Root>
+  <Card.Header>
+    <div className="flex items-center gap-4">
+      <Avatar src="/user.jpg" size="lg" />
+      <div>
+        <Card.Title>John Doe</Card.Title>
+        <Card.Description>
+          Software Engineer
+        </Card.Description>
+      </div>
+    </div>
+  </Card.Header>
+  <Card.Content>
+    <div className="space-y-2 text-sm">
+      <div className="flex justify-between">
+        <span className="text-gray-500">Email</span>
+        <span className="text-gray-900">john@example.com</span>
+      </div>
+      <div className="flex justify-between">
+        <span className="text-gray-500">Location</span>
+        <span className="text-gray-900">San Francisco, CA</span>
+      </div>
+    </div>
+  </Card.Content>
+  <Card.Footer>
+    <Button fullWidth>View Profile</Button>
+  </Card.Footer>
+</Card.Root>
+```
+
+### Clickable Card
+```tsx
+<Card.Root
+  as="button"
+  onClick={handleClick}
+  tw="cursor-pointer hover:shadow-lg transition-shadow"
+>
+  <Card.Content>
+    Clickable card content
+  </Card.Content>
+</Card.Root>
+```
+
+### Dashboard Cards
+```tsx
+<div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+  <Card.Root>
+    <Card.Header>
+      <Card.Title>Revenue</Card.Title>
+    </Card.Header>
+    <Card.Content>
+      <div className="text-3xl font-bold">$45,231</div>
+      <p className="text-sm text-gray-500 mt-1">
+        +20% from last month
+      </p>
+    </Card.Content>
+  </Card.Root>
+
+  <Card.Root>
+    <Card.Header>
+      <Card.Title>Users</Card.Title>
+    </Card.Header>
+    <Card.Content>
+      <div className="text-3xl font-bold">1,234</div>
+      <p className="text-sm text-gray-500 mt-1">
+        +12% from last month
+      </p>
+    </Card.Content>
+  </Card.Root>
+
+  <Card.Root>
+    <Card.Header>
+      <Card.Title>Orders</Card.Title>
+    </Card.Header>
+    <Card.Content>
+      <div className="text-3xl font-bold">567</div>
+      <p className="text-sm text-gray-500 mt-1">
+        +8% from last month
+      </p>
+    </Card.Content>
+  </Card.Root>
+</div>
+```
+
+## TypeScript
+
+```tsx
+import { Card } from '@kasomaibrahim/comp-lib';
+
+// All slots are typed
+<Card.Root tw="max-w-lg">
+  <Card.Header>
+    <Card.Title>Title</Card.Title>
+    <Card.Description>Description</Card.Description>
+  </Card.Header>
+  <Card.Content>Content</Card.Content>
+  <Card.Footer>Footer</Card.Footer>
+</Card.Root>
+
+// Polymorphic slots
+<Card.Root as="article">
+  <Card.Header as="header">
+    <Card.Title as="h1">Article Title</Card.Title>
+  </Card.Header>
+</Card.Root>
+```
+
+## Related Components
+
+- **Button** - Actions in card footer
+- **Input** - Forms within cards
+- **Avatar** - User cards
+- **Badge** - Status indicators
+- **Dialog** - Modal versions of cards

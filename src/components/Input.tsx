@@ -66,9 +66,9 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(function Input(
     isInvalid
       ? 'border-danger-600 focus:ring-danger-600 focus:border-danger-600'
       : 'border-gray-300 focus:ring-brand-600 focus:border-brand-600',
-    disabled && 'bg-gray-50 cursor-not-allowed opacity-60',
-    prefix && 'pl-10',
-    suffix && 'pr-10',
+    disabled ? 'bg-gray-50 cursor-not-allowed opacity-60' : '',
+    prefix ? 'pl-10' : '',
+    suffix ? 'pr-10' : '',
     className,
     tw
   );

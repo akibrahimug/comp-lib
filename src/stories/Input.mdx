@@ -1,0 +1,533 @@
+import { Meta, Canvas, Controls } from '@storybook/blocks';
+import * as InputStories from './Input.stories';
+
+<Meta of={InputStories} />
+
+# Input
+
+Text input field with label, description, error states, and icon support. Fully accessible with proper ARIA attributes.
+
+## Installation
+
+```bash
+npm install @kasomaibrahim/comp-lib
+```
+
+## Import
+
+```tsx
+import { Input } from '@kasomaibrahim/comp-lib';
+```
+
+## Basic Usage
+
+The Input component provides a complete form input solution with label, helper text, error handling, and icon support.
+
+<Canvas of={InputStories.Playground} />
+
+## Props
+
+<Controls of={InputStories.Playground} />
+
+## Core Props
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `label` | `string` | - | Input label text |
+| `description` | `string` | - | Helper text below the input |
+| `error` | `string` | - | Error message (shows error state) |
+| `required` | `boolean` | `false` | Shows required asterisk |
+| `prefix` | `ReactNode` | - | Icon or content before input |
+| `suffix` | `ReactNode` | - | Icon or content after input |
+| `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | Input size |
+| `disabled` | `boolean` | `false` | Disables the input |
+| `type` | `string` | `'text'` | HTML input type |
+| `tw` | `string` | - | Additional Tailwind classes |
+
+All standard HTML input attributes are also supported (placeholder, value, onChange, etc.)
+
+## Basic Input
+
+Simple input with just a label:
+
+<Canvas of={InputStories.Basic} />
+
+```tsx
+<Input
+  label="Email"
+  placeholder="you@example.com"
+/>
+```
+
+## With Description
+
+Add helper text to guide users:
+
+<Canvas of={InputStories.WithDescription} />
+
+```tsx
+<Input
+  label="Username"
+  description="Choose a unique username"
+  placeholder="johndoe"
+/>
+```
+
+## Required Field
+
+Mark inputs as required:
+
+<Canvas of={InputStories.Required} />
+
+```tsx
+<Input
+  label="Password"
+  type="password"
+  required
+  placeholder="Enter your password"
+/>
+```
+
+## Error State
+
+Display validation errors:
+
+<Canvas of={InputStories.WithError} />
+
+```tsx
+<Input
+  label="Email"
+  error="Please enter a valid email address"
+  defaultValue="invalid-email"
+/>
+```
+
+## Disabled State
+
+Disable inputs when needed:
+
+<Canvas of={InputStories.Disabled} />
+
+```tsx
+<Input
+  label="Locked Field"
+  disabled
+  defaultValue="This field is locked"
+/>
+```
+
+## Input Types
+
+Supports all HTML input types:
+
+<Canvas of={InputStories.InputTypes} />
+
+```tsx
+// Text
+<Input label="Text" type="text" />
+
+// Email
+<Input label="Email" type="email" />
+
+// Password
+<Input label="Password" type="password" />
+
+// Number
+<Input label="Number" type="number" />
+
+// Tel
+<Input label="Phone" type="tel" />
+
+// URL
+<Input label="Website" type="url" />
+
+// Date
+<Input label="Date" type="date" />
+
+// Time
+<Input label="Time" type="time" />
+```
+
+## Size Variants
+
+Three sizes available: `sm`, `md` (default), and `lg`:
+
+<Canvas of={InputStories.SizeVariants} />
+
+```tsx
+<Input label="Small" size="sm" />
+<Input label="Medium" size="md" />
+<Input label="Large" size="lg" />
+```
+
+## With Prefix/Suffix Icons
+
+Add icons before or after the input:
+
+<Canvas of={InputStories.WithPrefixSuffix} />
+
+```tsx
+// Search with prefix icon
+<Input
+  label="Search"
+  placeholder="Search..."
+  prefix={<SearchIcon className="w-4 h-4" />}
+/>
+
+// URL with prefix text
+<Input
+  label="Website"
+  placeholder="example.com"
+  prefix={<span className="text-sm">https://</span>}
+/>
+
+// Password with suffix toggle
+<Input
+  label="Password"
+  type={showPassword ? 'text' : 'password'}
+  suffix={<ToggleIcon onClick={() => setShowPassword(!showPassword)} />}
+/>
+```
+
+## State Variants
+
+All different input states:
+
+<Canvas of={InputStories.StateVariants} />
+
+## Form Example
+
+Complete form with multiple inputs:
+
+<Canvas of={InputStories.FormExample} />
+
+```tsx
+<form onSubmit={handleSubmit}>
+  <Input
+    label="Full Name"
+    required
+    placeholder="John Doe"
+  />
+
+  <Input
+    label="Email Address"
+    type="email"
+    required
+    placeholder="john@example.com"
+    description="We'll never share your email"
+  />
+
+  <Input
+    label="Password"
+    type="password"
+    required
+    placeholder="Enter password"
+    description="Must be at least 8 characters"
+  />
+
+  <Button type="submit">Create Account</Button>
+</form>
+```
+
+## Default Theme Configuration
+
+```js
+// tailwind.config.cjs
+module.exports = {
+  theme: {
+    extend: {
+      colors: {
+        gray: {
+          200: '#EAECF0',  // Border
+          300: '#D0D5DD',  // Hover border
+          400: '#98A2B3',  // Icon color
+          500: '#667085',  // Description text
+          700: '#344054',  // Label text
+          900: '#101828'   // Input text
+        },
+        brand: {
+          600: '#005BBB'   // Focus ring
+        },
+        danger: {
+          600: '#DC2626'   // Error color
+        }
+      }
+    }
+  }
+};
+```
+
+## Validation
+
+### Client-Side Validation
+
+```tsx
+function EmailInput() {
+  const [email, setEmail] = useState('');
+  const [error, setError] = useState('');
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setEmail(value);
+
+    // Validate email
+    if (value && !value.includes('@')) {
+      setError('Please enter a valid email');
+    } else {
+      setError('');
+    }
+  };
+
+  return (
+    <Input
+      label="Email"
+      type="email"
+      value={email}
+      onChange={handleChange}
+      error={error}
+    />
+  );
+}
+```
+
+### Form Validation
+
+```tsx
+function SignupForm() {
+  const { register, handleSubmit, formState: { errors } } = useForm();
+
+  return (
+    <form onSubmit={handleSubmit(onSubmit)}>
+      <Input
+        label="Email"
+        {...register('email', {
+          required: 'Email is required',
+          pattern: {
+            value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
+            message: 'Invalid email address'
+          }
+        })}
+        error={errors.email?.message}
+      />
+
+      <Input
+        label="Password"
+        type="password"
+        {...register('password', {
+          required: 'Password is required',
+          minLength: {
+            value: 8,
+            message: 'Password must be at least 8 characters'
+          }
+        })}
+        error={errors.password?.message}
+      />
+
+      <Button type="submit">Sign Up</Button>
+    </form>
+  );
+}
+```
+
+## Accessibility
+
+The Input component follows WAI-ARIA best practices:
+
+### Label Association
+```tsx
+// Labels are properly associated with inputs
+<Input label="Email" />
+// Renders: <label htmlFor="input-123">Email</label>
+//          <input id="input-123" />
+```
+
+### Required Fields
+```tsx
+<Input label="Email" required />
+// Adds visual indicator and aria-required
+```
+
+### Error States
+```tsx
+<Input
+  label="Email"
+  error="Invalid email"
+/>
+// Sets aria-invalid="true"
+// Associates error with aria-describedby
+```
+
+### Description
+```tsx
+<Input
+  label="Password"
+  description="Must be 8+ characters"
+/>
+// Description linked with aria-describedby
+```
+
+### Keyboard Navigation
+- **Tab**: Move focus to input
+- **Type**: Enter text
+- **Arrow keys**: Move cursor (in number inputs: increment/decrement)
+
+### Screen Reader Announcements
+- Label is announced when input receives focus
+- Description is announced after label
+- Error messages are announced when present
+- Required status is indicated
+
+## Best Practices
+
+### Do's ✅
+
+- Always provide a clear label
+- Use placeholder text for examples, not instructions
+- Show helpful descriptions for complex fields
+- Display errors inline immediately after validation
+- Use appropriate input types (email, tel, url, etc.)
+- Mark required fields clearly
+- Keep labels short and descriptive
+- Group related inputs together
+
+### Don'ts ❌
+
+- Don't use placeholder as the only label
+- Don't show errors before user interaction
+- Don't use generic error messages ("Invalid input")
+- Don't make optional fields required
+- Don't use disabled when you mean readonly
+- Don't set arbitrary maxLength without reason
+- Don't validate on every keystroke (wait for blur or submit)
+
+## Common Patterns
+
+### Search Input
+```tsx
+<Input
+  label="Search"
+  placeholder="Search products..."
+  prefix={<SearchIcon />}
+  onChange={(e) => handleSearch(e.target.value)}
+/>
+```
+
+### Email Input
+```tsx
+<Input
+  label="Email Address"
+  type="email"
+  required
+  placeholder="you@example.com"
+  description="We'll never share your email"
+  autoComplete="email"
+/>
+```
+
+### Password Input
+```tsx
+function PasswordInput() {
+  const [show, setShow] = useState(false);
+
+  return (
+    <Input
+      label="Password"
+      type={show ? 'text' : 'password'}
+      required
+      description="Must be at least 8 characters"
+      suffix={
+        <button type="button" onClick={() => setShow(!show)}>
+          {show ? <EyeOffIcon /> : <EyeIcon />}
+        </button>
+      }
+    />
+  );
+}
+```
+
+### Phone Input
+```tsx
+<Input
+  label="Phone Number"
+  type="tel"
+  placeholder="+1 (555) 000-0000"
+  description="Include country code"
+  prefix={<PhoneIcon />}
+/>
+```
+
+### URL Input
+```tsx
+<Input
+  label="Website"
+  type="url"
+  placeholder="example.com"
+  prefix={<span className="text-sm text-gray-500">https://</span>}
+  description="Your personal or company website"
+/>
+```
+
+### Controlled Input
+```tsx
+function ControlledInput() {
+  const [value, setValue] = useState('');
+
+  return (
+    <Input
+      label="Controlled Input"
+      value={value}
+      onChange={(e) => setValue(e.target.value)}
+    />
+  );
+}
+```
+
+### With Character Counter
+```tsx
+function BioInput() {
+  const [value, setValue] = useState('');
+  const maxLength = 200;
+
+  return (
+    <Input
+      label="Bio"
+      value={value}
+      onChange={(e) => setValue(e.target.value)}
+      maxLength={maxLength}
+      description={`${value.length} / ${maxLength} characters`}
+    />
+  );
+}
+```
+
+## TypeScript
+
+Fully typed with TypeScript:
+
+```tsx
+import { Input } from '@kasomaibrahim/comp-lib';
+import type { InputProps } from '@kasomaibrahim/comp-lib';
+
+// All props are typed
+<Input
+  label="Email"
+  type="email"  // Type: HTMLInputTypeAttribute
+  onChange={(e) => {
+    // e is React.ChangeEvent<HTMLInputElement>
+    const value = e.target.value;
+  }}
+/>
+
+// Custom wrapper
+function CustomInput(props: InputProps) {
+  return <Input {...props} />;
+}
+```
+
+## Related Components
+
+- **Textarea** - Multi-line text input
+- **Select** - Dropdown selection
+- **Checkbox** - Boolean input
+- **Radio** - Exclusive selection
+- **Button** - Form actions

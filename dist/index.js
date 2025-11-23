@@ -1,5 +1,5 @@
 import { twMerge } from 'tailwind-merge';
-import require$$0, { forwardRef, createContext, useContext, useLayoutEffect, useEffect, useId, useRef, useState, useCallback } from 'react';
+import React, { forwardRef, createContext, useContext, useLayoutEffect, useEffect, useId, useRef, useState, useCallback } from 'react';
 import { createPortal } from 'react-dom';
 
 function cx(...parts) {
@@ -47,7 +47,7 @@ var hasRequiredReactJsxRuntime_production_min;
 function requireReactJsxRuntime_production_min () {
 	if (hasRequiredReactJsxRuntime_production_min) return reactJsxRuntime_production_min;
 	hasRequiredReactJsxRuntime_production_min = 1;
-var f=require$$0,k=Symbol.for("react.element"),l=Symbol.for("react.fragment"),m=Object.prototype.hasOwnProperty,n=f.__SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED.ReactCurrentOwner,p={key:true,ref:true,__self:true,__source:true};
+var f=React,k=Symbol.for("react.element"),l=Symbol.for("react.fragment"),m=Object.prototype.hasOwnProperty,n=f.__SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED.ReactCurrentOwner,p={key:true,ref:true,__self:true,__source:true};
 	function q(c,a,g){var b,d={},e=null,h=null;void 0!==g&&(e=""+g);void 0!==a.key&&(e=""+a.key);void 0!==a.ref&&(h=a.ref);for(b in a)m.call(a,b)&&!p.hasOwnProperty(b)&&(d[b]=a[b]);if(c&&c.defaultProps)for(b in a=c.defaultProps,a) void 0===d[b]&&(d[b]=a[b]);return {$$typeof:k,type:c,key:e,ref:h,props:d,_owner:n.current}}reactJsxRuntime_production_min.Fragment=l;reactJsxRuntime_production_min.jsx=q;reactJsxRuntime_production_min.jsxs=q;
 	return reactJsxRuntime_production_min;
 }
@@ -236,7 +236,7 @@ const Input = forwardRef(function Input({ label, description, error, prefix, suf
     };
     const inputClasses = mergeTw('w-full rounded-md border font-medium transition-colors', 'placeholder:text-gray-400', 'focus:outline-none focus:ring-2 focus:ring-offset-2', sizeClasses[size], isInvalid
         ? 'border-danger-600 focus:ring-danger-600 focus:border-danger-600'
-        : 'border-gray-300 focus:ring-brand-600 focus:border-brand-600', disabled && 'bg-gray-50 cursor-not-allowed opacity-60', prefix && 'pl-10', suffix && 'pr-10', className, tw);
+        : 'border-gray-300 focus:ring-brand-600 focus:border-brand-600', disabled ? 'bg-gray-50 cursor-not-allowed opacity-60' : '', prefix ? 'pl-10' : '', suffix ? 'pr-10' : '', className, tw);
     return (jsxRuntimeExports.jsxs("div", { className: "w-full", children: [label && (jsxRuntimeExports.jsx("label", { htmlFor: id, className: "block text-sm font-medium text-gray-700 mb-1", children: label })), description && !error && (jsxRuntimeExports.jsx("p", { id: descriptionId, className: "text-sm text-gray-600 mb-2", children: description })), jsxRuntimeExports.jsxs("div", { className: "relative", children: [prefix && (jsxRuntimeExports.jsx("div", { className: "absolute left-3 top-1/2 -translate-y-1/2 text-gray-500", children: prefix })), jsxRuntimeExports.jsx("input", { ref: ref, id: id, disabled: disabled, "aria-invalid": isInvalid || undefined, "aria-describedby": cx(descriptionId, errorId), className: inputClasses, ...props }), suffix && (jsxRuntimeExports.jsx("div", { className: "absolute right-3 top-1/2 -translate-y-1/2 text-gray-500", children: suffix }))] }), error && (jsxRuntimeExports.jsx("p", { id: errorId, className: "mt-1 text-sm text-danger-600", role: "alert", children: error }))] }));
 });
 
@@ -968,5 +968,237 @@ const Badge = createComponent({
     },
 });
 
-export { Avatar, Badge, Button, Card, Checkbox, Dialog, Drawer, Input, LoadingOverlay, Radio, Select, Spinner, Tabs, Textarea, ToastProvider, Toggle, Tooltip, createComponent, createSlots, cx, mergeTw, tv, useFocusReturn, useFocusTrap, useIsomorphicLayoutEffect, useLockScroll, useStableId, useToast };
+/**
+ * Gallery component for displaying images in various grid layouts.
+ */
+const Gallery = createComponent({
+    as: 'div',
+    displayName: 'Gallery',
+    base: 'w-full',
+    variants: {
+        columns: {
+            '1': 'grid-cols-1',
+            '2': 'grid-cols-2',
+            '3': 'grid-cols-3',
+            '4': 'grid-cols-4',
+            '5': 'grid-cols-5',
+            '6': 'grid-cols-6',
+        },
+        gap: {
+            none: 'gap-0',
+            sm: 'gap-2',
+            md: 'gap-4',
+            lg: 'gap-6',
+            xl: 'gap-8',
+        },
+    },
+    defaultVariants: {
+        columns: '3',
+        gap: 'md',
+    },
+});
+/**
+ * GalleryImage component for individual images in the gallery.
+ */
+function GalleryImage({ src, alt, aspectRatio = 'square', objectFit = 'cover', onClick, className, tw, }) {
+    const aspectRatioClasses = {
+        square: 'aspect-square',
+        video: 'aspect-video',
+        portrait: 'aspect-[3/4]',
+        auto: '',
+    };
+    const objectFitClasses = {
+        cover: 'object-cover',
+        contain: 'object-contain',
+        fill: 'object-fill',
+    };
+    return (jsxRuntimeExports.jsx("div", { className: mergeTw('relative overflow-hidden rounded-lg bg-gray-100', aspectRatioClasses[aspectRatio], onClick && 'cursor-pointer hover:opacity-90 transition-opacity', className, tw), onClick: onClick, children: jsxRuntimeExports.jsx("img", { src: src, alt: alt, className: mergeTw('w-full h-full', objectFitClasses[objectFit]), loading: "lazy" }) }));
+}
+/**
+ * Lightbox component for viewing images in full screen.
+ */
+function GalleryLightbox({ images, currentIndex, onClose, onPrevious, onNext, }) {
+    const currentImage = images[currentIndex];
+    const hasPrevious = currentIndex > 0;
+    const hasNext = currentIndex < images.length - 1;
+    React.useEffect(() => {
+        const handleKeyDown = (e) => {
+            if (e.key === 'Escape')
+                onClose();
+            if (e.key === 'ArrowLeft' && hasPrevious && onPrevious)
+                onPrevious();
+            if (e.key === 'ArrowRight' && hasNext && onNext)
+                onNext();
+        };
+        document.addEventListener('keydown', handleKeyDown);
+        return () => document.removeEventListener('keydown', handleKeyDown);
+    }, [currentIndex, hasPrevious, hasNext, onClose, onPrevious, onNext]);
+    // Lock body scroll
+    React.useEffect(() => {
+        document.body.style.overflow = 'hidden';
+        return () => {
+            document.body.style.overflow = '';
+        };
+    }, []);
+    return (jsxRuntimeExports.jsxs("div", { className: "fixed inset-0 z-50 bg-black/95 flex items-center justify-center", onClick: onClose, children: [jsxRuntimeExports.jsx("button", { onClick: onClose, className: "absolute top-4 right-4 text-white hover:text-gray-300 transition-colors z-10", "aria-label": "Close lightbox", children: jsxRuntimeExports.jsx("svg", { width: "24", height: "24", fill: "none", viewBox: "0 0 24 24", stroke: "currentColor", children: jsxRuntimeExports.jsx("path", { strokeLinecap: "round", strokeLinejoin: "round", strokeWidth: 2, d: "M6 18L18 6M6 6l12 12" }) }) }), hasPrevious && onPrevious && (jsxRuntimeExports.jsx("button", { onClick: (e) => {
+                    e.stopPropagation();
+                    onPrevious();
+                }, className: "absolute left-4 top-1/2 -translate-y-1/2 text-white hover:text-gray-300 transition-colors z-10", "aria-label": "Previous image", children: jsxRuntimeExports.jsx("svg", { width: "32", height: "32", fill: "none", viewBox: "0 0 24 24", stroke: "currentColor", children: jsxRuntimeExports.jsx("path", { strokeLinecap: "round", strokeLinejoin: "round", strokeWidth: 2, d: "M15 19l-7-7 7-7" }) }) })), jsxRuntimeExports.jsxs("div", { className: "max-w-7xl max-h-[90vh] px-16", onClick: (e) => e.stopPropagation(), children: [jsxRuntimeExports.jsx("img", { src: currentImage.src, alt: currentImage.alt, className: "max-w-full max-h-[90vh] object-contain" }), jsxRuntimeExports.jsxs("div", { className: "text-white text-center mt-4", children: [currentIndex + 1, " / ", images.length] })] }), hasNext && onNext && (jsxRuntimeExports.jsx("button", { onClick: (e) => {
+                    e.stopPropagation();
+                    onNext();
+                }, className: "absolute right-4 top-1/2 -translate-y-1/2 text-white hover:text-gray-300 transition-colors z-10", "aria-label": "Next image", children: jsxRuntimeExports.jsx("svg", { width: "32", height: "32", fill: "none", viewBox: "0 0 24 24", stroke: "currentColor", children: jsxRuntimeExports.jsx("path", { strokeLinecap: "round", strokeLinejoin: "round", strokeWidth: 2, d: "M9 5l7 7-7 7" }) }) }))] }));
+}
+/**
+ * Hook for managing gallery lightbox state.
+ */
+function useGalleryLightbox(images) {
+    const [currentIndex, setCurrentIndex] = useState(null);
+    const open = (index) => setCurrentIndex(index);
+    const close = () => setCurrentIndex(null);
+    const next = () => {
+        if (currentIndex !== null && currentIndex < images.length - 1) {
+            setCurrentIndex(currentIndex + 1);
+        }
+    };
+    const previous = () => {
+        if (currentIndex !== null && currentIndex > 0) {
+            setCurrentIndex(currentIndex - 1);
+        }
+    };
+    return {
+        isOpen: currentIndex !== null,
+        currentIndex: currentIndex ?? 0,
+        open,
+        close,
+        next,
+        previous,
+    };
+}
+
+/**
+ * Carousel component for displaying content in a slideshow.
+ * Supports auto-play, navigation arrows, dots, and keyboard navigation.
+ */
+function Carousel({ children, autoPlay = false, interval = 3000, showDots = true, showArrows = true, loop = true, className, tw, }) {
+    const [currentIndex, setCurrentIndex] = useState(0);
+    const [isHovered, setIsHovered] = useState(false);
+    const timeoutRef = useRef(null);
+    const slides = React.Children.toArray(children);
+    const totalSlides = slides.length;
+    const goToSlide = (index) => {
+        setCurrentIndex(index);
+    };
+    const goToPrevious = () => {
+        if (currentIndex === 0) {
+            if (loop) {
+                setCurrentIndex(totalSlides - 1);
+            }
+        }
+        else {
+            setCurrentIndex(currentIndex - 1);
+        }
+    };
+    const goToNext = () => {
+        if (currentIndex === totalSlides - 1) {
+            if (loop) {
+                setCurrentIndex(0);
+            }
+        }
+        else {
+            setCurrentIndex(currentIndex + 1);
+        }
+    };
+    // Auto-play functionality
+    useEffect(() => {
+        if (!autoPlay || isHovered)
+            return;
+        timeoutRef.current = setTimeout(() => {
+            goToNext();
+        }, interval);
+        return () => {
+            if (timeoutRef.current) {
+                clearTimeout(timeoutRef.current);
+            }
+        };
+    }, [currentIndex, autoPlay, interval, isHovered]);
+    // Keyboard navigation
+    useEffect(() => {
+        const handleKeyDown = (e) => {
+            if (e.key === 'ArrowLeft')
+                goToPrevious();
+            if (e.key === 'ArrowRight')
+                goToNext();
+        };
+        window.addEventListener('keydown', handleKeyDown);
+        return () => window.removeEventListener('keydown', handleKeyDown);
+    }, [currentIndex]);
+    const canGoPrevious = loop || currentIndex > 0;
+    const canGoNext = loop || currentIndex < totalSlides - 1;
+    return (jsxRuntimeExports.jsxs("div", { className: mergeTw('relative w-full', className, tw), onMouseEnter: () => setIsHovered(true), onMouseLeave: () => setIsHovered(false), role: "region", "aria-label": "Carousel", children: [jsxRuntimeExports.jsx("div", { className: "relative overflow-hidden rounded-lg", children: jsxRuntimeExports.jsx("div", { className: "flex transition-transform duration-500 ease-out", style: { transform: `translateX(-${currentIndex * 100}%)` }, children: slides.map((slide, index) => (jsxRuntimeExports.jsx("div", { className: "min-w-full", "aria-hidden": index !== currentIndex, children: slide }, index))) }) }), showArrows && canGoPrevious && (jsxRuntimeExports.jsx("button", { onClick: goToPrevious, className: "absolute left-4 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white text-gray-800 rounded-full p-2 shadow-lg transition-all z-10", "aria-label": "Previous slide", children: jsxRuntimeExports.jsx("svg", { width: "24", height: "24", fill: "none", viewBox: "0 0 24 24", stroke: "currentColor", children: jsxRuntimeExports.jsx("path", { strokeLinecap: "round", strokeLinejoin: "round", strokeWidth: 2, d: "M15 19l-7-7 7-7" }) }) })), showArrows && canGoNext && (jsxRuntimeExports.jsx("button", { onClick: goToNext, className: "absolute right-4 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white text-gray-800 rounded-full p-2 shadow-lg transition-all z-10", "aria-label": "Next slide", children: jsxRuntimeExports.jsx("svg", { width: "24", height: "24", fill: "none", viewBox: "0 0 24 24", stroke: "currentColor", children: jsxRuntimeExports.jsx("path", { strokeLinecap: "round", strokeLinejoin: "round", strokeWidth: 2, d: "M9 5l7 7-7 7" }) }) })), showDots && (jsxRuntimeExports.jsx("div", { className: "absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2 z-10", children: slides.map((_, index) => (jsxRuntimeExports.jsx("button", { onClick: () => goToSlide(index), className: mergeTw('w-2 h-2 rounded-full transition-all', index === currentIndex
+                        ? 'w-8 bg-white'
+                        : 'bg-white/60 hover:bg-white/80'), "aria-label": `Go to slide ${index + 1}`, "aria-current": index === currentIndex }, index))) }))] }));
+}
+/**
+ * CarouselSlide component for individual slides.
+ */
+function CarouselSlide({ children, className, tw }) {
+    return (jsxRuntimeExports.jsx("div", { className: mergeTw('w-full', className, tw), children: children }));
+}
+/**
+ * CarouselImage component optimized for carousel slides.
+ */
+function CarouselImage({ src, alt, aspectRatio = 'video', objectFit = 'cover', className, tw, }) {
+    const aspectRatioClasses = {
+        square: 'aspect-square',
+        video: 'aspect-video',
+        portrait: 'aspect-[3/4]',
+        auto: '',
+    };
+    const objectFitClasses = {
+        cover: 'object-cover',
+        contain: 'object-contain',
+        fill: 'object-fill',
+    };
+    return (jsxRuntimeExports.jsx("div", { className: mergeTw('relative overflow-hidden bg-gray-100', aspectRatioClasses[aspectRatio], className, tw), children: jsxRuntimeExports.jsx("img", { src: src, alt: alt, className: mergeTw('w-full h-full', objectFitClasses[objectFit]) }) }));
+}
+/**
+ * Hook for managing carousel state externally.
+ */
+function useCarousel(totalSlides, options) {
+    const [currentIndex, setCurrentIndex] = useState(0);
+    const { loop = true } = options || {};
+    const goToSlide = (index) => {
+        setCurrentIndex(index);
+    };
+    const goToPrevious = () => {
+        if (currentIndex === 0) {
+            if (loop) {
+                setCurrentIndex(totalSlides - 1);
+            }
+        }
+        else {
+            setCurrentIndex(currentIndex - 1);
+        }
+    };
+    const goToNext = () => {
+        if (currentIndex === totalSlides - 1) {
+            if (loop) {
+                setCurrentIndex(0);
+            }
+        }
+        else {
+            setCurrentIndex(currentIndex + 1);
+        }
+    };
+    return {
+        currentIndex,
+        goToSlide,
+        goToPrevious,
+        goToNext,
+        canGoPrevious: loop || currentIndex > 0,
+        canGoNext: loop || currentIndex < totalSlides - 1,
+    };
+}
+
+export { Avatar, Badge, Button, Card, Carousel, CarouselImage, CarouselSlide, Checkbox, Dialog, Drawer, Gallery, GalleryImage, GalleryLightbox, Input, LoadingOverlay, Radio, Select, Spinner, Tabs, Textarea, ToastProvider, Toggle, Tooltip, createComponent, createSlots, cx, mergeTw, tv, useCarousel, useFocusReturn, useFocusTrap, useGalleryLightbox, useIsomorphicLayoutEffect, useLockScroll, useStableId, useToast };
 //# sourceMappingURL=index.js.map
