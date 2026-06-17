@@ -214,7 +214,11 @@ declare const Toggle: React.ForwardRefExoticComponent<ToggleProps & React.RefAtt
 
 declare const Card: {
     Root: any;
+<<<<<<< Updated upstream
 } & Record<"Description" | "Footer" | "Header" | "Title" | "Content", any>;
+=======
+} & Record<"Title" | "Content" | "Description" | "Footer" | "Header", any>;
+>>>>>>> Stashed changes
 
 interface TabsRootProps {
     /** Currently selected tab value */
