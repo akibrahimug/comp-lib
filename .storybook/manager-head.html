@@ -1,0 +1,19 @@
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link
+  href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300..700&family=Hanken+Grotesk:wght@300..800&family=JetBrains+Mono:wght@400;500;700&display=swap"
+  rel="stylesheet"
+/>
+<style>
+  /* We render our own modern icons via sidebar.renderLabel — hide Storybook's
+     default leading node icons so they aren't duplicated. The expand chevron is
+     a separate element, so this only targets the type icon. */
+  .sidebar-item > svg:first-child,
+  .sidebar-subheading svg:first-child {
+    display: none !important;
+  }
+  /* Keep the brand area icon-free of our injected icons. */
+  [aria-label="Sidebar"] .sidebar-item > span > span:first-child svg {
+    display: inline-block !important;
+  }
+</style>
