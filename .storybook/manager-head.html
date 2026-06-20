@@ -1,0 +1,19 @@
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link
+  href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300..700&family=Hanken+Grotesk:wght@300..800&family=JetBrains+Mono:wght@400;500;700&display=swap"
+  rel="stylesheet"
+/>
+<style>
+  /* Storybook renders every default node TYPE icon with a 14×14 viewBox (the
+     expand chevron is 8×8, and our injected badge icon uses a 24 viewBox). So
+     this hides ONLY the default type icons — on every node type (story, docs,
+     component, group) — while preserving chevrons and our own badges. */
+  [data-nodetype] svg[viewBox="0 0 14 14"] {
+    display: none !important;
+  }
+  /* keep our icon badge crisp and aligned */
+  .cl-ic-badge {
+    vertical-align: middle;
+  }
+</style>

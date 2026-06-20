@@ -1,0 +1,25 @@
+<!-- Distinctive type for the Storybook canvas: Fraunces (display serif),
+     Hanken Grotesk (body grotesk), JetBrains Mono (code). -->
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link
+  href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300..700&family=Hanken+Grotesk:wght@300..800&family=JetBrains+Mono:wght@400;500;700&display=swap"
+  rel="stylesheet"
+/>
+<style>
+  /* The story canvas follows the active theme: data-theme is set on <html> by
+     the preview decorator, so these CSS vars resolve to the selected palette. */
+  html {
+    background-color: rgb(var(--c-canvas));
+  }
+  body {
+    font-family: "Hanken Grotesk", system-ui, sans-serif;
+    background-color: rgb(var(--c-canvas));
+    color: rgb(var(--c-fg));
+  }
+  .sb-show-main.sb-main-centered,
+  .sb-show-main.sb-main-padded,
+  .sb-show-main.sb-main-fullscreen {
+    background-color: rgb(var(--c-canvas));
+  }
+</style>
