@@ -119,15 +119,59 @@ const ICONS: Record<string, string> = {
   dot: "M12 8a4 4 0 100 8 4 4 0 000-8z",
   component: "M12 3l3.5 3.5L12 10 8.5 6.5zM6.5 8.5L10 12l-3.5 3.5L3 12zM17.5 8.5L21 12l-3.5 3.5L14 12zM12 14l3.5 3.5L12 21l-3.5-3.5z",
   doc: "M7 3h7l5 5v13H7zM14 3v5h5",
+  plus: "M12 5v14M5 12h14",
+  check: "M20 6L9 17l-5-5",
+  arrow: "M5 12h14M13 6l6 6-6 6",
+  bolt: "M13 3v6h6l-8 12v-6H5l8-12z",
+  chart: "M3 3v18h18M7 14l3-3 3 2 5-6",
+  barchart: "M3 3v18h18M8 17V11M13 17V7M18 17v-4",
+  menu: "M3 6h18M3 12h18M3 18h18",
+  bell: "M18 8a6 6 0 10-12 0c0 7-3 9-3 9h18s-3-2-3-9M13.7 21a2 2 0 01-3.4 0",
+  gauge: "M12 14a2.5 2.5 0 002.5-2.5c0-1.4-2.5-5-2.5-5s-2.5 3.6-2.5 5A2.5 2.5 0 0012 14zM4.5 18a9 9 0 1115 0",
+  users: "M16 19v-2a4 4 0 00-4-4H6a4 4 0 00-4 4v2M9 9a4 4 0 100-8 4 4 0 000 8zM22 19v-2a4 4 0 00-3-3.9",
+  star: "M12 3l2.6 5.6 6.1.7-4.5 4.2 1.2 6L12 16.8 6.6 19.5l1.2-6L3.3 9.3l6.1-.7L12 3z",
+  folder: "M4 7a2 2 0 012-2h3.5l2 2H18a2 2 0 012 2v7a2 2 0 01-2 2H6a2 2 0 01-2-2V7z",
 };
 
-function svg(path: string, color: string) {
+function svg(path: string, color: string, size = 15) {
   return (
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth={1.9} strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth={1.9} strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
       <path d={path} />
     </svg>
   );
 }
+
+/** A distinctive tinted badge holding the icon — bigger and unmistakably custom. */
+function iconBadge(name: string, accent: string) {
+  return (
+    <span
+      className="cl-ic-badge"
+      style={{
+        display: "grid",
+        placeItems: "center",
+        width: 24,
+        height: 24,
+        borderRadius: 7,
+        background: accent + "24",
+        boxShadow: "inset 0 0 0 1px " + accent + "33",
+        color: accent,
+        flexShrink: 0,
+      }}
+    >
+      {svg(ICONS[name] || ICONS.dot, accent, 15)}
+    </span>
+  );
+}
+
+const BY_NAME: Record<string, string> = {
+  button: "grid", iconbutton: "plus", input: "window", textarea: "window", select: "chart",
+  checkbox: "check", radio: "dot", toggle: "bolt", card: "layers", tabs: "grid", accordion: "layers",
+  table: "grid", breadcrumb: "arrow", pagination: "arrow", tooltip: "chart", dialog: "window",
+  drawer: "layers", dropdownmenu: "menu", popover: "window", modal: "window", toast: "bell",
+  spinner: "gauge", alert: "bell", progress: "gauge", skeleton: "layers", avatar: "users",
+  badge: "star", icon: "sparkle", eyebrow: "arrow", kbd: "lock", stat: "barchart", code: "grid",
+  gallery: "grid", carousel: "layers", primitives: "component",
+};
 
 function iconKey(item: any): string {
   const n = String(item?.name || "").toLowerCase();
@@ -140,6 +184,7 @@ function iconKey(item: any): string {
   if (n.includes("dashboard")) return "dashboard";
   if (n.includes("auth")) return "lock";
   if (n.includes("shell")) return "window";
+  if (BY_NAME[n]) return BY_NAME[n];
   if (t === "docs") return "doc";
   if (t === "story") return "dot";
   if (t === "component" || t === "group") return "component";
@@ -149,25 +194,19 @@ function iconKey(item: any): string {
 
 function makeConfig(themeKey: ThemeKey) {
   const accent = { slate: "#818CF8", aurum: "#E2B863", evergreen: "#35D69C", daylight: "#4F46E5" }[themeKey];
-  const muted = managerThemes[themeKey].textMutedColor || "#888";
   return {
     theme: managerThemes[themeKey],
     sidebar: {
       showRoots: true,
-      renderLabel: (item: any) => {
-        const t = item?.type;
-        // Branches (component/group) keep their native icon + chevron untouched,
-        // so we never risk duplicating or hiding the expand caret. We inject our
-        // modern icon only where it's safe: roots and leaves (stories/docs).
-        if (t === "component" || t === "group") return item?.name;
-        const color = t === "root" ? accent : muted;
-        return (
-          <span className="cl-ic" style={{ display: "inline-flex", alignItems: "center", gap: 8 }}>
-            {svg(ICONS[iconKey(item)], color)}
-            <span>{item?.name}</span>
-          </span>
-        );
-      },
+      // Every node gets a distinctive tinted icon badge. Branches render only a
+      // chevron + label natively (no type icon), so there's nothing to collide
+      // with; leaf (story/docs) default icons are hidden via manager-head CSS.
+      renderLabel: (item: any) => (
+        <span className="cl-ic" style={{ display: "inline-flex", alignItems: "center", gap: 9 }}>
+          {iconBadge(iconKey(item), accent)}
+          <span>{item?.name}</span>
+        </span>
+      ),
     },
   };
 }

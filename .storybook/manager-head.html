@@ -5,15 +5,15 @@
   rel="stylesheet"
 />
 <style>
-  /* Story/docs leaves carry data-nodetype and have no expand chevron, so we can
-     safely hide ALL their svgs (the default type icon) and re-show only our own
-     injected icon (wrapped in .cl-ic). Branches keep their native icon+chevron. */
-  .sidebar-item[data-nodetype="story"] svg,
-  .sidebar-item[data-nodetype="document"] svg {
+  /* Storybook renders every default node TYPE icon with a 14×14 viewBox (the
+     expand chevron is 8×8, and our injected badge icon uses a 24 viewBox). So
+     this hides ONLY the default type icons — on every node type (story, docs,
+     component, group) — while preserving chevrons and our own badges. */
+  [data-nodetype] svg[viewBox="0 0 14 14"] {
     display: none !important;
   }
-  .sidebar-item[data-nodetype="story"] .cl-ic svg,
-  .sidebar-item[data-nodetype="document"] .cl-ic svg {
-    display: inline-block !important;
+  /* keep our icon badge crisp and aligned */
+  .cl-ic-badge {
+    vertical-align: middle;
   }
 </style>

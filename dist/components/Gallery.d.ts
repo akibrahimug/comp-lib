@@ -1,7 +1,23 @@
 /**
  * Gallery component for displaying images in various grid layouts.
  */
-export declare const Gallery: import("..").PolymorphicComponent<import("..").InferVariantProps<any>, "div">;
+export declare const Gallery: import("..").PolymorphicComponent<import("..").InferVariantProps<{
+    columns: {
+        '1': string;
+        '2': string;
+        '3': string;
+        '4': string;
+        '5': string;
+        '6': string;
+    };
+    gap: {
+        none: string;
+        sm: string;
+        md: string;
+        lg: string;
+        xl: string;
+    };
+}>, "div">;
 export interface GalleryImageProps {
     src: string;
     alt: string;

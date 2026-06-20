@@ -1,3 +1,3 @@
 export declare const Card: {
     Root: any;
-} & Record<"Description" | "Footer" | "Header" | "Title" | "Content", any>;
+} & Record<"Footer" | "Header" | "Title" | "Content" | "Description", any>;

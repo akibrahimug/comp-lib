@@ -1,5 +1,5 @@
 import React, { type ElementType, type ComponentPropsWithoutRef, type PropsWithChildren } from 'react';
-import { type TVOptions, type InferVariantProps } from './tv';
+import { type TVOptions, type InferVariantProps, type VariantConfig } from './tv';
 type AsProp<C extends ElementType> = {
     as?: C;
 };
@@ -11,9 +11,9 @@ type PolymorphicProps<C extends ElementType, P> = PropsWithChildren<P & AsProp<C
 export type PolymorphicComponent<P, D extends ElementType> = <C extends ElementType = D>(props: PolymorphicProps<C, P> & {
     ref?: any;
 }) => React.ReactElement | null;
-export interface CreateComponentOptions<Cfg extends Record<string, any>, D extends ElementType> extends TVOptions<any> {
+export interface CreateComponentOptions<Cfg extends VariantConfig, D extends ElementType> extends TVOptions<Cfg> {
     as?: D;
     displayName?: string;
 }
-export declare function createComponent<Cfg extends Record<string, any>, D extends ElementType = 'div'>(opts: CreateComponentOptions<Cfg, D>): PolymorphicComponent<InferVariantProps<any>, D>;
+export declare function createComponent<Cfg extends VariantConfig, D extends ElementType = 'div'>(opts: CreateComponentOptions<Cfg, D>): PolymorphicComponent<InferVariantProps<Cfg>, D>;
 export {};
