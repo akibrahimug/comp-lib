@@ -72,8 +72,10 @@ const preview = {
       storySort: {
         order: [
           "Intro",
+          "Pages",
+          ["Landing", "Pricing", "Contact"],
           "Sections",
-          ["Marketing", "App Shell", "Dashboard", "Auth"],
+          ["Marketing", "Content", "App Shell", "Dashboard", "Auth"],
           "Components",
           "Utilities",
           "*",
