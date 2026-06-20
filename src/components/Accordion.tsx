@@ -3,7 +3,6 @@ import React, {
   useContext,
   useState,
   forwardRef,
-  type ReactNode,
   type HTMLAttributes,
   type KeyboardEvent,
 } from 'react';
