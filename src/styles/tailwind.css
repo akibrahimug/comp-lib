@@ -2,13 +2,12 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Custom base styles for accessibility */
+/* ───────────────────────────── Base / a11y ───────────────────────────── */
 @layer base {
   *:focus-visible {
     @apply outline-none ring-2 ring-offset-2 ring-brand-600;
   }
 
-  /* Respect prefers-reduced-motion */
   @media (prefers-reduced-motion: reduce) {
     *,
     *::before,
@@ -16,10 +15,114 @@
       animation-duration: 0.01ms !important;
       animation-iteration-count: 1 !important;
       transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
     }
   }
 }
 
-/* Storybook docs styles */
-.sbdocs .docs-story { background: white; }
-.component-docs-grid { display: grid; grid-template-columns: 260px 1fr; gap: 2rem; }
+/* Theme variables (:root + [data-theme=…]) are injected by the Tailwind plugin
+   in tailwind.config.cjs so they ship with the library. */
+
+/* ──────────────────────── Theme-driven utilities ──────────────────────── */
+@layer components {
+  /* Glassy elevated surface — translucent panel + hairline + soft shadow. */
+  .glass {
+    background: rgb(var(--c-panel) / 0.72);
+    border: 1px solid rgb(var(--c-edge) / 0.12);
+    backdrop-filter: blur(18px) saturate(140%);
+    -webkit-backdrop-filter: blur(18px) saturate(140%);
+    box-shadow: var(--glass-shadow);
+  }
+
+  /* Living gradient-mesh atmosphere behind a section (uses the theme accent). */
+  .mesh {
+    position: relative;
+    background-color: rgb(var(--c-canvas));
+  }
+  .mesh::before {
+    content: "";
+    position: absolute;
+    inset: -20%;
+    background-image:
+      radial-gradient(56% 40% at 12% 4%, rgb(var(--c-accent) / 0.2) 0%, transparent 58%),
+      radial-gradient(48% 38% at 92% 8%, rgb(var(--c-accent-2) / 0.17) 0%, transparent 58%),
+      radial-gradient(60% 50% at 80% 98%, rgb(var(--c-accent) / 0.13) 0%, transparent 60%),
+      radial-gradient(50% 45% at 28% 92%, rgb(var(--c-accent-2) / 0.1) 0%, transparent 60%);
+    animation: mesh-pan 22s ease-in-out infinite;
+    pointer-events: none;
+    z-index: 0;
+  }
+  .mesh > * {
+    position: relative;
+    z-index: 1;
+  }
+
+  .grid-overlay {
+    background-image: linear-gradient(rgb(var(--c-edge) / 0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgb(var(--c-edge) / 0.04) 1px, transparent 1px);
+    background-size: 44px 44px;
+  }
+
+  /* Film grain overlay — drop inside any positioned element. */
+  .grain::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image: theme("backgroundImage.grain");
+    opacity: 0.035;
+    mix-blend-mode: overlay;
+    pointer-events: none;
+    z-index: 2;
+  }
+}
+
+@layer utilities {
+  /* Accent gradient text (follows the active theme). */
+  .text-accent-gradient {
+    background-image: linear-gradient(120deg, rgb(var(--c-accent)) 0%, rgb(var(--c-accent-2)) 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+  /* Animated sheen using the accent + foreground. */
+  .text-accent-shimmer {
+    background-image: linear-gradient(
+      100deg,
+      rgb(var(--c-accent) / 0.85) 0%,
+      rgb(var(--c-fg)) 28%,
+      rgb(var(--c-fg)) 34%,
+      rgb(var(--c-accent) / 0.85) 60%
+    );
+    background-size: 200% auto;
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    animation: shimmer 5s linear infinite;
+  }
+  /* Accent fill for buttons/marks. */
+  .bg-accent-sheen {
+    background-image: linear-gradient(135deg, rgb(var(--c-accent)) 0%, rgb(var(--c-accent-2)) 130%);
+  }
+  .scrollbar-luxe {
+    scrollbar-width: thin;
+    scrollbar-color: rgb(var(--c-edge) / 0.16) transparent;
+  }
+  .scrollbar-luxe::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+  .scrollbar-luxe::-webkit-scrollbar-thumb {
+    background: rgb(var(--c-edge) / 0.14);
+    border-radius: 999px;
+  }
+}
+
+/* Storybook docs niceties */
+.sbdocs .docs-story {
+  background: white;
+}
+.component-docs-grid {
+  display: grid;
+  grid-template-columns: 260px 1fr;
+  gap: 2rem;
+}

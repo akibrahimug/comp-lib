@@ -1,5 +1,5 @@
 import React, { forwardRef, type ElementType, type ComponentPropsWithoutRef, type PropsWithChildren } from 'react';
-import { tv, type TVOptions, type InferVariantProps } from './tv';
+import { tv, type TVOptions, type InferVariantProps, type VariantConfig } from './tv';
 import { mergeTw } from './mergeTw';
 
 type AsProp<C extends ElementType> = { as?: C };
@@ -15,14 +15,14 @@ export type PolymorphicComponent<P, D extends ElementType> = <C extends ElementT
   props: PolymorphicProps<C, P> & { ref?: any }
 ) => React.ReactElement | null;
 
-export interface CreateComponentOptions<Cfg extends Record<string, any>, D extends ElementType> extends TVOptions<any> {
+export interface CreateComponentOptions<Cfg extends VariantConfig, D extends ElementType> extends TVOptions<Cfg> {
   as?: D;
   displayName?: string;
 }
 
-export function createComponent<Cfg extends Record<string, any>, D extends ElementType = 'div'>(
+export function createComponent<Cfg extends VariantConfig, D extends ElementType = 'div'>(
   opts: CreateComponentOptions<Cfg, D>
-): PolymorphicComponent<InferVariantProps<any>, D> {
+): PolymorphicComponent<InferVariantProps<Cfg>, D> {
   const { as, displayName } = opts;
   const getClass = tv(opts as any);
   const Comp = forwardRef<any, any>(function Comp({ as: As = (as as any) || 'div', className, tw, children, ...rest }, ref) {

@@ -1,0 +1,19 @@
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link
+  href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300..700&family=Hanken+Grotesk:wght@300..800&family=JetBrains+Mono:wght@400;500;700&display=swap"
+  rel="stylesheet"
+/>
+<style>
+  /* Story/docs leaves carry data-nodetype and have no expand chevron, so we can
+     safely hide ALL their svgs (the default type icon) and re-show only our own
+     injected icon (wrapped in .cl-ic). Branches keep their native icon+chevron. */
+  .sidebar-item[data-nodetype="story"] svg,
+  .sidebar-item[data-nodetype="document"] svg {
+    display: none !important;
+  }
+  .sidebar-item[data-nodetype="story"] .cl-ic svg,
+  .sidebar-item[data-nodetype="document"] .cl-ic svg {
+    display: inline-block !important;
+  }
+</style>

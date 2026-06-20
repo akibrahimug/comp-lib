@@ -501,6 +501,207 @@ const Tabs = {
     TabPanel,
 };
 
+const AccordionContext = createContext(null);
+function useAccordionContext() {
+    const ctx = useContext(AccordionContext);
+    if (!ctx)
+        throw new Error('Accordion components must be used within Accordion.Root');
+    return ctx;
+}
+const ItemContext = createContext(null);
+function useItemContext() {
+    const ctx = useContext(ItemContext);
+    if (!ctx)
+        throw new Error('Accordion.Trigger / Content must be used within Accordion.Item');
+    return ctx;
+}
+const AccordionRoot = forwardRef(function AccordionRoot({ type = 'single', value, defaultValue = [], onValueChange, collapsible = true, className, tw, children, ...props }, ref) {
+    const [internal, setInternal] = useState(defaultValue);
+    const isControlled = value !== undefined;
+    const open = isControlled ? value : internal;
+    const setOpen = (next) => {
+        if (!isControlled)
+            setInternal(next);
+        onValueChange?.(next);
+    };
+    const toggle = (val) => {
+        const isOpen = open.includes(val);
+        if (type === 'single') {
+            setOpen(isOpen ? (collapsible ? [] : [val]) : [val]);
+        }
+        else {
+            setOpen(isOpen ? open.filter((v) => v !== val) : [...open, val]);
+        }
+    };
+    return (jsxRuntimeExports.jsx(AccordionContext.Provider, { value: { isOpen: (v) => open.includes(v), toggle, type }, children: jsxRuntimeExports.jsx("div", { ref: ref, className: mergeTw('w-full divide-y divide-gray-200', className, tw), ...props, children: children }) }));
+});
+const AccordionItem = forwardRef(function AccordionItem({ value, disabled, className, tw, children, ...props }, ref) {
+    const { isOpen } = useAccordionContext();
+    const id = useStableId('accordion');
+    const open = isOpen(value);
+    return (jsxRuntimeExports.jsx(ItemContext.Provider, { value: { value, open, disabled, triggerId: `${id}-trigger`, panelId: `${id}-panel` }, children: jsxRuntimeExports.jsx("div", { ref: ref, "data-state": open ? 'open' : 'closed', className: mergeTw(className, tw), ...props, children: children }) }));
+});
+const AccordionTrigger = forwardRef(function AccordionTrigger({ className, tw, children, ...props }, ref) {
+    const { toggle } = useAccordionContext();
+    const { value, open, disabled, triggerId, panelId } = useItemContext();
+    const handleKeyDown = (e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            if (!disabled)
+                toggle(value);
+        }
+    };
+    return (jsxRuntimeExports.jsxs("button", { ref: ref, type: "button", id: triggerId, "aria-expanded": open, "aria-controls": panelId, disabled: disabled, onClick: () => !disabled && toggle(value), onKeyDown: handleKeyDown, className: mergeTw('flex w-full items-center justify-between gap-4 py-4 text-left text-sm font-medium text-gray-900', 'transition-colors hover:text-brand-600 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-600', disabled && 'cursor-not-allowed opacity-50', className, tw), ...props, children: [jsxRuntimeExports.jsx("span", { className: "flex-1", children: children }), jsxRuntimeExports.jsx("svg", { width: "16", height: "16", viewBox: "0 0 24 24", fill: "none", "aria-hidden": "true", className: mergeTw('shrink-0 text-gray-400 transition-transform duration-200', open && 'rotate-180'), children: jsxRuntimeExports.jsx("path", { d: "M6 9l6 6 6-6", stroke: "currentColor", strokeWidth: "2", strokeLinecap: "round", strokeLinejoin: "round" }) })] }));
+});
+const AccordionContent = forwardRef(function AccordionContent({ className, tw, children, ...props }, ref) {
+    const { open, triggerId, panelId } = useItemContext();
+    return (jsxRuntimeExports.jsx("div", { ref: ref, id: panelId, role: "region", "aria-labelledby": triggerId, hidden: !open, className: mergeTw('overflow-hidden text-sm text-gray-600', open && 'animate-fade-in', className, tw), ...props, children: jsxRuntimeExports.jsx("div", { className: "pb-4", children: children }) }));
+});
+/* --------------------------------- Export --------------------------------- */
+/**
+ * Accordion with single/multiple expansion, full keyboard support and ARIA wiring.
+ *
+ * @example
+ * <Accordion.Root type="single" collapsible defaultValue={['a']}>
+ *   <Accordion.Item value="a">
+ *     <Accordion.Trigger>Question?</Accordion.Trigger>
+ *     <Accordion.Content>Answer.</Accordion.Content>
+ *   </Accordion.Item>
+ * </Accordion.Root>
+ */
+const Accordion = {
+    Root: AccordionRoot,
+    Item: AccordionItem,
+    Trigger: AccordionTrigger,
+    Content: AccordionContent,
+};
+
+const TableContext = createContext({});
+const TableRoot = forwardRef(function TableRoot({ striped, hoverable = true, dense, className, tw, children, ...props }, ref) {
+    return (jsxRuntimeExports.jsx(TableContext.Provider, { value: { striped, hoverable, dense }, children: jsxRuntimeExports.jsx("div", { className: "w-full overflow-x-auto", children: jsxRuntimeExports.jsx("table", { ref: ref, className: mergeTw('w-full border-collapse text-left text-sm', className, tw), ...props, children: children }) }) }));
+});
+/* -------------------------------- Sections -------------------------------- */
+const TableHeader = forwardRef(function TableHeader({ className, tw, ...props }, ref) {
+    return jsxRuntimeExports.jsx("thead", { ref: ref, className: mergeTw('border-b border-gray-200', className, tw), ...props });
+});
+const TableBody = forwardRef(function TableBody({ className, tw, ...props }, ref) {
+    return jsxRuntimeExports.jsx("tbody", { ref: ref, className: mergeTw('divide-y divide-gray-100', className, tw), ...props });
+});
+const TableFooter = forwardRef(function TableFooter({ className, tw, ...props }, ref) {
+    return (jsxRuntimeExports.jsx("tfoot", { ref: ref, className: mergeTw('border-t border-gray-200 bg-gray-50 font-medium', className, tw), ...props }));
+});
+const TableRow = forwardRef(function TableRow({ selected, className, tw, ...props }, ref) {
+    const { striped, hoverable } = useContext(TableContext);
+    return (jsxRuntimeExports.jsx("tr", { ref: ref, "data-selected": selected || undefined, className: mergeTw('transition-colors', striped && 'even:bg-gray-50/70', hoverable && 'hover:bg-gray-50', selected && 'bg-brand-50', className, tw), ...props }));
+});
+const TableHead = forwardRef(function TableHead({ className, tw, ...props }, ref) {
+    const { dense } = useContext(TableContext);
+    return (jsxRuntimeExports.jsx("th", { ref: ref, scope: "col", className: mergeTw('whitespace-nowrap text-xs font-semibold uppercase tracking-wider text-gray-500', dense ? 'px-3 py-2' : 'px-4 py-3', className, tw), ...props }));
+});
+const TableCell = forwardRef(function TableCell({ className, tw, ...props }, ref) {
+    const { dense } = useContext(TableContext);
+    return (jsxRuntimeExports.jsx("td", { ref: ref, className: mergeTw('align-middle text-gray-700', dense ? 'px-3 py-2' : 'px-4 py-3', className, tw), ...props }));
+});
+/* -------------------------------- Caption --------------------------------- */
+const TableCaption = forwardRef(function TableCaption({ className, tw, ...props }, ref) {
+    return jsxRuntimeExports.jsx("caption", { ref: ref, className: mergeTw('mt-3 text-xs text-gray-500', className, tw), ...props });
+});
+/* --------------------------------- Export --------------------------------- */
+/**
+ * Compound data table. `striped`, `hoverable` and `dense` on Root cascade to
+ * rows/cells via context.
+ *
+ * @example
+ * <Table.Root hoverable>
+ *   <Table.Header><Table.Row><Table.Head>Name</Table.Head></Table.Row></Table.Header>
+ *   <Table.Body><Table.Row><Table.Cell>Ada</Table.Cell></Table.Row></Table.Body>
+ * </Table.Root>
+ */
+const Table = {
+    Root: TableRoot,
+    Header: TableHeader,
+    Body: TableBody,
+    Footer: TableFooter,
+    Row: TableRow,
+    Head: TableHead,
+    Cell: TableCell,
+    Caption: TableCaption,
+};
+
+const BreadcrumbRoot = forwardRef(function BreadcrumbRoot({ className, tw, children, ...props }, ref) {
+    return (jsxRuntimeExports.jsx("nav", { ref: ref, "aria-label": "Breadcrumb", className: mergeTw(className, tw), ...props, children: jsxRuntimeExports.jsx("ol", { className: "flex flex-wrap items-center gap-1.5 text-sm text-gray-500", children: children }) }));
+});
+const BreadcrumbItem = forwardRef(function BreadcrumbItem({ className, tw, children, ...props }, ref) {
+    return (jsxRuntimeExports.jsx("li", { ref: ref, className: mergeTw('inline-flex items-center gap-1.5', className, tw), ...props, children: children }));
+});
+const BreadcrumbLink = forwardRef(function BreadcrumbLink({ className, tw, children, ...props }, ref) {
+    return (jsxRuntimeExports.jsx("a", { ref: ref, className: mergeTw('rounded transition-colors hover:text-gray-900 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-600', className, tw), ...props, children: children }));
+});
+/** The current (non-navigable) page. */
+const BreadcrumbPage = forwardRef(function BreadcrumbPage({ className, tw, children, ...props }, ref) {
+    return (jsxRuntimeExports.jsx("span", { ref: ref, role: "link", "aria-disabled": "true", "aria-current": "page", className: mergeTw('font-medium text-gray-900', className, tw), ...props, children: children }));
+});
+const BreadcrumbSeparator = forwardRef(function BreadcrumbSeparator({ className, tw, children, ...props }, ref) {
+    return (jsxRuntimeExports.jsx("li", { ref: ref, role: "presentation", "aria-hidden": "true", className: mergeTw('text-gray-300 [&>svg]:h-3.5 [&>svg]:w-3.5', className, tw), ...props, children: children ?? (jsxRuntimeExports.jsx("svg", { viewBox: "0 0 24 24", fill: "none", "aria-hidden": "true", children: jsxRuntimeExports.jsx("path", { d: "M9 18l6-6-6-6", stroke: "currentColor", strokeWidth: "2", strokeLinecap: "round", strokeLinejoin: "round" }) })) }));
+});
+/* --------------------------------- Export --------------------------------- */
+/**
+ * Breadcrumb navigation. Compose with Link for navigable crumbs, Page for the
+ * current page, and Separator between them.
+ *
+ * @example
+ * <Breadcrumb.Root>
+ *   <Breadcrumb.Item><Breadcrumb.Link href="/">Home</Breadcrumb.Link></Breadcrumb.Item>
+ *   <Breadcrumb.Separator />
+ *   <Breadcrumb.Item><Breadcrumb.Page>Settings</Breadcrumb.Page></Breadcrumb.Item>
+ * </Breadcrumb.Root>
+ */
+const Breadcrumb = {
+    Root: BreadcrumbRoot,
+    Item: BreadcrumbItem,
+    Link: BreadcrumbLink,
+    Page: BreadcrumbPage,
+    Separator: BreadcrumbSeparator,
+};
+
+const DOTS = '…';
+function range(start, end) {
+    return Array.from({ length: end - start + 1 }, (_, i) => start + i);
+}
+/** Build the page list with ellipses, mirroring common pagination UIs. */
+function usePaginationRange(page, count, siblingCount) {
+    const totalNumbers = siblingCount * 2 + 5; // first, last, current, 2 dots
+    if (totalNumbers >= count)
+        return range(1, count);
+    const leftSibling = Math.max(page - siblingCount, 1);
+    const rightSibling = Math.min(page + siblingCount, count);
+    const showLeftDots = leftSibling > 2;
+    const showRightDots = rightSibling < count - 1;
+    if (!showLeftDots && showRightDots) {
+        return [...range(1, 3 + 2 * siblingCount), DOTS, count];
+    }
+    if (showLeftDots && !showRightDots) {
+        return [1, DOTS, ...range(count - (2 + 2 * siblingCount), count)];
+    }
+    return [1, DOTS, ...range(leftSibling, rightSibling), DOTS, count];
+}
+const arrow = (dir) => (jsxRuntimeExports.jsx("svg", { width: "16", height: "16", viewBox: "0 0 24 24", fill: "none", "aria-hidden": "true", children: jsxRuntimeExports.jsx("path", { d: dir === 'prev' ? 'M15 18l-6-6 6-6' : 'M9 18l6-6-6-6', stroke: "currentColor", strokeWidth: "2", strokeLinecap: "round", strokeLinejoin: "round" }) }));
+const cellBase = 'inline-flex h-9 min-w-9 items-center justify-center rounded-lg px-3 text-sm font-medium transition-colors ' +
+    'focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-600 disabled:pointer-events-none disabled:opacity-40';
+/**
+ * Pagination control with a smart ellipsis range. Fully controlled.
+ *
+ * @example
+ * <Pagination page={page} count={12} onChange={setPage} />
+ */
+const Pagination = forwardRef(function Pagination({ page, count, onChange, siblingCount = 1, showEdges = true, className, tw, ...props }, ref) {
+    const items = usePaginationRange(page, count, siblingCount);
+    const go = (p) => onChange(Math.min(Math.max(1, p), count));
+    return (jsxRuntimeExports.jsxs("nav", { ref: ref, "aria-label": "Pagination", className: mergeTw('flex items-center gap-1', className, tw), ...props, children: [showEdges && (jsxRuntimeExports.jsx("button", { type: "button", onClick: () => go(page - 1), disabled: page <= 1, "aria-label": "Previous page", className: mergeTw(cellBase, 'text-gray-600 hover:bg-gray-100'), children: arrow('prev') })), items.map((item, i) => item === DOTS ? (jsxRuntimeExports.jsx("span", { className: "inline-flex h-9 min-w-9 items-center justify-center text-gray-400", children: DOTS }, `dots-${i}`)) : (jsxRuntimeExports.jsx("button", { type: "button", onClick: () => go(item), "aria-current": item === page ? 'page' : undefined, className: mergeTw(cellBase, item === page
+                    ? 'bg-brand-600 text-white shadow-sm hover:bg-brand-700'
+                    : 'text-gray-700 hover:bg-gray-100'), children: item }, item))), showEdges && (jsxRuntimeExports.jsx("button", { type: "button", onClick: () => go(page + 1), disabled: page >= count, "aria-label": "Next page", className: mergeTw(cellBase, 'text-gray-600 hover:bg-gray-100'), children: arrow('next') }))] }));
+});
+
 const TooltipContext = createContext(null);
 function useTooltipContext() {
     const context = useContext(TooltipContext);
@@ -853,6 +1054,294 @@ const Drawer = {
     Close: DrawerClose,
 };
 
+const MenuContext = createContext(null);
+function useMenu() {
+    const ctx = useContext(MenuContext);
+    if (!ctx)
+        throw new Error('DropdownMenu components must be used within DropdownMenu.Root');
+    return ctx;
+}
+const Root$1 = ({ children, open: controlled, defaultOpen, onOpenChange, align = 'start', side = 'bottom' }) => {
+    const [internal, setInternal] = useState(defaultOpen || false);
+    const isControlled = controlled !== undefined;
+    const open = isControlled ? controlled : internal;
+    const triggerRef = useRef(null);
+    const contentRef = useRef(null);
+    const menuId = useStableId('menu');
+    const setOpen = useCallback((o) => {
+        if (!isControlled)
+            setInternal(o);
+        onOpenChange?.(o);
+    }, [isControlled, onOpenChange]);
+    return (jsxRuntimeExports.jsx(MenuContext.Provider, { value: { open, setOpen, triggerRef, contentRef, menuId, align, side }, children: jsxRuntimeExports.jsx("div", { className: "relative inline-block text-left", children: children }) }));
+};
+const Trigger$1 = forwardRef(function Trigger({ className, tw, children, onClick, ...props }, ref) {
+    const { open, setOpen, triggerRef, menuId } = useMenu();
+    const handleRef = (node) => {
+        triggerRef.current = node;
+        if (typeof ref === 'function')
+            ref(node);
+        else if (ref)
+            ref.current = node;
+    };
+    return (jsxRuntimeExports.jsx("button", { ref: handleRef, type: "button", "aria-haspopup": "menu", "aria-expanded": open, "aria-controls": open ? menuId : undefined, onClick: (e) => {
+            setOpen(!open);
+            onClick?.(e);
+        }, className: mergeTw(className, tw), ...props, children: children }));
+});
+const Content$1 = forwardRef(function Content({ sideOffset = 6, className, tw, children, ...props }, ref) {
+    const { open, setOpen, triggerRef, contentRef, menuId, align, side } = useMenu();
+    const [style, setStyle] = useState({ position: 'fixed', top: 0, left: 0, opacity: 0 });
+    const handleRef = (node) => {
+        contentRef.current = node;
+        if (typeof ref === 'function')
+            ref(node);
+        else if (ref)
+            ref.current = node;
+    };
+    useEffect(() => {
+        if (!open)
+            return;
+        const place = () => {
+            const t = triggerRef.current?.getBoundingClientRect();
+            const c = contentRef.current?.getBoundingClientRect();
+            if (!t || !c)
+                return;
+            let top = side === 'bottom' ? t.bottom + sideOffset : t.top - c.height - sideOffset;
+            let left = align === 'start' ? t.left : align === 'end' ? t.right - c.width : t.left + t.width / 2 - c.width / 2;
+            left = Math.max(8, Math.min(left, window.innerWidth - c.width - 8));
+            top = Math.max(8, Math.min(top, window.innerHeight - c.height - 8));
+            setStyle({ position: 'fixed', top, left, opacity: 1 });
+        };
+        place();
+        window.addEventListener('scroll', place, true);
+        window.addEventListener('resize', place);
+        return () => {
+            window.removeEventListener('scroll', place, true);
+            window.removeEventListener('resize', place);
+        };
+    }, [open, align, side, sideOffset, triggerRef, contentRef]);
+    // Focus first item on open; close on Escape / outside click.
+    useEffect(() => {
+        if (!open)
+            return;
+        const items = () => Array.from(contentRef.current?.querySelectorAll('[role="menuitem"]:not([aria-disabled="true"])') || []);
+        const first = items()[0];
+        first?.focus();
+        const onKey = (e) => {
+            const list = items();
+            const idx = list.indexOf(document.activeElement);
+            if (e.key === 'Escape') {
+                setOpen(false);
+                triggerRef.current?.focus();
+            }
+            else if (e.key === 'ArrowDown') {
+                e.preventDefault();
+                list[(idx + 1) % list.length]?.focus();
+            }
+            else if (e.key === 'ArrowUp') {
+                e.preventDefault();
+                list[(idx - 1 + list.length) % list.length]?.focus();
+            }
+            else if (e.key === 'Home') {
+                e.preventDefault();
+                list[0]?.focus();
+            }
+            else if (e.key === 'End') {
+                e.preventDefault();
+                list[list.length - 1]?.focus();
+            }
+        };
+        const onClick = (e) => {
+            const target = e.target;
+            if (!contentRef.current?.contains(target) && !triggerRef.current?.contains(target)) {
+                setOpen(false);
+            }
+        };
+        document.addEventListener('keydown', onKey);
+        document.addEventListener('mousedown', onClick);
+        return () => {
+            document.removeEventListener('keydown', onKey);
+            document.removeEventListener('mousedown', onClick);
+        };
+    }, [open, setOpen, contentRef, triggerRef]);
+    if (!open)
+        return null;
+    return createPortal(jsxRuntimeExports.jsx("div", { ref: handleRef, id: menuId, role: "menu", style: style, className: mergeTw('z-50 min-w-[12rem] origin-top rounded-xl border border-gray-200 bg-white p-1.5 shadow-card', 'animate-zoom-in-95', className, tw), ...props, children: children }), document.body);
+});
+const Item = forwardRef(function Item({ disabled, destructive, icon, className, tw, children, onClick, ...props }, ref) {
+    const { setOpen } = useMenu();
+    return (jsxRuntimeExports.jsxs("button", { ref: ref, type: "button", role: "menuitem", "aria-disabled": disabled || undefined, disabled: disabled, onClick: (e) => {
+            if (disabled)
+                return;
+            onClick?.(e);
+            setOpen(false);
+        }, className: mergeTw('flex w-full items-center gap-2.5 rounded-lg px-2.5 py-2 text-left text-sm transition-colors', 'focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-600', destructive
+            ? 'text-danger-600 hover:bg-danger-50 focus:bg-danger-50'
+            : 'text-gray-700 hover:bg-gray-100 focus:bg-gray-100', disabled && 'pointer-events-none opacity-50', className, tw), ...props, children: [icon && jsxRuntimeExports.jsx("span", { className: "shrink-0 [&>svg]:h-4 [&>svg]:w-4", children: icon }), jsxRuntimeExports.jsx("span", { className: "flex-1", children: children })] }));
+});
+/* ------------------------------ Label / Sep ------------------------------- */
+const Label = forwardRef(function Label({ className, tw, ...props }, ref) {
+    return (jsxRuntimeExports.jsx("div", { ref: ref, className: mergeTw('px-2.5 py-1.5 text-xs font-semibold uppercase tracking-wide text-gray-400', className, tw), ...props }));
+});
+const Separator = forwardRef(function Separator({ className, tw, ...props }, ref) {
+    return jsxRuntimeExports.jsx("div", { ref: ref, role: "separator", className: mergeTw('my-1.5 h-px bg-gray-100', className, tw), ...props });
+});
+/* --------------------------------- Export --------------------------------- */
+/**
+ * Dropdown menu with portal positioning, outside-click & Escape dismissal, and
+ * arrow-key roving focus.
+ *
+ * @example
+ * <DropdownMenu.Root align="end">
+ *   <DropdownMenu.Trigger><Button>Options</Button></DropdownMenu.Trigger>
+ *   <DropdownMenu.Content>
+ *     <DropdownMenu.Item>Edit</DropdownMenu.Item>
+ *     <DropdownMenu.Separator />
+ *     <DropdownMenu.Item destructive>Delete</DropdownMenu.Item>
+ *   </DropdownMenu.Content>
+ * </DropdownMenu.Root>
+ */
+const DropdownMenu = {
+    Root: Root$1,
+    Trigger: Trigger$1,
+    Content: Content$1,
+    Item,
+    Label,
+    Separator,
+};
+
+const PopoverContext = createContext(null);
+function usePopover() {
+    const ctx = useContext(PopoverContext);
+    if (!ctx)
+        throw new Error('Popover components must be used within Popover.Root');
+    return ctx;
+}
+const Root = ({ children, open: controlled, defaultOpen, onOpenChange, align = 'center', side = 'bottom' }) => {
+    const [internal, setInternal] = useState(defaultOpen || false);
+    const isControlled = controlled !== undefined;
+    const open = isControlled ? controlled : internal;
+    const triggerRef = useRef(null);
+    const contentRef = useRef(null);
+    const popoverId = useStableId('popover');
+    const setOpen = useCallback((o) => {
+        if (!isControlled)
+            setInternal(o);
+        onOpenChange?.(o);
+    }, [isControlled, onOpenChange]);
+    return (jsxRuntimeExports.jsx(PopoverContext.Provider, { value: { open, setOpen, triggerRef, contentRef, popoverId, align, side }, children: jsxRuntimeExports.jsx("div", { className: "relative inline-block", children: children }) }));
+};
+const Trigger = forwardRef(function Trigger({ className, tw, children, onClick, ...props }, ref) {
+    const { open, setOpen, triggerRef, popoverId } = usePopover();
+    const handleRef = (node) => {
+        triggerRef.current = node;
+        if (typeof ref === 'function')
+            ref(node);
+        else if (ref)
+            ref.current = node;
+    };
+    return (jsxRuntimeExports.jsx("button", { ref: handleRef, type: "button", "aria-haspopup": "dialog", "aria-expanded": open, "aria-controls": open ? popoverId : undefined, onClick: (e) => {
+            setOpen(!open);
+            onClick?.(e);
+        }, className: mergeTw(className, tw), ...props, children: children }));
+});
+const Content = forwardRef(function Content({ sideOffset = 8, className, tw, children, ...props }, ref) {
+    const { open, setOpen, triggerRef, contentRef, popoverId, align, side } = usePopover();
+    const [style, setStyle] = useState({ position: 'fixed', top: 0, left: 0, opacity: 0 });
+    useFocusReturn();
+    const handleRef = (node) => {
+        contentRef.current = node;
+        if (typeof ref === 'function')
+            ref(node);
+        else if (ref)
+            ref.current = node;
+    };
+    useEffect(() => {
+        if (!open)
+            return;
+        const place = () => {
+            const t = triggerRef.current?.getBoundingClientRect();
+            const c = contentRef.current?.getBoundingClientRect();
+            if (!t || !c)
+                return;
+            let top = 0;
+            let left = 0;
+            if (side === 'bottom' || side === 'top') {
+                top = side === 'bottom' ? t.bottom + sideOffset : t.top - c.height - sideOffset;
+                left = align === 'start' ? t.left : align === 'end' ? t.right - c.width : t.left + t.width / 2 - c.width / 2;
+            }
+            else {
+                left = side === 'right' ? t.right + sideOffset : t.left - c.width - sideOffset;
+                top = align === 'start' ? t.top : align === 'end' ? t.bottom - c.height : t.top + t.height / 2 - c.height / 2;
+            }
+            left = Math.max(8, Math.min(left, window.innerWidth - c.width - 8));
+            top = Math.max(8, Math.min(top, window.innerHeight - c.height - 8));
+            setStyle({ position: 'fixed', top, left, opacity: 1 });
+        };
+        place();
+        window.addEventListener('scroll', place, true);
+        window.addEventListener('resize', place);
+        return () => {
+            window.removeEventListener('scroll', place, true);
+            window.removeEventListener('resize', place);
+        };
+    }, [open, align, side, sideOffset, triggerRef, contentRef]);
+    useEffect(() => {
+        if (!open)
+            return;
+        const onKey = (e) => {
+            if (e.key === 'Escape') {
+                setOpen(false);
+                triggerRef.current?.focus();
+            }
+        };
+        const onClick = (e) => {
+            const target = e.target;
+            if (!contentRef.current?.contains(target) && !triggerRef.current?.contains(target)) {
+                setOpen(false);
+            }
+        };
+        document.addEventListener('keydown', onKey);
+        document.addEventListener('mousedown', onClick);
+        return () => {
+            document.removeEventListener('keydown', onKey);
+            document.removeEventListener('mousedown', onClick);
+        };
+    }, [open, setOpen, contentRef, triggerRef]);
+    if (!open)
+        return null;
+    return createPortal(jsxRuntimeExports.jsx("div", { ref: handleRef, id: popoverId, role: "dialog", style: style, className: mergeTw('z-50 w-72 rounded-2xl border border-gray-200 bg-white p-4 shadow-card', 'animate-zoom-in-95', className, tw), ...props, children: children }), document.body);
+});
+/* ---------------------------------- Close --------------------------------- */
+const Close = forwardRef(function Close({ className, tw, children, onClick, ...props }, ref) {
+    const { setOpen } = usePopover();
+    return (jsxRuntimeExports.jsx("button", { ref: ref, type: "button", onClick: (e) => {
+            setOpen(false);
+            onClick?.(e);
+        }, className: mergeTw('absolute right-3 top-3 rounded-md p-1 text-gray-400 transition hover:text-gray-600 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-600', className, tw), "aria-label": "Close", ...props, children: children ?? (jsxRuntimeExports.jsx("svg", { width: "14", height: "14", viewBox: "0 0 24 24", fill: "none", "aria-hidden": "true", children: jsxRuntimeExports.jsx("path", { d: "M18 6L6 18M6 6l12 12", stroke: "currentColor", strokeWidth: "2", strokeLinecap: "round" }) })) }));
+});
+/* --------------------------------- Export --------------------------------- */
+/**
+ * Popover — floating panel anchored to a trigger, with portal positioning,
+ * outside-click & Escape dismissal and focus return.
+ *
+ * @example
+ * <Popover.Root side="bottom" align="end">
+ *   <Popover.Trigger><Button>Open</Button></Popover.Trigger>
+ *   <Popover.Content>
+ *     <Popover.Close />
+ *     <p>Anything you like in here.</p>
+ *   </Popover.Content>
+ * </Popover.Root>
+ */
+const Popover = {
+    Root,
+    Trigger,
+    Content,
+    Close,
+};
+
 const ToastContext = createContext(null);
 let toastCounter = 0;
 function ToastProvider({ children, max = 5 }) {
@@ -963,25 +1452,104 @@ function LoadingOverlay({ message = 'Loading...', show = true, }) {
     return (jsxRuntimeExports.jsxs("div", { className: "fixed inset-0 z-50 flex flex-col items-center justify-center bg-white/80 backdrop-blur-sm", role: "status", "aria-live": "polite", "aria-label": message, children: [jsxRuntimeExports.jsx(Spinner, { size: "xl", color: "brand", className: "mb-4" }), jsxRuntimeExports.jsx("p", { className: "text-sm font-medium text-gray-700", children: message })] }));
 }
 
+const variantStyles = {
+    info: { wrap: 'bg-info-50 border-info-200 text-info-800', icon: 'text-info-600', title: 'text-info-900' },
+    success: { wrap: 'bg-success-50 border-success-200 text-success-800', icon: 'text-success-600', title: 'text-success-900' },
+    warning: { wrap: 'bg-accent-50 border-accent-200 text-accent-800', icon: 'text-accent-700', title: 'text-accent-900' },
+    danger: { wrap: 'bg-danger-50 border-danger-200 text-danger-800', icon: 'text-danger-600', title: 'text-danger-900' },
+    neutral: { wrap: 'bg-gray-50 border-gray-200 text-gray-700', icon: 'text-gray-500', title: 'text-gray-900' },
+};
+const defaultIcons = {
+    info: (jsxRuntimeExports.jsx("path", { d: "M12 16v-4M12 8h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z", stroke: "currentColor", strokeWidth: "2", strokeLinecap: "round", strokeLinejoin: "round" })),
+    success: (jsxRuntimeExports.jsx("path", { d: "M22 11.08V12a10 10 0 11-5.93-9.14M22 4L12 14.01l-3-3", stroke: "currentColor", strokeWidth: "2", strokeLinecap: "round", strokeLinejoin: "round" })),
+    warning: (jsxRuntimeExports.jsx("path", { d: "M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0zM12 9v4M12 17h.01", stroke: "currentColor", strokeWidth: "2", strokeLinecap: "round", strokeLinejoin: "round" })),
+    danger: (jsxRuntimeExports.jsx("path", { d: "M12 8v4M12 16h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z", stroke: "currentColor", strokeWidth: "2", strokeLinecap: "round", strokeLinejoin: "round" })),
+    neutral: (jsxRuntimeExports.jsx("path", { d: "M12 16v-4M12 8h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z", stroke: "currentColor", strokeWidth: "2", strokeLinecap: "round", strokeLinejoin: "round" })),
+};
 /**
- * Avatar component for displaying user profile images or initials.
+ * Inline Alert / banner for contextual feedback. Five intents, optional title,
+ * custom or default icon, and an optional dismiss affordance.
+ *
+ * @example
+ * <Alert variant="success" title="Saved" onClose={() => {}}>
+ *   Your changes were saved.
+ * </Alert>
+ */
+const Alert = forwardRef(function Alert({ variant = 'info', title, icon, onClose, className, tw, children, ...props }, ref) {
+    const styles = variantStyles[variant];
+    const showIcon = icon !== false;
+    return (jsxRuntimeExports.jsxs("div", { ref: ref, role: "alert", className: mergeTw('flex items-start gap-3 rounded-xl border p-4 text-sm', styles.wrap, className, tw), ...props, children: [showIcon && (jsxRuntimeExports.jsx("span", { className: mergeTw('mt-0.5 shrink-0', styles.icon), children: icon ?? (jsxRuntimeExports.jsx("svg", { width: "18", height: "18", viewBox: "0 0 24 24", fill: "none", "aria-hidden": "true", children: defaultIcons[variant] })) })), jsxRuntimeExports.jsxs("div", { className: "min-w-0 flex-1", children: [title && jsxRuntimeExports.jsx("div", { className: mergeTw('font-semibold', styles.title), children: title }), children && jsxRuntimeExports.jsx("div", { className: mergeTw(!!title && 'mt-0.5', 'leading-relaxed'), children: children })] }), onClose && (jsxRuntimeExports.jsx("button", { type: "button", onClick: onClose, "aria-label": "Dismiss", className: mergeTw('-mr-1 -mt-1 shrink-0 rounded-md p-1 opacity-70 transition hover:opacity-100', styles.icon), children: jsxRuntimeExports.jsx("svg", { width: "16", height: "16", viewBox: "0 0 24 24", fill: "none", "aria-hidden": "true", children: jsxRuntimeExports.jsx("path", { d: "M18 6L6 18M6 6l12 12", stroke: "currentColor", strokeWidth: "2", strokeLinecap: "round" }) }) }))] }));
+});
+
+const barColors = {
+    brand: 'bg-brand-600',
+    gold: 'bg-gold-500',
+    success: 'bg-success-600',
+    danger: 'bg-danger-600',
+    info: 'bg-info-600',
+};
+const trackHeights = {
+    sm: 'h-1.5',
+    md: 'h-2.5',
+    lg: 'h-3.5',
+};
+/**
+ * Progress bar. Pass a numeric `value` for determinate, or omit it (or pass
+ * `null`) for an animated indeterminate state.
+ *
+ * @example
+ * <Progress value={64} variant="gold" showValue />
+ */
+const Progress = forwardRef(function Progress({ value = null, max = 100, variant = 'brand', size = 'md', showValue, label, className, tw, ...props }, ref) {
+    const indeterminate = value === null || value === undefined;
+    const pct = indeterminate ? 0 : Math.min(100, Math.max(0, (value / max) * 100));
+    return (jsxRuntimeExports.jsxs("div", { ref: ref, className: mergeTw('flex w-full items-center gap-3', className, tw), ...props, children: [jsxRuntimeExports.jsx("div", { role: "progressbar", "aria-valuemin": 0, "aria-valuemax": max, "aria-valuenow": indeterminate ? undefined : value ?? undefined, "aria-label": label, className: mergeTw('relative w-full overflow-hidden rounded-full bg-gray-200', trackHeights[size]), children: indeterminate ? (jsxRuntimeExports.jsx("div", { className: mergeTw('absolute inset-y-0 left-0 w-1/3 rounded-full', barColors[variant]), style: { animation: 'slide-in-from-left 1.2s ease-in-out infinite alternate' } })) : (jsxRuntimeExports.jsx("div", { className: mergeTw('h-full rounded-full transition-[width] duration-500 ease-out', barColors[variant]), style: { width: `${pct}%` } })) }), showValue && !indeterminate && (jsxRuntimeExports.jsxs("span", { className: "w-10 shrink-0 text-right text-xs font-medium tabular-nums text-gray-600", children: [Math.round(pct), "%"] }))] }));
+});
+
+const shapes = {
+    text: 'h-4 rounded',
+    circle: 'rounded-full',
+    rect: 'rounded-none',
+    rounded: 'rounded-xl',
+};
+const shimmerClass = 'relative overflow-hidden bg-gray-200/80 before:absolute before:inset-0 ' +
+    'before:-translate-x-full before:animate-shimmer ' +
+    'before:bg-gradient-to-r before:from-transparent before:via-white/60 before:to-transparent';
+const toLen = (v) => (typeof v === 'number' ? `${v}px` : v);
+/**
+ * Loading placeholder with a moving shimmer. Use `lines` for multi-line text
+ * blocks, or `shape` + width/height for avatars, thumbnails and cards.
+ *
+ * @example
+ * <Skeleton shape="circle" width={40} height={40} />
+ * <Skeleton lines={3} />
+ */
+const Skeleton = forwardRef(function Skeleton({ shape = 'text', width, height, lines = 1, className, tw, style, ...props }, ref) {
+    if (shape === 'text' && lines > 1) {
+        return (jsxRuntimeExports.jsx("div", { ref: ref, className: mergeTw('flex flex-col gap-2', className, tw), "aria-hidden": "true", ...props, children: Array.from({ length: lines }).map((_, i) => (jsxRuntimeExports.jsx("div", { className: mergeTw(shapes.text, shimmerClass), style: { width: i === lines - 1 ? '70%' : '100%' } }, i))) }));
+    }
+    return (jsxRuntimeExports.jsx("div", { ref: ref, "aria-hidden": "true", className: mergeTw(shapes[shape], shimmerClass, className, tw), style: { width: toLen(width), height: toLen(height), ...style }, ...props }));
+});
+
+/**
+ * Avatar component for displaying user profile images or initials..
  */
 const Avatar = createComponent({
-    as: 'div',
-    displayName: 'Avatar',
-    base: 'relative inline-flex items-center justify-center rounded-full bg-gray-200 font-medium text-gray-700 overflow-hidden flex-shrink-0',
+    as: "div",
+    displayName: "Avatar",
+    base: "relative inline-flex items-center justify-center rounded-full bg-gray-200 font-medium text-gray-700 overflow-hidden flex-shrink-0",
     variants: {
         size: {
-            xs: 'h-6 w-6 text-xs',
-            sm: 'h-8 w-8 text-sm',
-            md: 'h-10 w-10 text-base',
-            lg: 'h-12 w-12 text-lg',
-            xl: 'h-16 w-16 text-xl',
-            '2xl': 'h-20 w-20 text-2xl',
+            xs: "h-6 w-6 text-xs",
+            sm: "h-8 w-8 text-sm",
+            md: "h-10 w-10 text-base",
+            lg: "h-12 w-12 text-lg",
+            xl: "h-16 w-16 text-xl",
+            "2xl": "h-20 w-20 text-2xl",
         },
     },
     defaultVariants: {
-        size: 'md',
+        size: "md",
     },
 });
 
@@ -1011,6 +1579,132 @@ const Badge = createComponent({
         variant: 'default',
         size: 'md',
     },
+});
+
+/**
+ * A small, modern line-icon set (Lucide-inspired, 24px grid). Icons inherit
+ * `currentColor`, so they adapt to whatever text color / theme surrounds them.
+ */
+const icons = {
+    sparkle: 'M12 3l1.6 4.6a3 3 0 001.8 1.8L20 11l-4.6 1.6a3 3 0 00-1.8 1.8L12 19l-1.6-4.6a3 3 0 00-1.8-1.8L4 11l4.6-1.6a3 3 0 001.8-1.8L12 3z',
+    check: 'M20 6L9 17l-5-5',
+    arrow: 'M5 12h14M13 6l6 6-6 6',
+    bolt: 'M13 3v6h6l-8 12v-6H5l8-12z',
+    shield: 'M12 3l8 3v5c0 5-3.4 8.5-8 10-4.6-1.5-8-5-8-10V6l8-3z',
+    layers: 'M12 3l9 5-9 5-9-5 9-5zM3 13l9 5 9-5',
+    dashboard: 'M4 4h6v8H4zM14 4h6v5h-6zM14 13h6v7h-6zM4 16h6v4H4z',
+    barchart: 'M3 3v18h18M8 17V11M13 17V7M18 17v-4',
+    gauge: 'M12 14a2.5 2.5 0 002.5-2.5c0-1.4-2.5-5-2.5-5s-2.5 3.6-2.5 5A2.5 2.5 0 0012 14zM4.5 18a9 9 0 1115 0',
+    globe: 'M12 21a9 9 0 100-18 9 9 0 000 18zM3.5 9h17M3.5 15h17M12 3a14 14 0 010 18 14 14 0 010-18z',
+    users: 'M16 19v-2a4 4 0 00-4-4H6a4 4 0 00-4 4v2M9 9a4 4 0 100-8 4 4 0 000 8zM22 19v-2a4 4 0 00-3-3.9M16 1.1A4 4 0 0116 9',
+    bell: 'M18 8a6 6 0 10-12 0c0 7-3 9-3 9h18s-3-2-3-9M13.7 21a2 2 0 01-3.4 0',
+    search: 'M11 19a8 8 0 100-16 8 8 0 000 16zM21 21l-4.3-4.3',
+    menu: 'M3 6h18M3 12h18M3 18h18',
+    x: 'M18 6L6 18M6 6l12 12',
+    chart: 'M3 3v18h18M7 14l3-3 3 2 5-6',
+    wallet: 'M3 8a2 2 0 012-2h12.5A1.5 1.5 0 0019 7.5V7a2 2 0 00-2-2H5M3 8v8a2 2 0 002 2h13a2 2 0 002-2v-5a2 2 0 00-2-2H5a2 2 0 01-2-2zM16.5 12.5h.01',
+    creditcard: 'M3 6h18v12H3zM3 10h18M7 15h4',
+    folder: 'M4 7a2 2 0 012-2h3.5l2 2H18a2 2 0 012 2v7a2 2 0 01-2 2H6a2 2 0 01-2-2V7z',
+    star: 'M12 3l2.6 5.6 6.1.7-4.5 4.2 1.2 6L12 16.8 6.6 19.5l1.2-6L3.3 9.3l6.1-.7L12 3z',
+    github: 'M9 19c-5 1.4-5-2.5-7-3m14 6v-3.5a3 3 0 00-.9-2.3c3-.3 6.1-1.5 6.1-6.6a5.1 5.1 0 00-1.4-3.5 4.8 4.8 0 00-.1-3.5s-1.1-.3-3.6 1.4a12.3 12.3 0 00-6.4 0C5.7 1.7 4.6 2 4.6 2a4.8 4.8 0 00-.1 3.5A5.1 5.1 0 003 9c0 5.1 3.1 6.3 6.1 6.6a3 3 0 00-.9 2.3V21',
+    twitter: 'M22 4.5a8 8 0 01-2.3.6 4 4 0 001.8-2.2 8 8 0 01-2.5 1 4 4 0 00-6.9 3.6A11.3 11.3 0 013 3.3a4 4 0 001.2 5.3 4 4 0 01-1.8-.5 4 4 0 003.2 4 4 4 0 01-1.8.1 4 4 0 003.7 2.8A8 8 0 012 21a11.3 11.3 0 006.1 1.8c7.3 0 11.4-6.1 11.4-11.4v-.5A8 8 0 0022 4.5z',
+    grid: 'M4 4h7v7H4zM13 4h7v7h-7zM13 13h7v7h-7zM4 13h7v7H4z',
+    rocket: 'M5 14l-2 5 5-2m2-2a14 14 0 01.5-9A9 9 0 0119 4a9 9 0 01-1.4 9.5 14 14 0 01-9 .5L5 14zm9-5.5h.01',
+    lock: 'M5 11h14v10H5zM8 11V7a4 4 0 018 0v4',
+    eye: 'M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7-10-7-10-7z M12 15a3 3 0 100-6 3 3 0 000 6z',
+    'eye-off': 'M10 5.1A11 11 0 0112 5c6.4 0 10 7 10 7a18 18 0 01-2.2 3M6.6 6.6A18 18 0 002 12s3.6 7 10 7a11 11 0 005.3-1.3M3 3l18 18M9.9 9.9a3 3 0 004.2 4.2',
+    mail: 'M3 6h18v12H3zM3 7l9 6 9-6',
+    home: 'M3 11l9-7 9 7M5 10v10h5v-6h4v6h5V10',
+    cog: 'M12 15a3 3 0 100-6 3 3 0 000 6zM19.4 13.5a1.7 1.7 0 00.4 1.8l.1.1a2 2 0 11-2.8 2.8l-.1-.1a1.7 1.7 0 00-2.9 1.2V21a2 2 0 11-4 0v-.2a1.7 1.7 0 00-2.9-1.1l-.1.1a2 2 0 11-2.8-2.8l.1-.1a1.7 1.7 0 00-1.2-2.9H3a2 2 0 110-4h.2a1.7 1.7 0 001.1-2.9l-.1-.1a2 2 0 112.8-2.8l.1.1a1.7 1.7 0 001.8.4h.1A1.7 1.7 0 0010 3.2V3a2 2 0 114 0v.2a1.7 1.7 0 002.9 1.1l.1-.1a2 2 0 112.8 2.8l-.1.1a1.7 1.7 0 00-.4 1.8v.1a1.7 1.7 0 001.5 1H21a2 2 0 110 4h-.2a1.7 1.7 0 00-1.5 1z',
+    logout: 'M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9',
+    plus: 'M12 5v14M5 12h14',
+    trash: 'M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6M10 11v5M14 11v5',
+    download: 'M12 3v12M7 10l5 5 5-5M5 21h14',
+    // filled (rendered solid)
+    google: 'M21.8 12.2c0-.7-.1-1.4-.2-2H12v3.8h5.5a4.7 4.7 0 01-2 3.1v2.6h3.3c1.9-1.8 3-4.4 3-7.5z M12 22c2.7 0 5-1 6.6-2.4l-3.3-2.5c-.9.6-2 1-3.3 1-2.6 0-4.7-1.7-5.5-4.1H3.1v2.6A10 10 0 0012 22z M6.5 14c-.2-.6-.3-1.3-.3-2s.1-1.4.3-2V7.4H3.1a10 10 0 000 9.2L6.5 14z M12 6c1.5 0 2.8.5 3.8 1.5l2.9-2.9A10 10 0 0012 2 10 10 0 003.1 7.4L6.5 10c.8-2.4 2.9-4 5.5-4z',
+};
+/** Icons drawn as solid fills rather than strokes. */
+const FILLED = new Set(['google']);
+/**
+ * Render a named icon. Inherits `currentColor`.
+ *
+ * @example
+ * <Icon name="sparkle" className="h-5 w-5 text-brand-600" />
+ */
+const Icon = forwardRef(function Icon({ name, size, className, tw, ...props }, ref) {
+    const d = icons[name];
+    const filled = FILLED.has(name);
+    return (jsxRuntimeExports.jsx("svg", { ref: ref, viewBox: "0 0 24 24", width: size, height: size, fill: filled ? 'currentColor' : 'none', stroke: filled ? 'none' : 'currentColor', strokeWidth: 1.75, strokeLinecap: "round", strokeLinejoin: "round", className: mergeTw(size ? undefined : 'h-5 w-5', className, tw), "aria-hidden": "true", ...props, children: d ? jsxRuntimeExports.jsx("path", { d: d }) : null }));
+});
+
+/**
+ * Eyebrow / overline label — a small uppercase monospace kicker above headings.
+ *
+ * @example
+ * <Eyebrow>Why us</Eyebrow>
+ */
+const Eyebrow = forwardRef(function Eyebrow({ dot = true, dotTw = 'bg-accent', className, tw, children, ...props }, ref) {
+    return (jsxRuntimeExports.jsxs("span", { ref: ref, className: mergeTw('inline-flex items-center gap-2.5 font-mono text-[11px] font-medium uppercase tracking-[0.24em] text-fg-muted', className, tw), ...props, children: [dot && (jsxRuntimeExports.jsxs("span", { className: "relative flex h-1.5 w-1.5", children: [jsxRuntimeExports.jsx("span", { className: mergeTw('absolute inline-flex h-full w-full rounded-full opacity-70', dotTw) }), jsxRuntimeExports.jsx("span", { className: mergeTw('relative inline-flex h-1.5 w-1.5 rounded-full', dotTw) })] })), children] }));
+});
+
+/**
+ * Keyboard key hint.
+ *
+ * @example
+ * Press <Kbd>⌘</Kbd> <Kbd>K</Kbd> to search.
+ */
+const Kbd = forwardRef(function Kbd({ className, tw, children, ...props }, ref) {
+    return (jsxRuntimeExports.jsx("kbd", { ref: ref, className: mergeTw('inline-flex h-5 min-w-[1.25rem] items-center justify-center rounded border border-edge/20 bg-fg/[0.06] px-1.5', 'font-mono text-[11px] font-medium text-fg-muted', className, tw), ...props, children: children }));
+});
+
+const intents = {
+    primary: 'bg-accent text-onaccent hover:brightness-110 focus:ring-accent focus:ring-offset-canvas',
+    secondary: 'border border-edge/15 bg-fg/[0.04] text-fg hover:bg-fg/[0.08] focus:ring-accent focus:ring-offset-canvas',
+    ghost: 'text-fg-muted hover:bg-fg/10 hover:text-fg focus:ring-accent focus:ring-offset-canvas',
+    danger: 'bg-danger-600 text-white hover:bg-danger-700 focus:ring-danger-600 focus:ring-offset-canvas',
+};
+const sizes = {
+    sm: 'h-8 w-8 [&>svg]:h-4 [&>svg]:w-4',
+    md: 'h-10 w-10 [&>svg]:h-5 [&>svg]:w-5',
+    lg: 'h-11 w-11 [&>svg]:h-5 [&>svg]:w-5',
+};
+/**
+ * Square, icon-only button. Requires an `aria-label`.
+ *
+ * @example
+ * <IconButton aria-label="Settings" intent="ghost"><Icon name="cog" /></IconButton>
+ */
+const IconButton = forwardRef(function IconButton({ intent = 'secondary', size = 'md', className, tw, children, type = 'button', ...props }, ref) {
+    return (jsxRuntimeExports.jsx("button", { ref: ref, type: type, className: mergeTw('inline-flex items-center justify-center rounded-lg transition-colors', 'focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-60 disabled:cursor-not-allowed', intents[intent], sizes[size], className, tw), ...props, children: children }));
+});
+
+/**
+ * Stat / metric card — label, value and an optional trend delta + icon.
+ *
+ * @example
+ * <Stat label="Revenue" value="$48,210" delta="+12.4%" trend="up"
+ *       icon={<Icon name="wallet" />} hint="vs last month" />
+ */
+const Stat = forwardRef(function Stat({ label, value, delta, trend, icon, hint, className, tw, ...props }, ref) {
+    const up = trend !== 'down';
+    return (jsxRuntimeExports.jsxs("div", { ref: ref, className: mergeTw('rounded-2xl border border-edge/12 bg-panel/80 p-5 shadow-luxe-sm backdrop-blur-xl', className, tw), ...props, children: [jsxRuntimeExports.jsxs("div", { className: "flex items-center justify-between", children: [jsxRuntimeExports.jsx("span", { className: "text-xs font-medium uppercase tracking-wider text-fg-subtle", children: label }), icon && (jsxRuntimeExports.jsx("span", { className: "grid h-8 w-8 place-items-center rounded-lg border border-edge/10 bg-fg/[0.04] text-accent [&>svg]:h-4 [&>svg]:w-4", children: icon }))] }), jsxRuntimeExports.jsx("div", { className: "mt-4 text-3xl font-semibold tracking-tight text-fg", children: value }), (delta || hint) && (jsxRuntimeExports.jsxs("div", { className: "mt-2 flex items-center gap-2 text-xs", children: [delta && (jsxRuntimeExports.jsxs("span", { className: mergeTw('inline-flex items-center gap-1 font-medium', up ? 'text-success-500' : 'text-danger-500'), children: [jsxRuntimeExports.jsx("svg", { width: "12", height: "12", viewBox: "0 0 24 24", fill: "none", "aria-hidden": "true", className: up ? '-rotate-45' : 'rotate-45', children: jsxRuntimeExports.jsx("path", { d: "M5 12h14M13 6l6 6-6 6", stroke: "currentColor", strokeWidth: "2.2", strokeLinecap: "round", strokeLinejoin: "round" }) }), delta] })), hint && jsxRuntimeExports.jsx("span", { className: "text-fg-subtle", children: hint })] }))] }));
+});
+
+/**
+ * A self-contained dark code block with an optional filename header and a
+ * copy-to-clipboard button. Looks consistent on any background/theme.
+ *
+ * @example
+ * <Code filename="App.tsx" lang="tsx" code={`<Button>Click</Button>`} />
+ */
+const Code = forwardRef(function Code({ code, filename, lang, copyable = true, className, tw, ...props }, ref) {
+    const [copied, setCopied] = useState(false);
+    const copy = () => {
+        navigator.clipboard?.writeText(code).catch(() => { });
+        setCopied(true);
+        setTimeout(() => setCopied(false), 1600);
+    };
+    return (jsxRuntimeExports.jsxs("div", { ref: ref, className: mergeTw('overflow-hidden rounded-xl border border-white/10 bg-[#0c0e14] shadow-lg', className, tw), ...props, children: [(filename || lang || copyable) && (jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-3 border-b border-white/10 bg-white/[0.03] px-4 py-2.5", children: [jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-1.5", children: [jsxRuntimeExports.jsx("span", { className: "h-2.5 w-2.5 rounded-full bg-[#ff5f57]" }), jsxRuntimeExports.jsx("span", { className: "h-2.5 w-2.5 rounded-full bg-[#febc2e]" }), jsxRuntimeExports.jsx("span", { className: "h-2.5 w-2.5 rounded-full bg-[#28c840]" })] }), filename && jsxRuntimeExports.jsx("span", { className: "font-mono text-xs text-gray-400", children: filename }), jsxRuntimeExports.jsxs("div", { className: "ml-auto flex items-center gap-3", children: [lang && jsxRuntimeExports.jsx("span", { className: "font-mono text-[10px] uppercase tracking-widest text-gray-500", children: lang }), copyable && (jsxRuntimeExports.jsx("button", { type: "button", onClick: copy, className: "inline-flex items-center gap-1.5 rounded-md px-2 py-1 font-mono text-[11px] text-gray-300 transition hover:bg-white/10 hover:text-white", "aria-label": "Copy code", children: copied ? (jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [jsxRuntimeExports.jsx("svg", { width: "12", height: "12", viewBox: "0 0 24 24", fill: "none", children: jsxRuntimeExports.jsx("path", { d: "M20 6L9 17l-5-5", stroke: "currentColor", strokeWidth: "2.4", strokeLinecap: "round", strokeLinejoin: "round" }) }), "Copied"] })) : (jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [jsxRuntimeExports.jsx("svg", { width: "12", height: "12", viewBox: "0 0 24 24", fill: "none", children: jsxRuntimeExports.jsx("path", { d: "M9 9h10v12H9zM5 15H3V3h12v2", stroke: "currentColor", strokeWidth: "1.8", strokeLinecap: "round", strokeLinejoin: "round" }) }), "Copy"] })) }))] })] })), jsxRuntimeExports.jsx("pre", { className: "scrollbar-luxe overflow-x-auto p-4 text-[13px] leading-relaxed", children: jsxRuntimeExports.jsx("code", { className: "font-mono text-gray-200", children: code }) })] }));
 });
 
 /**
@@ -1245,5 +1939,5 @@ function useCarousel(totalSlides, options) {
     };
 }
 
-export { Avatar, Badge, Button, Card, Carousel, CarouselImage, CarouselSlide, Checkbox, Dialog, Drawer, Gallery, GalleryImage, GalleryLightbox, Input, LoadingOverlay, Dialog as Modal, Radio, Select, Spinner, Tabs, Textarea, ToastProvider, Toggle, Tooltip, createComponent, createSlots, cx, mergeTw, tv, useCarousel, useFocusReturn, useFocusTrap, useGalleryLightbox, useIsomorphicLayoutEffect, useLockScroll, useStableId, useToast };
+export { Accordion, Alert, Avatar, Badge, Breadcrumb, Button, Card, Carousel, CarouselImage, CarouselSlide, Checkbox, Code, Dialog, Drawer, DropdownMenu, Eyebrow, Gallery, GalleryImage, GalleryLightbox, Icon, IconButton, Input, Kbd, LoadingOverlay, Dialog as Modal, Pagination, Popover, Progress, Radio, Select, Skeleton, Spinner, Stat, Table, Tabs, Textarea, ToastProvider, Toggle, Tooltip, createComponent, createSlots, cx, icons, mergeTw, tv, useCarousel, useFocusReturn, useFocusTrap, useGalleryLightbox, useIsomorphicLayoutEffect, useLockScroll, useStableId, useToast };
 //# sourceMappingURL=index.js.map
