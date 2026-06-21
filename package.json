@@ -27,6 +27,8 @@
     "test": "vitest run",
     "release": "semantic-release",
     "typecheck": "tsc --noEmit",
+    "lint": "eslint src --ext .ts,.tsx",
+    "lint:fix": "eslint src --ext .ts,.tsx --fix",
     "chromatic": "npx chromatic --project-token=chpt_282ce463b67934d",
     "prepare": "husky install",
     "commit": "git-cz"

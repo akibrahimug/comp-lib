@@ -1,23 +1,27 @@
 # @kasoma/comp-lib
 
-A Tailwind-first, variant-driven, polymorphic React component library built for modern web applications.
+A Tailwind-first, variant-driven, polymorphic React component library — shipped with a **runtime-themeable design system**, ready-to-copy **page templates** and **section blocks**, and an interactive Storybook showcase.
+
+This is not a demo app. It's a full component system: 30+ accessible components and primitives, a `tv()` variant engine, polymorphic `as`/`tw` APIs, SSR-safe hooks, and a CSS-variable theme layer you can re-skin at runtime.
 
 ## Documentation
 
-- **[Complete Component Documentation](./COMPONENT_DOCS.md)** - Comprehensive docs with examples, theme config, and all variants for each component
-- **[Implementation Guide](./COMPONENT_GUIDE.md)** - Patterns and architecture for building new components
-- **Storybook** - Run `npm run storybook` to view interactive examples
+- **Storybook** — run `npm run storybook`. Opens on the **Intro / Welcome** landing page, a live, themeable tour of the whole system.
+- **[Complete Component Documentation](./COMPONENT_DOCS.md)** — examples, variants, and theme config per component.
+- **[Implementation Guide](./COMPONENT_GUIDE.md)** — patterns and architecture for building new components.
 
 ## Features
 
-- **Tailwind-First**: All components styled with Tailwind CSS
-- **Variant System**: Powerful `tv()` function for composable, type-safe variants
-- **Polymorphic**: Use the `as` prop to render components as any HTML element
-- **TypeScript**: Full type safety with excellent IntelliSense
-- **Accessible**: WCAG AA compliant with keyboard navigation and ARIA support
-- **Tree-Shakable**: Only bundle what you use (`sideEffects: false`)
-- **SSR-Safe**: Works seamlessly with Next.js, Remix, and other SSR frameworks
-- **Customizable**: Use the `tw` prop to extend styles at call-site
+- **Tailwind-First** — every component is styled with Tailwind CSS, no runtime CSS-in-JS.
+- **Runtime Theming** — 4 built-in themes (Daylight, Slate, Aurum, Evergreen) driven by CSS-variable tokens; swap the whole palette by setting `data-theme` on a root element.
+- **Variant System** — a powerful `tv()` function for composable, type-safe variants.
+- **Polymorphic** — the `as` prop renders any component as any element/component.
+- **Tweakable** — the `tw` prop extends or overrides styles at the call site, conflict-aware via `tailwind-merge`.
+- **Pages & Sections** — copy-ready page templates and section blocks composed from the primitives.
+- **TypeScript** — full type safety with first-class IntelliSense.
+- **Accessible** — WCAG 2.1 AA: keyboard navigation, focus management, ARIA wiring.
+- **Tree-Shakable** — named exports, `sideEffects: false` — bundle only what you use.
+- **SSR-Safe** — hydration-safe ids and isomorphic effects for Next.js, Remix, etc.
 
 ## Installation
 
@@ -43,11 +47,7 @@ function App() {
         Save Changes
       </Button>
 
-      <Input
-        label="Email"
-        type="email"
-        placeholder="you@example.com"
-      />
+      <Input label="Email" type="email" placeholder="you@example.com" />
     </>
   );
 }
@@ -55,7 +55,7 @@ function App() {
 
 ## Tailwind Configuration
 
-Add the library to your Tailwind content paths:
+Add the library to your Tailwind content paths so its classes are generated:
 
 ```js
 // tailwind.config.js
@@ -75,47 +75,71 @@ module.exports = {
 };
 ```
 
-## Components (17 Total)
+## Theming
 
-> For complete documentation with all variants, sizes, and examples, see [COMPONENT_DOCS.md](./COMPONENT_DOCS.md)
+The library ships a **runtime theme system** built on CSS-variable tokens. Each theme defines a small set of semantic tokens which Tailwind maps to utility classes — switch the active theme by setting `data-theme` on any ancestor (typically `<html>`), and the entire surface re-skins instantly.
 
-### Form Components (7)
+**Built-in themes:** `daylight` (light, default) · `slate` · `aurum` · `evergreen`.
 
-- **[Button](./COMPONENT_DOCS.md#button)** - Polymorphic button with variants (primary, secondary, danger, ghost) and 3 sizes
-- **[Input](./COMPONENT_DOCS.md#input)** - Text input with label, description, error states, prefix/suffix icons
-- **[Textarea](./COMPONENT_DOCS.md#textarea)** - Multi-line input with auto-resize and character counter
-- **[Select](./COMPONENT_DOCS.md#select)** - Native select with custom styling
-- **[Checkbox](./COMPONENT_DOCS.md#checkbox)** - Checkbox with indeterminate state support
-- **[Radio](./COMPONENT_DOCS.md#radio)** - Radio button with label and description
-- **[Toggle](./COMPONENT_DOCS.md#toggle)** - Switch/toggle component with ARIA switch role
+```tsx
+// Swap the whole palette at runtime — no re-render of styles required.
+document.documentElement.setAttribute('data-theme', 'aurum');
+```
 
-### Layout Components (5)
+Semantic tokens are exposed as Tailwind utilities:
 
-- **[Card](./COMPONENT_DOCS.md#card)** - Compound component (Root, Header, Title, Description, Content, Footer)
-- **[Tabs](./COMPONENT_DOCS.md#tabs)** - Accessible tabs with roving tabindex and keyboard navigation
-- **[Dialog](./COMPONENT_DOCS.md#dialog)** - Modal with focus trap, scroll lock, and ESC to close
-- **[Drawer](./COMPONENT_DOCS.md#drawer)** - Slide-in panel from any direction (left, right, top, bottom)
-- **[Tooltip](./COMPONENT_DOCS.md#tooltip)** - Hover/focus tooltip with 4 positions
+| Token            | Utilities                                  | Role                          |
+| ---------------- | ------------------------------------------ | ----------------------------- |
+| `--c-canvas`     | `bg-canvas`                                | App background                |
+| `--c-panel`      | `bg-panel`                                 | Cards / surfaces              |
+| `--c-elevated`   | `bg-elevated`                              | Raised surfaces               |
+| `--c-edge`       | `border-edge`                              | Hairline borders              |
+| `--c-fg`         | `text-fg`, `text-fg-muted`, `text-fg-subtle` | Foreground text             |
+| `--c-accent`     | `text-accent`, `bg-accent`                 | Primary accent (jewel tone)   |
+| `--c-accent-2`   | `text-accent2`, `bg-accent2`               | Secondary / counter-tone      |
+| `--c-on-accent`  | `text-onaccent`                            | Text on accent fills          |
 
-### Feedback Components (3)
+The token definitions live in `tailwind.config.js` (a small `addBase` plugin maps `:root` + `[data-theme="…"]`), with helper utilities (`text-accent-gradient`, `text-accent-shimmer`, mesh/grain stage) in `src/styles/tailwind.css`. Adopt the same config in your app to inherit all four themes, or define your own palettes against the same token names.
 
-- **[Toast](./COMPONENT_DOCS.md#toast)** - Toast notifications with manager (success, error, warning, info)
-- **[Spinner](./COMPONENT_DOCS.md#spinner)** - Loading spinner with 3 sizes and multiple colors
-- **[LoadingOverlay](./COMPONENT_DOCS.md#loadingoverlay)** - Full-page loading overlay with spinner
+Every component also accepts the `tw` prop, so you can theme any element ad-hoc against these tokens:
 
-### Display Components (2)
+```tsx
+<Button tw="bg-accent text-onaccent hover:bg-accent/90">Themed</Button>
+<Badge tw="border border-accent/30 bg-accent/10 text-accent">New</Badge>
+```
 
-- **[Avatar](./COMPONENT_DOCS.md#avatar)** - Profile images with 6 sizes (xs-2xl) and initials fallback
-- **[Badge](./COMPONENT_DOCS.md#badge)** - Labels and status indicators with 5 variants and 3 sizes
+## Components
 
-### Media Components (2)
+> For complete documentation with all variants, sizes, and examples, see [COMPONENT_DOCS.md](./COMPONENT_DOCS.md) or browse Storybook.
 
-- **[Gallery](./COMPONENT_DOCS.md#gallery)** - Image gallery with grid layouts and lightbox support
-- **[Carousel](./COMPONENT_DOCS.md#carousel)** - Slideshow component with auto-play and navigation
+**Form** — Button · Input · Textarea · Select · Checkbox · Radio · Toggle
+
+**Layout** — Card · Tabs · Accordion · Table
+
+**Navigation** — Breadcrumb · Pagination
+
+**Overlay** — Dialog (`Modal` alias) · Drawer · Popover · DropdownMenu · Tooltip
+
+**Feedback** — Toast · Alert · Progress · Spinner · Skeleton
+
+**Display** — Avatar · Badge · Icon
+
+**Media** — Gallery · Carousel
+
+**Primitives** — Eyebrow · Kbd · IconButton · Stat · Code
+
+## Pages & Sections
+
+Beyond individual components, Storybook includes copy-ready compositions that show how the primitives assemble into real screens. All are fully themeable via the theme switcher in the toolbar.
+
+- **Pages** — `Landing`, `Pricing`, `Contact` — complete, multi-section page templates.
+- **Sections** — `Marketing`, `Content`, `App Shell`, `Dashboard`, `Auth` — reusable blocks (heroes, feature grids, testimonials, pricing tables, FAQs, footers, dashboards, auth flows).
+
+Each story includes a source panel so you can copy the markup straight into your app.
 
 ## Core API
 
-### tv() - Tailwind Variants
+### tv() — Tailwind Variants
 
 Create variant-driven className composers:
 
@@ -129,26 +153,16 @@ const button = tv({
       primary: 'bg-brand-600 text-white hover:bg-brand-700',
       secondary: 'bg-gray-200 text-gray-900',
     },
-    size: {
-      sm: 'h-8 text-sm',
-      md: 'h-10 text-base',
-    },
+    size: { sm: 'h-8 text-sm', md: 'h-10 text-base' },
   },
   defaultVariants: { intent: 'primary', size: 'md' },
-  compoundVariants: [
-    { intent: 'primary', size: 'lg', class: 'shadow-lg' },
-  ],
+  compoundVariants: [{ intent: 'primary', size: 'lg', class: 'shadow-lg' }],
 });
 
-// Use it
-<button className={button({ intent: 'secondary', size: 'sm' })}>
-  Click me
-</button>
+<button className={button({ intent: 'secondary', size: 'sm' })}>Click me</button>;
 ```
 
-### createComponent() - Polymorphic Components
-
-Build polymorphic components with variant support:
+### createComponent() — Polymorphic Components
 
 ```tsx
 import { createComponent } from '@kasoma/comp-lib';
@@ -166,15 +180,12 @@ const Badge = createComponent({
   defaultVariants: { variant: 'default' },
 });
 
-// Use with polymorphism
 <Badge as="div" variant="success" tw="inline-flex items-center gap-1">
   Active
-</Badge>
+</Badge>;
 ```
 
-### createSlots() - Compound Components
-
-Create compound components with shared context:
+### createSlots() — Compound Components
 
 ```tsx
 import { createSlots } from '@kasoma/comp-lib';
@@ -185,37 +196,33 @@ const Alert = createSlots({
   description: { base: 'text-sm text-gray-600 mt-1' },
 });
 
-// Use it
 <Alert.Root>
   <Alert.Title>Success</Alert.Title>
   <Alert.Description>Your changes have been saved.</Alert.Description>
-</Alert.Root>
+</Alert.Root>;
 ```
 
 ### Utility Functions
 
-- **mergeTw(...classes)**: Tailwind-aware class merging using `tailwind-merge`
-- **cx(...classes)**: Simple class name joiner
+- **mergeTw(...classes)** — Tailwind-aware class merging via `tailwind-merge`.
+- **cx(...classes)** — simple class name joiner.
 
 ## The `tw` Prop
 
-All components support the `tw` prop for ad-hoc styling:
+All components support the `tw` prop for ad-hoc styling and theming:
 
 ```tsx
-<Button intent="primary" tw="rounded-full shadow-2xl">
-  Custom Styled Button
-</Button>
-
+<Button intent="primary" tw="rounded-full shadow-2xl">Custom Styled</Button>
 <Input label="Name" tw="max-w-sm" />
 ```
 
 ## Hooks
 
-- **useStableId(prefix?)**: SSR-safe ID generation
-- **useLockScroll(lock)**: Lock body scroll (for modals)
-- **useFocusTrap(ref, active)**: Trap focus within element
-- **useFocusReturn()**: Return focus on unmount
-- **useIsomorphicLayoutEffect**: SSR-safe layout effect
+- **useStableId(prefix?)** — SSR-safe ID generation
+- **useLockScroll(lock)** — lock body scroll (for modals/drawers)
+- **useFocusTrap(ref, active)** — trap focus within an element
+- **useFocusReturn()** — return focus on unmount
+- **useIsomorphicLayoutEffect** — SSR-safe layout effect
 
 ## Accessibility
 
@@ -230,32 +237,17 @@ All components follow WCAG 2.1 AA guidelines:
 
 ## SSR Support
 
-All components are SSR-safe and compatible with:
-
-- **Next.js** (App Router & Pages Router)
-- **Remix**
-- **Gatsby**
-- Any React SSR framework
-
-The library uses React 18's `useId` for hydration-safe IDs and checks for `window` before accessing browser APIs.
+All components are SSR-safe and compatible with Next.js (App & Pages Router), Remix, Gatsby, and any React SSR framework. The library uses React 18's `useId` for hydration-safe IDs and guards browser APIs behind `window` checks.
 
 ## Development
 
 ```bash
-# Install dependencies
-npm install
-
-# Start Storybook
-npm run storybook
-
-# Build library
-npm run build
-
-# Run tests
-npm test
-
-# Type check
-npm run typecheck
+npm install          # install dependencies
+npm run storybook    # start Storybook (lands on Intro / Welcome)
+npm run build        # build the library
+npm test             # run tests (Vitest)
+npm run typecheck    # type-check (tsc --noEmit)
+npm run lint         # lint (ESLint)
 ```
 
 ## Publishing
@@ -263,6 +255,7 @@ npm run typecheck
 This library uses [semantic-release](https://github.com/semantic-release/semantic-release) for automated versioning and publishing.
 
 Commit message format:
+
 - `feat: ...` → minor version bump
 - `fix: ...` → patch version bump
 - `BREAKING CHANGE: ...` → major version bump
@@ -274,16 +267,6 @@ MIT
 ## Contributing
 
 Contributions are welcome! Please open an issue or PR.
-
-## Storybook
-
-View the full component documentation and interactive examples:
-
-```bash
-npm run storybook
-```
-
-Or visit the deployed Storybook (if configured).
 
 ---
 
