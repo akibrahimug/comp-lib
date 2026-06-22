@@ -6,6 +6,9 @@ Comprehensive documentation for all components with usage examples, theme config
 
 ## Table of Contents
 
+### Blocks
+- [Blocks — 24 pre-assembled, multi-design components](#blocks)
+
 ### Form Components
 - [Button](#button)
 - [Input](#input)
@@ -1432,6 +1435,73 @@ import { PricingCard } from '@kasoma/comp-lib';
   <PricingCard.Action>Upgrade</PricingCard.Action>
 </PricingCard>
 ```
+
+A controlled, overlay block (composes `Dialog`):
+
+```tsx
+import { CommandPalette } from '@kasoma/comp-lib';
+const [open, setOpen] = useState(false);
+
+<CommandPalette
+  variant="grouped"
+  open={open}
+  onOpenChange={setOpen}
+  groups={[
+    { label: 'Actions', items: [
+      { label: 'New file', shortcut: '⌘N' },
+      { label: 'Search', shortcut: '⌘K' },
+    ] },
+  ]}
+/>
+```
+
+### Block reference
+
+Every block accepts `variant`, `className`, and `tw` on the root and on each slot, and renders from data props when no children are passed.
+
+#### Cards — shared designs `minimal · bordered · elevated · glass · gradient · feature`
+
+| Block | Slots | Key data props |
+| ----- | ----- | -------------- |
+| **PricingCard** | `.Ribbon .Header .Price .Features .Action .Footer` | `name, description, price, currency, period, features, cta, ribbon, footnote, highlighted` |
+| **ProductCard** | `.Media .Body .Title .Rating .Price .Action` | `image, title, price, originalPrice, currency, rating, reviews, badge, cta` |
+| **StatCard** | `.Icon .Label .Value .Delta .Hint` | `label, value, delta, deltaDirection ('up'\|'down'), icon, hint` |
+| **ProfileCard** | `.Avatar .Name .Role .Bio .Socials .Action` | `name, role, avatar, bio, socials, cta` |
+| **TestimonialCard** | `.Rating .Quote .Author` | `quote, name, role, avatar, rating` |
+| **BlogCard** | `.Media .Body .Category .Title .Excerpt .Meta` | `image, category, title, excerpt, author, authorAvatar, date, readTime, href` |
+
+#### Marketing — full-width sections (layout designs)
+
+| Block | Designs | Slots | Key data props |
+| ----- | ------- | ----- | -------------- |
+| **Hero** | `split · centered · imageRight · gradient · glass · video` | `.Eyebrow .Title .Subtitle .Actions .Media` | `eyebrow, title, subtitle, primaryCta, secondaryCta, image` |
+| **FeatureGrid** | `grid3 · grid2 · alternating · iconLeft · bordered · spotlight` | `.Eyebrow .Title .Subtitle .Items .Item` | `eyebrow, title, subtitle, features[{icon,title,description}]` |
+| **PricingTable** | `cards · comparison · toggle · twoTier · glass · gradient` | `.Eyebrow .Title .Tiers` | `eyebrow, title, tiers: PricingCardProps[]` (composes PricingCard; `toggle` swaps monthly/annual) |
+| **CTASection** | `simple · centered · split · gradient · glass · card` | `.Title .Subtitle .Actions` | `title, subtitle, primaryCta, secondaryCta` |
+| **FAQ** | `accordion · twoColumn · bordered · cards · centered · split` | `.Eyebrow .Title .Items` | `eyebrow, title, items[{q,a}]` (composes Accordion) |
+| **Testimonials** | `grid · single · carousel · masonry · logos · gradient` | `.Eyebrow .Title .Items .Item` | `eyebrow, title, items[{quote,name,role,avatar}]` |
+
+#### App UI (layout designs)
+
+| Block | Designs | Slots | Notes |
+| ----- | ------- | ----- | ----- |
+| **Navbar** | `minimal · centered · split · glass · withSearch · mega` | `.Brand .Links .Search .Actions .Avatar` | `brand, links[{label,href,active}], actions`; sticky + responsive |
+| **Sidebar** | `minimal · grouped · iconRail · floating · glass · dark` | `.Brand .Group .Item .Footer` | `groups[{label,items[{label,icon,active,badge}]}], footer`; `iconRail` collapses to icons |
+| **Footer** | `simple · columns · cta · newsletter · minimal · dark` | `.Brand .Column .Bottom` | `columns[{title,links}]`; `newsletter` composes Input + Button |
+| **DashboardShell** | `sidebarLeft · sidebarRight · topnav · compact · glass · split` | `.Sidebar .Topbar .Content` | layout wrapper; positions slots per variant |
+| **EmptyState** | `minimal · illustrated · card · cta · error · search` | `.Icon .Title .Description .Action` | `icon, title, description, action` |
+| **CommandPalette** | `minimal · grouped · withFooter · icons · recent · glass` | `.Input .Group .Item .Footer` | **controlled** via `open` / `onOpenChange`; `groups[{label,items[{label,icon,shortcut}]}]`; composes Dialog + Input + Kbd |
+
+#### Forms / Auth / Commerce (layout designs)
+
+| Block | Designs | Slots | Key data props |
+| ----- | ------- | ----- | -------------- |
+| **SignIn** | `centered · split · card · glass · minimal · social` | `.Panel .Header .Field .Actions .Social .Footer` | `title, subtitle, onSubmit, socials[{provider,href,label}], forgotHref, signupHref` |
+| **SignUp** | `centered · split · card · glass · steps · social` | `.Panel .Header .Field .Actions .Social .Footer` | `title, subtitle, onSubmit, socials, signinHref` |
+| **SettingsForm** | `tabs · sections · sidebar · cards · inline · split` | `.Group .Field .ToggleRow .SaveBar` | grouped profile/account/notifications + save bar; `tabs` composes Tabs |
+| **ContactForm** | `simple · split · card · glass · withDetails · minimal` | `.Header .Field .Submit .Details` | name / email / subject / message; `withDetails` shows a contact sidebar |
+| **CheckoutForm** | `single · twoColumn · steps · card · glass · compact` | `.Section .Field .Summary` | contact / shipping / payment + order summary |
+| **ProductGrid** | `grid3 · grid4 · list · masonry · compact · featured` | `.Item` | `products[{image,title,price,originalPrice,badge,rating}], columns` |
 
 Every block accepts `className` and `tw` on the root and each slot, so you can override or extend any surface against the semantic tokens (`bg-panel`, `text-fg`, `border-edge/15`, `bg-primary`, `text-primary-fg`…). Browse all blocks under **Blocks/** in Storybook — each story renders all 6 designs with a copy-paste source panel, live in every theme.
 
