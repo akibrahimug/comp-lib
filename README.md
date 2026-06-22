@@ -95,17 +95,19 @@ Semantic tokens are exposed as Tailwind utilities:
 | `--c-elevated`   | `bg-elevated`                              | Raised surfaces               |
 | `--c-edge`       | `border-edge`                              | Hairline borders              |
 | `--c-fg`         | `text-fg`, `text-fg-muted`, `text-fg-subtle` | Foreground text             |
-| `--c-accent`     | `text-accent`, `bg-accent`                 | Primary accent (jewel tone)   |
+| `--c-accent`     | `text-primary`, `bg-primary` (+ `/opacity`) | Primary accent (theme-following) |
 | `--c-accent-2`   | `text-accent2`, `bg-accent2`               | Secondary / counter-tone      |
-| `--c-on-accent`  | `text-onaccent`                            | Text on accent fills          |
+| `--c-on-accent`  | `text-primary-fg`, `text-onaccent`         | Text on accent fills          |
+
+> The theme-following accent is exposed as **`primary`** / **`primary-fg`** (e.g. `bg-primary`, `text-primary`, `border-primary/30`, `ring-primary/20`, `text-primary-fg`). Note: `bg-accent` / `text-accent` refer to a separate **static amber** ramp and do _not_ follow the theme — use `primary` for accents.
 
 The token definitions live in `tailwind.config.js` (a small `addBase` plugin maps `:root` + `[data-theme="…"]`), with helper utilities (`text-accent-gradient`, `text-accent-shimmer`, mesh/grain stage) in `src/styles/tailwind.css`. Adopt the same config in your app to inherit all four themes, or define your own palettes against the same token names.
 
 Every component also accepts the `tw` prop, so you can theme any element ad-hoc against these tokens:
 
 ```tsx
-<Button tw="bg-accent text-onaccent hover:bg-accent/90">Themed</Button>
-<Badge tw="border border-accent/30 bg-accent/10 text-accent">New</Badge>
+<Button tw="bg-primary text-primary-fg hover:brightness-110">Themed</Button>
+<Badge tw="border border-primary/30 bg-primary/10 text-primary">New</Badge>
 ```
 
 ## Components
@@ -127,6 +129,44 @@ Every component also accepts the `tw` prop, so you can theme any element ad-hoc 
 **Media** — Gallery · Carousel
 
 **Primitives** — Eyebrow · Kbd · IconButton · Stat · Code
+
+## Blocks
+
+Beyond primitives, the library ships a **Blocks** tier: pre-assembled, fully-customizable components — the kind Tailwind UI / Material UI / shadcn-blocks sell — each with **6 built-in designs** via a `variant` prop, composed from the in-house primitives and themed entirely through the semantic tokens (so every design re-skins across all 4 themes for free).
+
+Every block is importable from the package, renders complete from data props, **and** exposes a compound slot API for full structural control:
+
+```tsx
+import { PricingCard } from '@kasoma/comp-lib';
+
+// Data-prop form — renders a complete tier out of the box:
+<PricingCard
+  variant="feature"            // minimal | bordered | elevated | glass | gradient | feature
+  name="Pro"
+  price={29}
+  period="/mo"
+  features={['SSO & SAML', 'Audit log', '99.9% SLA']}
+  cta="Upgrade"
+  ribbon="Most popular"
+/>
+
+// Slot composition — full structural control:
+<PricingCard variant="gradient">
+  <PricingCard.Header name="Pro" description="For growing teams" />
+  <PricingCard.Price amount={29} period="/mo" />
+  <PricingCard.Features items={['SSO & SAML', 'Audit log']} />
+  <PricingCard.Action>Upgrade</PricingCard.Action>
+</PricingCard>
+```
+
+| Family | Designs | Blocks |
+| ------ | ------- | ------ |
+| **Cards** | `minimal · bordered · elevated · glass · gradient · feature` | PricingCard · ProductCard · StatCard · ProfileCard · TestimonialCard · BlogCard |
+| **Marketing** | 6 layout designs each | Hero · FeatureGrid · PricingTable · CTASection · FAQ · Testimonials |
+| **App UI** | 6 layout designs each | Navbar · Sidebar · Footer · DashboardShell · EmptyState · CommandPalette |
+| **Forms / Auth / Commerce** | 6 layout designs each | SignIn · SignUp · SettingsForm · ContactForm · CheckoutForm · ProductGrid |
+
+Browse them under **Blocks/** in Storybook — each story shows all 6 designs with copy-paste source, live in every theme.
 
 ## Pages & Sections
 

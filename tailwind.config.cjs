@@ -28,9 +28,18 @@ module.exports = {
           muted: "rgb(var(--c-fg-muted) / <alpha-value>)",
           subtle: "rgb(var(--c-fg-subtle) / <alpha-value>)",
         },
-        accent: "rgb(var(--c-accent) / <alpha-value>)",
+        // NOTE: the theme-following accent is exposed as `primary` (below). A bare
+        // `accent: rgb(var(--c-accent))` here would be shadowed by the static amber
+        // `accent` ramp defined further down, so it is intentionally omitted.
         accent2: "rgb(var(--c-accent-2) / <alpha-value>)",
         onaccent: "rgb(var(--c-on-accent) / <alpha-value>)",
+        // Theme-following primary accent — swaps per [data-theme] on <html>. Pairs
+        // with `primary-fg` for contrast text (text/bg on a primary surface). This
+        // is the accent the Blocks tier uses (bg-primary, text-primary, ring-primary/20…).
+        primary: {
+          DEFAULT: "rgb(var(--c-accent) / <alpha-value>)",
+          fg: "rgb(var(--c-on-accent) / <alpha-value>)",
+        },
 
         // ── Brand (refined sapphire) ──────────────────────────────────────
         brand: {

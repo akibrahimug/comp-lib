@@ -1385,6 +1385,58 @@ import { Button } from '@yourorg/component-library';
 
 ---
 
+## Blocks
+
+The **Blocks** tier is a suite of pre-assembled, fully-customizable components (cards, marketing sections, app chrome, auth/commerce forms) — the kind Tailwind UI / Material UI / shadcn-blocks ship. Each block:
+
+- exposes **6 designs** via a single `variant` prop;
+- renders **complete from data props** out of the box, _and_ exposes a **compound slot API** (`Block.Sub`) for full structural control;
+- is composed from the in-house primitives (Button, Input, Badge, Avatar, Accordion, Dialog…);
+- is themed **only** through the semantic tokens, so every design re-skins across all 4 themes automatically.
+
+### Design vocabulary
+
+Card-like blocks share a 6-design language: `minimal` (flat) · `bordered` (hairline edge) · `elevated` (soft shadow) · `glass` (frosted panel) · `gradient` (accent-tinted wash) · `feature` (spotlight / accent ring). Full-width blocks (Hero, Navbar, Footer, DashboardShell…) use layout-oriented variant sets instead.
+
+### Catalog
+
+| Family | Designs | Blocks |
+| ------ | ------- | ------ |
+| **Cards** | `minimal · bordered · elevated · glass · gradient · feature` | `PricingCard` · `ProductCard` · `StatCard` · `ProfileCard` · `TestimonialCard` · `BlogCard` |
+| **Marketing** | 6 layout designs each | `Hero` · `FeatureGrid` · `PricingTable` · `CTASection` · `FAQ` · `Testimonials` |
+| **App UI** | 6 layout designs each | `Navbar` · `Sidebar` · `Footer` · `DashboardShell` · `EmptyState` · `CommandPalette` |
+| **Forms / Auth / Commerce** | 6 layout designs each | `SignIn` · `SignUp` · `SettingsForm` · `ContactForm` · `CheckoutForm` · `ProductGrid` |
+
+### Usage
+
+```tsx
+import { PricingCard } from '@kasoma/comp-lib';
+
+// 1) Data props — renders a complete tier:
+<PricingCard
+  variant="feature"
+  name="Pro"
+  price={29}
+  period="/mo"
+  features={['SSO & SAML', 'Audit log', '99.9% SLA']}
+  cta="Upgrade"
+  ribbon="Most popular"
+/>
+
+// 2) Slot composition — full control over structure:
+<PricingCard variant="gradient">
+  <PricingCard.Ribbon>Most popular</PricingCard.Ribbon>
+  <PricingCard.Header name="Pro" description="For growing teams" />
+  <PricingCard.Price amount={29} period="/mo" />
+  <PricingCard.Features items={['SSO & SAML', { label: 'Phone support', included: false }]} />
+  <PricingCard.Action>Upgrade</PricingCard.Action>
+</PricingCard>
+```
+
+Every block accepts `className` and `tw` on the root and each slot, so you can override or extend any surface against the semantic tokens (`bg-panel`, `text-fg`, `border-edge/15`, `bg-primary`, `text-primary-fg`…). Browse all blocks under **Blocks/** in Storybook — each story renders all 6 designs with a copy-paste source panel, live in every theme.
+
+---
+
 ## Performance
 
 - 🎯 **Tree-shakable**: Import only what you use

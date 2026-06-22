@@ -1941,51 +1941,1786 @@ function useCarousel(totalSlides, options) {
     };
 }
 
+/**
+ * Shared foundation for the Blocks tier — pre-assembled, multi-design components
+ * (PricingCard, Hero, Navbar, SignIn …) composed from the library primitives.
+ *
+ * Every block exposes a 6-value `variant` prop and is themed *only* through the
+ * semantic tokens (canvas / panel / elevated / edge / fg / primary …) so it
+ * re-tints automatically across all themes (daylight / slate / aurum / evergreen).
+ * Centralising the design vocabulary here keeps the whole suite visually coherent.
+ */
+const BLOCK_VARIANTS = [
+    'minimal',
+    'bordered',
+    'elevated',
+    'glass',
+    'gradient',
+    'feature',
+];
+/** Root surface classes per design — all theme-following via semantic tokens. */
+const surfaceVariants = {
+    minimal: 'bg-transparent',
+    bordered: 'bg-panel/60 border border-edge/12',
+    elevated: 'bg-elevated border border-edge/10 shadow-luxe-sm',
+    glass: 'glass',
+    gradient: 'border border-edge/12 bg-gradient-to-br from-primary/10 via-panel/40 to-accent2/10',
+    feature: 'bg-elevated border border-primary/30 ring-1 ring-primary/20 shadow-accent',
+};
+/* ─────────────────────── Reusable accent class strings ───────────────────── */
+/* Theme-following accent helpers so every block styles CTAs/marks identically. */
+/** Solid accent surface (buttons, marks) + correct contrast text. */
+const accentSolid = 'bg-primary text-primary-fg hover:brightness-110 shadow-accent border-0';
+/** Soft accent tint (chips, highlighted rows). */
+const accentSoft = 'bg-primary/10 text-primary border border-primary/20';
+/** Ghost control sitting on a themed surface. */
+const ghostControl = 'border border-edge/15 bg-fg/[0.04] text-fg hover:bg-fg/[0.08]';
+/** Hairline-bordered, theme-aware input surface. */
+const inputSurface = 'w-full rounded-xl border border-edge/15 bg-elevated/70 px-3.5 py-2.5 text-sm text-fg ' +
+    'placeholder:text-fg-subtle transition focus:border-primary/60 focus:outline-none focus:ring-2 focus:ring-primary/25';
+/* ──────────────────────── Variant context (cascade) ──────────────────────── */
+/* A block's Root publishes its `variant`; sub-parts read it to adapt styling. */
+const BlockVariantContext = React.createContext('elevated');
+/** Read the active block variant. Pass a local override to win over context. */
+function useBlockVariant(local) {
+    const ctx = React.useContext(BlockVariantContext);
+    return local ?? ctx;
+}
+
+/* ---------------------------------- Root ---------------------------------- */
+const PricingCardRoot = React.forwardRef(function PricingCard({ variant = 'elevated', highlighted, className, tw, children, name, description, price, currency = '$', period = '/mo', features, cta, ribbon, footnote, ...rest }, ref) {
+    const promoted = highlighted || variant === 'feature';
+    const hasChildren = React.Children.count(children) > 0;
+    return (jsxRuntimeExports.jsx(BlockVariantContext.Provider, { value: variant, children: jsxRuntimeExports.jsx("div", { ref: ref, className: mergeTw('relative flex w-full max-w-sm flex-col gap-5 rounded-2xl p-6 text-fg transition-transform', surfaceVariants[variant], promoted && variant !== 'feature' && 'ring-1 ring-primary/30', promoted && 'lg:scale-[1.02]', className, tw), ...rest, children: hasChildren ? (children) : (jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [ribbon ? jsxRuntimeExports.jsx(PricingRibbon, { children: ribbon }) : null, jsxRuntimeExports.jsx(PricingHeader, { name: name, description: description }), jsxRuntimeExports.jsx(PricingPrice, { amount: price, currency: currency, period: period }), features?.length ? jsxRuntimeExports.jsx(PricingFeatures, { items: features }) : null, cta ? jsxRuntimeExports.jsx(PricingAction, { children: cta }) : null, footnote ? jsxRuntimeExports.jsx(PricingFooter, { children: footnote }) : null] })) }) }));
+});
+const PricingRibbon = React.forwardRef(function PricingCardRibbon({ children, className, tw, ...rest }, ref) {
+    return (jsxRuntimeExports.jsx("span", { ref: ref, className: mergeTw('inline-flex w-fit items-center gap-1.5 rounded-full bg-primary/10 px-3 py-1', 'font-mono text-[11px] font-medium uppercase tracking-widest text-primary', 'ring-1 ring-primary/20', className, tw), ...rest, children: children }));
+});
+const PricingHeader = React.forwardRef(function PricingCardHeader({ name, description, children, className, tw, ...rest }, ref) {
+    return (jsxRuntimeExports.jsx("div", { ref: ref, className: mergeTw('flex flex-col gap-1', className, tw), ...rest, children: children ?? (jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [name ? (jsxRuntimeExports.jsx("h3", { className: "font-display text-lg font-semibold text-fg", children: name })) : null, description ? (jsxRuntimeExports.jsx("p", { className: "text-sm text-fg-muted", children: description })) : null] })) }));
+});
+const PricingPrice = React.forwardRef(function PricingCardPrice({ amount, currency = '$', period = '/mo', children, className, tw, ...rest }, ref) {
+    const variant = useBlockVariant();
+    return (jsxRuntimeExports.jsx("div", { ref: ref, className: mergeTw('flex items-baseline gap-1', className, tw), ...rest, children: children ?? (jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [typeof amount === 'number' ? (jsxRuntimeExports.jsx("span", { className: "text-sm font-medium text-fg-muted", children: currency })) : null, jsxRuntimeExports.jsx("span", { className: mergeTw('font-display text-4xl font-semibold tracking-tight', variant === 'feature' || variant === 'gradient'
+                        ? 'text-primary'
+                        : 'text-fg'), children: amount }), period ? (jsxRuntimeExports.jsx("span", { className: "text-sm font-medium text-fg-subtle", children: period })) : null] })) }));
+});
+function CheckMark({ muted }) {
+    return (jsxRuntimeExports.jsx("svg", { viewBox: "0 0 20 20", fill: "none", "aria-hidden": "true", className: mergeTw('mt-0.5 h-4 w-4 shrink-0', muted ? 'text-fg-subtle' : 'text-primary'), children: jsxRuntimeExports.jsx("path", { d: "M16.5 5.5 8.25 13.75 4 9.5", stroke: "currentColor", strokeWidth: "2", strokeLinecap: "round", strokeLinejoin: "round" }) }));
+}
+const PricingFeatures = React.forwardRef(function PricingCardFeatures({ items, children, className, tw, ...rest }, ref) {
+    return (jsxRuntimeExports.jsx("ul", { ref: ref, className: mergeTw('flex flex-col gap-2.5 text-sm text-fg-muted', className, tw), ...rest, children: children ??
+            items?.map((item, i) => {
+                const label = typeof item === 'string' ? item : item.label;
+                const included = typeof item === 'string' ? true : item.included !== false;
+                return (jsxRuntimeExports.jsxs("li", { className: mergeTw('flex items-start gap-2.5', !included && 'opacity-55'), children: [jsxRuntimeExports.jsx(CheckMark, { muted: !included }), jsxRuntimeExports.jsx("span", { className: mergeTw(!included && 'line-through'), children: label })] }, i));
+            }) }));
+});
+const PricingAction = React.forwardRef(function PricingCardAction({ tone, children, className, tw, ...rest }, ref) {
+    const variant = useBlockVariant();
+    const resolved = tone ?? (variant === 'feature' || variant === 'gradient' ? 'accent' : 'ghost');
+    return (jsxRuntimeExports.jsx(Button, { ref: ref, fullWidth: true, intent: "ghost", tw: mergeTw('mt-1 rounded-xl', resolved === 'accent' ? accentSolid : ghostControl, className, tw), ...rest, children: children }));
+});
+/* --------------------------------- Footer --------------------------------- */
+const PricingFooter = React.forwardRef(function PricingCardFooter({ children, className, tw, ...rest }, ref) {
+    return (jsxRuntimeExports.jsx("p", { ref: ref, className: mergeTw('text-center text-xs text-fg-subtle', className, tw), ...rest, children: children }));
+});
+const PricingCard = PricingCardRoot;
+PricingCard.Ribbon = PricingRibbon;
+PricingCard.Header = PricingHeader;
+PricingCard.Price = PricingPrice;
+PricingCard.Features = PricingFeatures;
+PricingCard.Action = PricingAction;
+PricingCard.Footer = PricingFooter;
+
+/* ---------------------------------- Root ---------------------------------- */
+const ProductCardRoot = React.forwardRef(function ProductCard({ variant = 'elevated', className, tw, children, image, title, price, originalPrice, currency = '$', rating, reviews, badge, cta, ...rest }, ref) {
+    const hasChildren = React.Children.count(children) > 0;
+    return (jsxRuntimeExports.jsx(BlockVariantContext.Provider, { value: variant, children: jsxRuntimeExports.jsx("div", { ref: ref, className: mergeTw('group/card relative flex w-full max-w-sm flex-col gap-4 overflow-hidden rounded-2xl p-4 text-fg transition-transform', surfaceVariants[variant], className, tw), ...rest, children: hasChildren ? (children) : (jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [jsxRuntimeExports.jsx(ProductMedia, { src: image, alt: typeof title === 'string' ? title : undefined, badge: badge }), jsxRuntimeExports.jsxs(ProductBody, { children: [title ? jsxRuntimeExports.jsx(ProductTitle, { children: title }) : null, typeof rating === 'number' ? (jsxRuntimeExports.jsx(ProductRating, { value: rating, reviews: reviews })) : null, price != null ? (jsxRuntimeExports.jsx(ProductPrice, { amount: price, originalPrice: originalPrice, currency: currency })) : null, cta ? jsxRuntimeExports.jsx(ProductAction, { children: cta }) : null] })] })) }) }));
+});
+const ProductMedia = React.forwardRef(function ProductCardMedia({ src, alt, badge, children, className, tw, ...rest }, ref) {
+    return (jsxRuntimeExports.jsxs("div", { ref: ref, className: mergeTw('relative aspect-[4/3] w-full overflow-hidden rounded-xl border border-edge/10 bg-canvas/40', className, tw), ...rest, children: [children ??
+                (src ? (jsxRuntimeExports.jsx("img", { src: src, alt: alt ?? '', className: "h-full w-full object-cover transition-transform duration-500 group-hover/card:scale-105" })) : (jsxRuntimeExports.jsx("div", { className: "grid h-full w-full place-items-center text-fg-subtle", children: jsxRuntimeExports.jsx("svg", { viewBox: "0 0 24 24", fill: "none", "aria-hidden": "true", className: "h-10 w-10", children: jsxRuntimeExports.jsx("path", { d: "M3 6a2 2 0 012-2h14a2 2 0 012 2v12a2 2 0 01-2 2H5a2 2 0 01-2-2V6zM3 16l4.5-4.5a2 2 0 012.8 0L15 16M14 13l1.5-1.5a2 2 0 012.8 0L21 14M9 9.5a1 1 0 11-2 0 1 1 0 012 0z", stroke: "currentColor", strokeWidth: "1.5", strokeLinecap: "round", strokeLinejoin: "round" }) }) }))), badge ? (jsxRuntimeExports.jsx(Badge, { tw: "absolute left-3 top-3 border border-primary/20 bg-primary/15 text-primary backdrop-blur-sm", children: badge })) : null] }));
+});
+/* ----------------------------------- Body --------------------------------- */
+const ProductBody = React.forwardRef(function ProductCardBody({ children, className, tw, ...rest }, ref) {
+    return (jsxRuntimeExports.jsx("div", { ref: ref, className: mergeTw('flex flex-1 flex-col gap-2.5', className, tw), ...rest, children: children }));
+});
+/* ----------------------------------- Title -------------------------------- */
+const ProductTitle = React.forwardRef(function ProductCardTitle({ children, className, tw, ...rest }, ref) {
+    return (jsxRuntimeExports.jsx("h3", { ref: ref, className: mergeTw('font-display text-base font-semibold leading-snug text-fg', className, tw), ...rest, children: children }));
+});
+function Star$2({ fill }) {
+    const id = React.useId();
+    return (jsxRuntimeExports.jsxs("svg", { viewBox: "0 0 20 20", "aria-hidden": "true", className: "h-4 w-4 text-primary", children: [fill === 'half' ? (jsxRuntimeExports.jsx("defs", { children: jsxRuntimeExports.jsxs("linearGradient", { id: id, children: [jsxRuntimeExports.jsx("stop", { offset: "50%", stopColor: "currentColor" }), jsxRuntimeExports.jsx("stop", { offset: "50%", stopColor: "currentColor", stopOpacity: "0.25" })] }) })) : null, jsxRuntimeExports.jsx("path", { d: "M10 1.5l2.47 5.01 5.53.8-4 3.9.94 5.5L10 14.1l-4.95 2.6.94-5.5-4-3.9 5.53-.8L10 1.5z", fill: fill === 'full' ? 'currentColor' : fill === 'half' ? `url(#${id})` : 'currentColor', fillOpacity: fill === 'empty' ? 0.25 : 1 })] }));
+}
+const ProductRating = React.forwardRef(function ProductCardRating({ value = 0, reviews, children, className, tw, ...rest }, ref) {
+    return (jsxRuntimeExports.jsx("div", { ref: ref, className: mergeTw('flex items-center gap-2 text-sm', className, tw), ...rest, children: children ?? (jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [jsxRuntimeExports.jsx("span", { className: "flex items-center gap-0.5", children: Array.from({ length: 5 }, (_, i) => {
+                        const fill = value >= i + 1 ? 'full' : value >= i + 0.5 ? 'half' : 'empty';
+                        return jsxRuntimeExports.jsx(Star$2, { fill: fill }, i);
+                    }) }), jsxRuntimeExports.jsx("span", { className: "font-medium text-fg-muted", children: value.toFixed(1) }), typeof reviews === 'number' ? (jsxRuntimeExports.jsxs("span", { className: "text-fg-subtle", children: ["(", reviews, ")"] })) : null] })) }));
+});
+function formatPrice$1(amount, currency) {
+    if (amount == null)
+        return null;
+    return typeof amount === 'number' ? `${currency}${amount}` : amount;
+}
+const ProductPrice = React.forwardRef(function ProductCardPrice({ amount, originalPrice, currency = '$', children, className, tw, ...rest }, ref) {
+    return (jsxRuntimeExports.jsx("div", { ref: ref, className: mergeTw('mt-auto flex items-baseline gap-2 pt-1', className, tw), ...rest, children: children ?? (jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [jsxRuntimeExports.jsx("span", { className: "font-display text-xl font-semibold tracking-tight text-fg", children: formatPrice$1(amount, currency) }), originalPrice != null ? (jsxRuntimeExports.jsx("span", { className: "text-sm font-medium text-fg-subtle line-through", children: formatPrice$1(originalPrice, currency) })) : null] })) }));
+});
+const ProductAction = React.forwardRef(function ProductCardAction({ tone, children, className, tw, ...rest }, ref) {
+    const variant = useBlockVariant();
+    const resolved = tone ?? (variant === 'feature' || variant === 'gradient' ? 'accent' : 'ghost');
+    return (jsxRuntimeExports.jsx(Button, { ref: ref, fullWidth: true, intent: "ghost", tw: mergeTw('mt-2 rounded-xl', resolved === 'accent' ? accentSolid : ghostControl, className, tw), ...rest, children: children }));
+});
+const ProductCard = ProductCardRoot;
+ProductCard.Media = ProductMedia;
+ProductCard.Body = ProductBody;
+ProductCard.Title = ProductTitle;
+ProductCard.Rating = ProductRating;
+ProductCard.Price = ProductPrice;
+ProductCard.Action = ProductAction;
+
+/* ---------------------------------- Root ---------------------------------- */
+const StatCardRoot = React.forwardRef(function StatCard({ variant = 'elevated', className, tw, children, label, value, delta, deltaDirection = 'up', icon, hint, ...rest }, ref) {
+    const hasChildren = React.Children.count(children) > 0;
+    return (jsxRuntimeExports.jsx(BlockVariantContext.Provider, { value: variant, children: jsxRuntimeExports.jsx("div", { ref: ref, className: mergeTw('relative flex w-full max-w-sm flex-col gap-1 rounded-2xl p-5 text-fg transition-transform', surfaceVariants[variant], className, tw), ...rest, children: hasChildren ? (children) : (jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [jsxRuntimeExports.jsxs("div", { className: "flex items-start justify-between gap-3", children: [label ? jsxRuntimeExports.jsx(StatLabel, { children: label }) : null, icon ? jsxRuntimeExports.jsx(StatIcon, { children: icon }) : null] }), value != null ? jsxRuntimeExports.jsx(StatValue, { children: value }) : null, delta != null || hint != null ? (jsxRuntimeExports.jsxs("div", { className: "mt-1 flex items-center gap-2", children: [delta != null ? (jsxRuntimeExports.jsx(StatDelta, { direction: deltaDirection, children: delta })) : null, hint != null ? jsxRuntimeExports.jsx(StatHint, { children: hint }) : null] })) : null] })) }) }));
+});
+/* ----------------------------------- Icon --------------------------------- */
+const StatIcon = React.forwardRef(function StatCardIcon({ children, className, tw, ...rest }, ref) {
+    const variant = useBlockVariant();
+    const accented = variant === 'feature' || variant === 'gradient';
+    return (jsxRuntimeExports.jsx("span", { ref: ref, className: mergeTw('grid h-9 w-9 shrink-0 place-items-center rounded-xl [&>svg]:h-[18px] [&>svg]:w-[18px]', accented
+            ? 'border border-primary/20 bg-primary/10 text-primary'
+            : 'border border-edge/10 bg-fg/[0.04] text-fg-muted', className, tw), ...rest, children: children }));
+});
+/* ----------------------------------- Label -------------------------------- */
+const StatLabel = React.forwardRef(function StatCardLabel({ children, className, tw, ...rest }, ref) {
+    return (jsxRuntimeExports.jsx("span", { ref: ref, className: mergeTw('text-xs font-medium uppercase tracking-wider text-fg-subtle', className, tw), ...rest, children: children }));
+});
+/* ----------------------------------- Value -------------------------------- */
+const StatValue = React.forwardRef(function StatCardValue({ children, className, tw, ...rest }, ref) {
+    const variant = useBlockVariant();
+    return (jsxRuntimeExports.jsx("div", { ref: ref, className: mergeTw('mt-3 font-display text-3xl font-semibold tracking-tight', variant === 'feature' || variant === 'gradient' ? 'text-primary' : 'text-fg', className, tw), ...rest, children: children }));
+});
+const StatDelta = React.forwardRef(function StatCardDelta({ direction = 'up', children, className, tw, ...rest }, ref) {
+    const up = direction !== 'down';
+    return (jsxRuntimeExports.jsxs("span", { ref: ref, className: mergeTw('inline-flex items-center gap-1 text-xs font-medium', up ? 'text-success-500' : 'text-danger-500', className, tw), ...rest, children: [jsxRuntimeExports.jsx("svg", { width: "12", height: "12", viewBox: "0 0 24 24", fill: "none", "aria-hidden": "true", className: up ? '-rotate-45' : 'rotate-45', children: jsxRuntimeExports.jsx("path", { d: "M5 12h14M13 6l6 6-6 6", stroke: "currentColor", strokeWidth: "2.2", strokeLinecap: "round", strokeLinejoin: "round" }) }), children] }));
+});
+/* ----------------------------------- Hint --------------------------------- */
+const StatHint = React.forwardRef(function StatCardHint({ children, className, tw, ...rest }, ref) {
+    return (jsxRuntimeExports.jsx("span", { ref: ref, className: mergeTw('text-xs text-fg-subtle', className, tw), ...rest, children: children }));
+});
+const StatCard = StatCardRoot;
+StatCard.Icon = StatIcon;
+StatCard.Label = StatLabel;
+StatCard.Value = StatValue;
+StatCard.Delta = StatDelta;
+StatCard.Hint = StatHint;
+
+/** Derive up-to-2-letter initials from a name for the avatar fallback. */
+function initialsFrom$2(name) {
+    if (typeof name !== 'string')
+        return '';
+    return name
+        .trim()
+        .split(/\s+/)
+        .slice(0, 2)
+        .map((w) => w[0]?.toUpperCase() ?? '')
+        .join('');
+}
+/* ---------------------------------- Root ---------------------------------- */
+const ProfileCardRoot = React.forwardRef(function ProfileCard({ variant = 'elevated', className, tw, children, name, role, avatar, bio, socials, cta, ...rest }, ref) {
+    const hasChildren = React.Children.count(children) > 0;
+    return (jsxRuntimeExports.jsx(BlockVariantContext.Provider, { value: variant, children: jsxRuntimeExports.jsx("div", { ref: ref, className: mergeTw('group/card relative flex w-full max-w-sm flex-col items-center gap-3 rounded-2xl p-6 text-center text-fg transition-transform', surfaceVariants[variant], className, tw), ...rest, children: hasChildren ? (children) : (jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [jsxRuntimeExports.jsx(ProfileAvatar, { src: avatar, children: initialsFrom$2(name) }), name ? jsxRuntimeExports.jsx(ProfileName, { children: name }) : null, role ? jsxRuntimeExports.jsx(ProfileRole, { children: role }) : null, bio ? jsxRuntimeExports.jsx(ProfileBio, { children: bio }) : null, socials?.length ? jsxRuntimeExports.jsx(ProfileSocials, { socials: socials }) : null, cta ? jsxRuntimeExports.jsx(ProfileAction, { children: cta }) : null] })) }) }));
+});
+const ProfileAvatar = React.forwardRef(function ProfileCardAvatar({ src, alt, children, className, tw, ...rest }, ref) {
+    const variant = useBlockVariant();
+    const accented = variant === 'feature' || variant === 'gradient';
+    return (jsxRuntimeExports.jsx(Avatar, { ref: ref, size: "xl", tw: mergeTw('ring-2 ring-offset-2 ring-offset-transparent', accented
+            ? 'bg-primary/15 text-primary ring-primary/40'
+            : 'bg-fg/[0.06] text-fg-muted ring-edge/15', className, tw), ...rest, children: src ? (jsxRuntimeExports.jsx("img", { src: src, alt: alt ?? '', className: "h-full w-full object-cover" })) : (children) }));
+});
+/* ----------------------------------- Name --------------------------------- */
+const ProfileName = React.forwardRef(function ProfileCardName({ children, className, tw, ...rest }, ref) {
+    return (jsxRuntimeExports.jsx("h3", { ref: ref, className: mergeTw('mt-1 font-display text-lg font-semibold leading-tight text-fg', className, tw), ...rest, children: children }));
+});
+/* ----------------------------------- Role --------------------------------- */
+const ProfileRole = React.forwardRef(function ProfileCardRole({ children, className, tw, ...rest }, ref) {
+    const variant = useBlockVariant();
+    return (jsxRuntimeExports.jsx("p", { ref: ref, className: mergeTw('text-sm font-medium', variant === 'feature' || variant === 'gradient' ? 'text-primary' : 'text-fg-muted', className, tw), ...rest, children: children }));
+});
+/* ----------------------------------- Bio ---------------------------------- */
+const ProfileBio = React.forwardRef(function ProfileCardBio({ children, className, tw, ...rest }, ref) {
+    return (jsxRuntimeExports.jsx("p", { ref: ref, className: mergeTw('text-sm leading-relaxed text-fg-subtle', className, tw), ...rest, children: children }));
+});
+function SocialIcon({ platform }) {
+    const common = {
+        viewBox: '0 0 24 24',
+        'aria-hidden': true,
+        className: 'h-[18px] w-[18px]',
+    };
+    switch (platform) {
+        case 'github':
+            return (jsxRuntimeExports.jsx("svg", { ...common, fill: "currentColor", children: jsxRuntimeExports.jsx("path", { d: "M12 2a10 10 0 00-3.16 19.49c.5.09.68-.22.68-.48l-.01-1.7c-2.78.6-3.37-1.34-3.37-1.34-.45-1.16-1.11-1.47-1.11-1.47-.91-.62.07-.6.07-.6 1 .07 1.53 1.03 1.53 1.03.89 1.53 2.34 1.09 2.91.83.09-.65.35-1.09.63-1.34-2.22-.25-4.55-1.11-4.55-4.94 0-1.09.39-1.98 1.03-2.68-.1-.25-.45-1.27.1-2.65 0 0 .84-.27 2.75 1.02a9.56 9.56 0 015 0c1.91-1.29 2.75-1.02 2.75-1.02.55 1.38.2 2.4.1 2.65.64.7 1.03 1.59 1.03 2.68 0 3.84-2.34 4.69-4.57 4.94.36.31.68.92.68 1.85l-.01 2.74c0 .27.18.58.69.48A10 10 0 0012 2z" }) }));
+        case 'twitter':
+            return (jsxRuntimeExports.jsx("svg", { ...common, fill: "currentColor", children: jsxRuntimeExports.jsx("path", { d: "M18.9 2.3h3.3l-7.2 8.2L23.7 22h-6.6l-5.2-6.8L5.9 22H2.6l7.7-8.8L1.7 2.3h6.8l4.7 6.2 5.7-6.2zm-1.2 17.7h1.8L7.4 4.2H5.5l12.2 15.8z" }) }));
+        case 'linkedin':
+            return (jsxRuntimeExports.jsx("svg", { ...common, fill: "currentColor", children: jsxRuntimeExports.jsx("path", { d: "M20.45 20.45h-3.56v-5.57c0-1.33-.02-3.04-1.85-3.04-1.85 0-2.14 1.45-2.14 2.94v5.67H9.35V9h3.41v1.56h.05c.48-.9 1.64-1.85 3.37-1.85 3.6 0 4.27 2.37 4.27 5.46v6.28zM5.34 7.43a2.07 2.07 0 110-4.14 2.07 2.07 0 010 4.14zm1.78 13.02H3.56V9h3.56v11.45zM22.22 0H1.77C.79 0 0 .77 0 1.73v20.54C0 23.23.79 24 1.77 24h20.45c.98 0 1.78-.77 1.78-1.73V1.73C24 .77 23.2 0 22.22 0z" }) }));
+        case 'dribbble':
+            return (jsxRuntimeExports.jsxs("svg", { ...common, fill: "none", stroke: "currentColor", strokeWidth: "1.7", children: [jsxRuntimeExports.jsx("circle", { cx: "12", cy: "12", r: "9.5" }), jsxRuntimeExports.jsx("path", { d: "M4.5 8.5c5.5.5 11 0 14.5-3M2.7 13.5C9 12 14 14 17 19M9 3c4 5 5.5 11 5 18", strokeLinecap: "round" })] }));
+        case 'website':
+        default:
+            return (jsxRuntimeExports.jsxs("svg", { ...common, fill: "none", stroke: "currentColor", strokeWidth: "1.7", children: [jsxRuntimeExports.jsx("circle", { cx: "12", cy: "12", r: "9.5" }), jsxRuntimeExports.jsx("path", { d: "M2.5 12h19M12 2.5c2.8 2.5 4.3 6 4.3 9.5S14.8 19 12 21.5M12 2.5C9.2 5 7.7 8.5 7.7 12s1.5 7 4.3 9.5", strokeLinecap: "round" })] }));
+    }
+}
+const ProfileSocials = React.forwardRef(function ProfileCardSocials({ socials, children, className, tw, ...rest }, ref) {
+    return (jsxRuntimeExports.jsx("div", { ref: ref, className: mergeTw('mt-1 flex items-center justify-center gap-1.5', className, tw), ...rest, children: children ??
+            socials?.map((s, i) => (jsxRuntimeExports.jsx("a", { href: s.href, "aria-label": s.label ?? s.platform, className: "grid h-9 w-9 place-items-center rounded-xl border border-edge/12 bg-fg/[0.04] text-fg-muted transition-colors hover:border-primary/30 hover:bg-primary/10 hover:text-primary", children: jsxRuntimeExports.jsx(SocialIcon, { platform: s.platform }) }, `${s.platform}-${i}`))) }));
+});
+const ProfileAction = React.forwardRef(function ProfileCardAction({ tone, children, className, tw, ...rest }, ref) {
+    const variant = useBlockVariant();
+    const resolved = tone ?? (variant === 'feature' || variant === 'gradient' ? 'accent' : 'ghost');
+    return (jsxRuntimeExports.jsx(Button, { ref: ref, fullWidth: true, intent: "ghost", tw: mergeTw('mt-3 rounded-xl', resolved === 'accent' ? accentSolid : ghostControl, className, tw), ...rest, children: children }));
+});
+const ProfileCard = ProfileCardRoot;
+ProfileCard.Avatar = ProfileAvatar;
+ProfileCard.Name = ProfileName;
+ProfileCard.Role = ProfileRole;
+ProfileCard.Bio = ProfileBio;
+ProfileCard.Socials = ProfileSocials;
+ProfileCard.Action = ProfileAction;
+
+/** Derive up-to-2-letter initials from a name for the avatar fallback. */
+function initialsFrom$1(name) {
+    if (typeof name !== 'string')
+        return '';
+    return name
+        .trim()
+        .split(/\s+/)
+        .slice(0, 2)
+        .map((w) => w[0]?.toUpperCase() ?? '')
+        .join('');
+}
+/* ---------------------------------- Root ---------------------------------- */
+const TestimonialCardRoot = React.forwardRef(function TestimonialCard({ variant = 'elevated', className, tw, children, quote, name, role, avatar, rating, ...rest }, ref) {
+    const hasChildren = React.Children.count(children) > 0;
+    return (jsxRuntimeExports.jsx(BlockVariantContext.Provider, { value: variant, children: jsxRuntimeExports.jsx("div", { ref: ref, className: mergeTw('group/card relative flex w-full max-w-sm flex-col gap-4 rounded-2xl p-6 text-fg transition-transform', surfaceVariants[variant], className, tw), ...rest, children: hasChildren ? (children) : (jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [typeof rating === 'number' ? jsxRuntimeExports.jsx(TestimonialRating, { value: rating }) : null, quote ? jsxRuntimeExports.jsx(TestimonialQuote, { children: quote }) : null, name ? (jsxRuntimeExports.jsx(TestimonialAuthor, { name: name, role: role, avatar: avatar })) : null] })) }) }));
+});
+function Star$1({ fill }) {
+    const id = React.useId();
+    return (jsxRuntimeExports.jsxs("svg", { viewBox: "0 0 20 20", "aria-hidden": "true", className: "h-[18px] w-[18px] text-primary", children: [fill === 'half' ? (jsxRuntimeExports.jsx("defs", { children: jsxRuntimeExports.jsxs("linearGradient", { id: id, children: [jsxRuntimeExports.jsx("stop", { offset: "50%", stopColor: "currentColor" }), jsxRuntimeExports.jsx("stop", { offset: "50%", stopColor: "currentColor", stopOpacity: "0.25" })] }) })) : null, jsxRuntimeExports.jsx("path", { d: "M10 1.5l2.47 5.01 5.53.8-4 3.9.94 5.5L10 14.1l-4.95 2.6.94-5.5-4-3.9 5.53-.8L10 1.5z", fill: fill === 'full' ? 'currentColor' : fill === 'half' ? `url(#${id})` : 'currentColor', fillOpacity: fill === 'empty' ? 0.25 : 1 })] }));
+}
+const TestimonialRating = React.forwardRef(function TestimonialCardRating({ value = 0, children, className, tw, ...rest }, ref) {
+    return (jsxRuntimeExports.jsx("div", { ref: ref, className: mergeTw('flex items-center gap-0.5', className, tw), "aria-label": `${value} out of 5 stars`, ...rest, children: children ??
+            Array.from({ length: 5 }, (_, i) => {
+                const fill = value >= i + 1 ? 'full' : value >= i + 0.5 ? 'half' : 'empty';
+                return jsxRuntimeExports.jsx(Star$1, { fill: fill }, i);
+            }) }));
+});
+/* ----------------------------------- Quote -------------------------------- */
+const TestimonialQuote = React.forwardRef(function TestimonialCardQuote({ children, className, tw, ...rest }, ref) {
+    return (jsxRuntimeExports.jsxs("blockquote", { ref: ref, className: mergeTw('relative flex-1 font-display text-lg font-medium leading-relaxed text-fg', className, tw), ...rest, children: [jsxRuntimeExports.jsx("svg", { viewBox: "0 0 24 24", "aria-hidden": "true", className: "mb-2 h-7 w-7 text-primary/40", fill: "currentColor", children: jsxRuntimeExports.jsx("path", { d: "M9.5 6C6.5 7.6 4.8 10.4 4.8 14v4h5.4v-5.4H7.6c.1-2 1-3.4 2.9-4.4L9.5 6zm9 0c-3 1.6-4.7 4.4-4.7 8v4h5.4v-5.4h-2.6c.1-2 1-3.4 2.9-4.4L18.5 6z" }) }), children] }));
+});
+const TestimonialAuthor = React.forwardRef(function TestimonialCardAuthor({ name, role, avatar, children, className, tw, ...rest }, ref) {
+    const variant = useBlockVariant();
+    const accented = variant === 'feature' || variant === 'gradient';
+    return (jsxRuntimeExports.jsx("div", { ref: ref, className: mergeTw('mt-2 flex items-center gap-3 border-t border-edge/10 pt-4', className, tw), ...rest, children: children ?? (jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [jsxRuntimeExports.jsx(Avatar, { size: "md", tw: accented
+                        ? 'bg-primary/15 text-primary'
+                        : 'bg-fg/[0.06] text-fg-muted', children: avatar ? (jsxRuntimeExports.jsx("img", { src: avatar, alt: typeof name === 'string' ? name : '', className: "h-full w-full object-cover" })) : (initialsFrom$1(name)) }), jsxRuntimeExports.jsxs("div", { className: "flex min-w-0 flex-col", children: [jsxRuntimeExports.jsx("span", { className: "truncate font-display text-sm font-semibold text-fg", children: name }), role ? (jsxRuntimeExports.jsx("span", { className: "truncate text-xs text-fg-subtle", children: role })) : null] })] })) }));
+});
+const TestimonialCard = TestimonialCardRoot;
+TestimonialCard.Rating = TestimonialRating;
+TestimonialCard.Quote = TestimonialQuote;
+TestimonialCard.Author = TestimonialAuthor;
+
+/** Derive up-to-2-letter initials from a name for the avatar fallback. */
+function initialsFrom(name) {
+    if (typeof name !== 'string')
+        return '';
+    return name
+        .trim()
+        .split(/\s+/)
+        .slice(0, 2)
+        .map((w) => w[0]?.toUpperCase() ?? '')
+        .join('');
+}
+/* ---------------------------------- Root ---------------------------------- */
+const BlogCardRoot = React.forwardRef(function BlogCard({ variant = 'elevated', className, tw, children, image, category, title, excerpt, author, authorAvatar, date, readTime, href, ...rest }, ref) {
+    const hasChildren = React.Children.count(children) > 0;
+    return (jsxRuntimeExports.jsx(BlockVariantContext.Provider, { value: variant, children: jsxRuntimeExports.jsx("div", { ref: ref, className: mergeTw('group/card relative flex w-full max-w-sm flex-col gap-4 overflow-hidden rounded-2xl p-4 text-fg transition-transform', surfaceVariants[variant], className, tw), ...rest, children: hasChildren ? (children) : (jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [jsxRuntimeExports.jsx(BlogMedia, { src: image, alt: typeof title === 'string' ? title : undefined }), jsxRuntimeExports.jsxs(BlogBody, { children: [category ? jsxRuntimeExports.jsx(BlogCategory, { children: category }) : null, title ? jsxRuntimeExports.jsx(BlogTitle, { href: href, children: title }) : null, excerpt ? jsxRuntimeExports.jsx(BlogExcerpt, { children: excerpt }) : null, author || date || readTime ? (jsxRuntimeExports.jsx(BlogMeta, { author: author, authorAvatar: authorAvatar, date: date, readTime: readTime })) : null] })] })) }) }));
+});
+const BlogMedia = React.forwardRef(function BlogCardMedia({ src, alt, children, className, tw, ...rest }, ref) {
+    return (jsxRuntimeExports.jsx("div", { ref: ref, className: mergeTw('relative aspect-[16/9] w-full overflow-hidden rounded-xl border border-edge/10 bg-canvas/40', className, tw), ...rest, children: children ??
+            (src ? (jsxRuntimeExports.jsx("img", { src: src, alt: alt ?? '', className: "h-full w-full object-cover transition-transform duration-500 group-hover/card:scale-105" })) : (jsxRuntimeExports.jsx("div", { className: "grid h-full w-full place-items-center text-fg-subtle", children: jsxRuntimeExports.jsx("svg", { viewBox: "0 0 24 24", fill: "none", "aria-hidden": "true", className: "h-10 w-10", children: jsxRuntimeExports.jsx("path", { d: "M3 6a2 2 0 012-2h14a2 2 0 012 2v12a2 2 0 01-2 2H5a2 2 0 01-2-2V6zM3 16l4.5-4.5a2 2 0 012.8 0L15 16M14 13l1.5-1.5a2 2 0 012.8 0L21 14M9 9.5a1 1 0 11-2 0 1 1 0 012 0z", stroke: "currentColor", strokeWidth: "1.5", strokeLinecap: "round", strokeLinejoin: "round" }) }) }))) }));
+});
+/* ----------------------------------- Body --------------------------------- */
+const BlogBody = React.forwardRef(function BlogCardBody({ children, className, tw, ...rest }, ref) {
+    return (jsxRuntimeExports.jsx("div", { ref: ref, className: mergeTw('flex flex-1 flex-col gap-2.5 px-1', className, tw), ...rest, children: children }));
+});
+/* --------------------------------- Category ------------------------------- */
+const BlogCategory = React.forwardRef(function BlogCardCategory({ children, className, tw, ...rest }, ref) {
+    return (jsxRuntimeExports.jsx(Badge, { ref: ref, tw: mergeTw('w-fit uppercase tracking-wider', accentSoft, className, tw), ...rest, children: children }));
+});
+const BlogTitle = React.forwardRef(function BlogCardTitle({ href, children, className, tw, ...rest }, ref) {
+    return (jsxRuntimeExports.jsx("h3", { ref: ref, className: mergeTw('font-display text-lg font-semibold leading-snug text-fg', className, tw), ...rest, children: href ? (jsxRuntimeExports.jsx("a", { href: href, className: "transition-colors before:absolute before:inset-0 hover:text-primary", children: children })) : (children) }));
+});
+/* ---------------------------------- Excerpt ------------------------------- */
+const BlogExcerpt = React.forwardRef(function BlogCardExcerpt({ children, className, tw, ...rest }, ref) {
+    return (jsxRuntimeExports.jsx("p", { ref: ref, className: mergeTw('text-sm leading-relaxed text-fg-muted', className, tw), ...rest, children: children }));
+});
+const BlogMeta = React.forwardRef(function BlogCardMeta({ author, authorAvatar, date, readTime, children, className, tw, ...rest }, ref) {
+    return (jsxRuntimeExports.jsx("div", { ref: ref, className: mergeTw('mt-auto flex items-center gap-2.5 border-t border-edge/10 pt-3 text-xs text-fg-subtle', className, tw), ...rest, children: children ?? (jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [author ? (jsxRuntimeExports.jsxs("span", { className: "flex items-center gap-2", children: [jsxRuntimeExports.jsx(Avatar, { size: "xs", tw: "bg-fg/[0.06] text-fg-muted", children: authorAvatar ? (jsxRuntimeExports.jsx("img", { src: authorAvatar, alt: typeof author === 'string' ? author : '', className: "h-full w-full object-cover" })) : (initialsFrom(author)) }), jsxRuntimeExports.jsx("span", { className: "font-medium text-fg-muted", children: author })] })) : null, (author && (date || readTime)) ? (jsxRuntimeExports.jsx("span", { "aria-hidden": "true", className: "text-fg-subtle/60", children: "\u00B7" })) : null, date ? jsxRuntimeExports.jsx("span", { children: date }) : null, date && readTime ? (jsxRuntimeExports.jsx("span", { "aria-hidden": "true", className: "text-fg-subtle/60", children: "\u00B7" })) : null, readTime ? jsxRuntimeExports.jsx("span", { children: readTime }) : null] })) }));
+});
+const BlogCard = BlogCardRoot;
+BlogCard.Media = BlogMedia;
+BlogCard.Body = BlogBody;
+BlogCard.Category = BlogCategory;
+BlogCard.Title = BlogTitle;
+BlogCard.Excerpt = BlogExcerpt;
+BlogCard.Meta = BlogMeta;
+
+const HERO_VARIANTS = [
+    'split',
+    'centered',
+    'imageRight',
+    'gradient',
+    'glass',
+    'video',
+];
+/* Hero broadcasts its layout variant to sub-parts so they self-arrange. */
+const HeroVariantContext = React.createContext('split');
+const useHeroVariant = () => React.useContext(HeroVariantContext);
+const centeredVariant = (v) => v === 'centered' || v === 'gradient' || v === 'glass' || v === 'video';
+const hasMedia = (v) => v === 'split' || v === 'imageRight' || v === 'video';
+/* Section-level surface per layout — all theme-following via tokens. */
+const sectionSurface$5 = {
+    split: 'bg-canvas',
+    centered: 'bg-canvas',
+    imageRight: 'bg-canvas',
+    gradient: 'bg-gradient-to-br from-primary/12 via-canvas to-accent2/12',
+    glass: 'bg-canvas',
+    video: 'bg-canvas',
+};
+/* ---------------------------------- Root ---------------------------------- */
+const HeroRoot = React.forwardRef(function Hero({ variant = 'split', className, tw, children, eyebrow, title, subtitle, primaryCta, secondaryCta, image, ...rest }, ref) {
+    const hasChildren = React.Children.count(children) > 0;
+    const centered = centeredVariant(variant);
+    const withMedia = hasMedia(variant);
+    return (jsxRuntimeExports.jsx(HeroVariantContext.Provider, { value: variant, children: jsxRuntimeExports.jsx(BlockVariantContext.Provider, { value: "elevated", children: jsxRuntimeExports.jsxs("section", { ref: ref, className: mergeTw('relative w-full overflow-hidden text-fg', sectionSurface$5[variant], variant === 'glass' && 'mesh', className, tw), ...rest, children: [(variant === 'gradient' || variant === 'glass' || variant === 'centered') && (jsxRuntimeExports.jsx("div", { "aria-hidden": true, className: "pointer-events-none absolute left-1/2 top-0 h-[420px] w-[760px] -translate-x-1/2 rounded-full bg-primary/10 blur-[120px]" })), jsxRuntimeExports.jsx("div", { className: "relative mx-auto max-w-6xl px-5 py-20 sm:px-6 sm:py-28", children: hasChildren ? (centered ? (jsxRuntimeExports.jsx("div", { className: "mx-auto flex max-w-3xl flex-col items-center gap-6 text-center", children: children })) : (jsxRuntimeExports.jsx("div", { className: "grid items-center gap-12 lg:grid-cols-2", children: children }))) : centered ? (jsxRuntimeExports.jsxs("div", { className: "mx-auto flex max-w-3xl flex-col items-center gap-6 text-center", children: [eyebrow ? jsxRuntimeExports.jsx(HeroEyebrow, { children: eyebrow }) : null, title ? jsxRuntimeExports.jsx(HeroTitle, { children: title }) : null, subtitle ? jsxRuntimeExports.jsx(HeroSubtitle, { children: subtitle }) : null, jsxRuntimeExports.jsx(HeroActions, { primaryCta: primaryCta, secondaryCta: secondaryCta }), variant === 'video' ? jsxRuntimeExports.jsx(HeroMedia, { image: image }) : null] })) : (jsxRuntimeExports.jsxs("div", { className: mergeTw('grid items-center gap-12 lg:grid-cols-2', variant === 'imageRight' && 'lg:[&>*:first-child]:order-1'), children: [jsxRuntimeExports.jsxs("div", { className: "flex flex-col items-start gap-6", children: [eyebrow ? jsxRuntimeExports.jsx(HeroEyebrow, { children: eyebrow }) : null, title ? jsxRuntimeExports.jsx(HeroTitle, { children: title }) : null, subtitle ? jsxRuntimeExports.jsx(HeroSubtitle, { children: subtitle }) : null, jsxRuntimeExports.jsx(HeroActions, { primaryCta: primaryCta, secondaryCta: secondaryCta })] }), withMedia ? jsxRuntimeExports.jsx(HeroMedia, { image: image }) : null] })) })] }) }) }));
+});
+const HeroEyebrow = React.forwardRef(function HeroEyebrow({ children, className, tw, ...rest }, ref) {
+    return (jsxRuntimeExports.jsx(Badge, { ref: ref, tw: mergeTw('gap-1.5 rounded-full bg-primary/10 px-3 py-1 font-mono text-[11px] font-medium uppercase tracking-widest text-primary ring-1 ring-primary/20', className, tw), ...rest, children: children }));
+});
+/* ---------------------------------- Title --------------------------------- */
+const HeroTitle = React.forwardRef(function HeroTitle({ children, className, tw, ...rest }, ref) {
+    const variant = useHeroVariant();
+    return (jsxRuntimeExports.jsx("h1", { ref: ref, className: mergeTw('font-display text-4xl font-light leading-[1.05] tracking-tight text-fg sm:text-5xl lg:text-6xl', (variant === 'gradient' || variant === 'glass') && 'text-balance', className, tw), ...rest, children: children }));
+});
+/* -------------------------------- Subtitle -------------------------------- */
+const HeroSubtitle = React.forwardRef(function HeroSubtitle({ children, className, tw, ...rest }, ref) {
+    return (jsxRuntimeExports.jsx("p", { ref: ref, className: mergeTw('max-w-xl text-lg leading-relaxed text-fg-muted', className, tw), ...rest, children: children }));
+});
+function ArrowIcon$1() {
+    return (jsxRuntimeExports.jsx("svg", { viewBox: "0 0 20 20", fill: "none", "aria-hidden": "true", className: "h-4 w-4", children: jsxRuntimeExports.jsx("path", { d: "M4 10h11m0 0-4-4m4 4-4 4", stroke: "currentColor", strokeWidth: "2", strokeLinecap: "round", strokeLinejoin: "round" }) }));
+}
+function ctaLabel$1(cta) {
+    if (cta && typeof cta === 'object' && 'label' in cta) {
+        return cta.label;
+    }
+    return cta;
+}
+const HeroActions = React.forwardRef(function HeroActions({ primaryCta, secondaryCta, children, className, tw, ...rest }, ref) {
+    const variant = useHeroVariant();
+    const centered = centeredVariant(variant);
+    const primary = ctaLabel$1(primaryCta);
+    const secondary = ctaLabel$1(secondaryCta);
+    if (!children && !primary && !secondary)
+        return null;
+    return (jsxRuntimeExports.jsx("div", { ref: ref, className: mergeTw('mt-2 flex flex-col gap-3 sm:flex-row', centered && 'justify-center', className, tw), ...rest, children: children ?? (jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [primary ? (jsxRuntimeExports.jsxs(Button, { size: "lg", intent: "ghost", tw: mergeTw('group rounded-xl', accentSolid), children: [primary, jsxRuntimeExports.jsx(ArrowIcon$1, {})] })) : null, secondary ? (jsxRuntimeExports.jsx(Button, { size: "lg", intent: "ghost", tw: mergeTw('rounded-xl', ghostControl), children: secondary })) : null] })) }));
+});
+const HeroMedia = React.forwardRef(function HeroMedia({ image, children, className, tw, ...rest }, ref) {
+    const variant = useHeroVariant();
+    return (jsxRuntimeExports.jsx("div", { ref: ref, className: mergeTw('relative w-full overflow-hidden rounded-2xl border border-edge/12 bg-elevated shadow-luxe', variant === 'video' ? 'aspect-video' : 'aspect-[4/3]', className, tw), ...rest, children: children ??
+            (image ? (jsxRuntimeExports.jsx("img", { src: image, alt: "", className: "h-full w-full object-cover" })) : (jsxRuntimeExports.jsx("div", { className: "absolute inset-0 grid place-items-center bg-gradient-to-br from-primary/10 via-panel/40 to-accent2/10", children: variant === 'video' ? (jsxRuntimeExports.jsx("span", { className: "grid h-16 w-16 place-items-center rounded-full bg-primary text-primary-fg shadow-accent", children: jsxRuntimeExports.jsx("svg", { viewBox: "0 0 24 24", fill: "currentColor", "aria-hidden": "true", className: "ml-1 h-6 w-6", children: jsxRuntimeExports.jsx("path", { d: "M8 5v14l11-7z" }) }) })) : (jsxRuntimeExports.jsx("span", { className: "font-mono text-[11px] uppercase tracking-[0.28em] text-fg-subtle", children: "Preview" })) }))) }));
+});
+const Hero = HeroRoot;
+Hero.Eyebrow = HeroEyebrow;
+Hero.Title = HeroTitle;
+Hero.Subtitle = HeroSubtitle;
+Hero.Actions = HeroActions;
+Hero.Media = HeroMedia;
+
+const FEATURE_GRID_VARIANTS = [
+    'grid3',
+    'grid2',
+    'alternating',
+    'iconLeft',
+    'bordered',
+    'spotlight',
+];
+/* FeatureGrid broadcasts its layout variant so sub-parts self-arrange. */
+const FeatureGridVariantContext = React.createContext('grid3');
+const useFeatureGridVariant = () => React.useContext(FeatureGridVariantContext);
+/* Section-level surface per layout — all theme-following via tokens. */
+const sectionSurface$4 = {
+    grid3: 'bg-canvas',
+    grid2: 'bg-canvas',
+    alternating: 'bg-canvas',
+    iconLeft: 'bg-canvas',
+    bordered: 'bg-canvas',
+    spotlight: 'bg-gradient-to-b from-primary/8 via-canvas to-canvas',
+};
+/* ---------------------------------- Root ---------------------------------- */
+const FeatureGridRoot = React.forwardRef(function FeatureGrid({ variant = 'grid3', className, tw, children, eyebrow, title, subtitle, features, ...rest }, ref) {
+    const hasChildren = React.Children.count(children) > 0;
+    return (jsxRuntimeExports.jsx(FeatureGridVariantContext.Provider, { value: variant, children: jsxRuntimeExports.jsxs("section", { ref: ref, className: mergeTw('relative w-full overflow-hidden text-fg', sectionSurface$4[variant], className, tw), ...rest, children: [variant === 'spotlight' && (jsxRuntimeExports.jsx("div", { "aria-hidden": true, className: "pointer-events-none absolute left-1/2 top-0 h-[420px] w-[760px] -translate-x-1/2 rounded-full bg-primary/10 blur-[120px]" })), jsxRuntimeExports.jsx("div", { className: "relative mx-auto max-w-6xl px-5 py-20 sm:px-6 sm:py-28", children: hasChildren ? (children) : (jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [(eyebrow || title || subtitle) && (jsxRuntimeExports.jsxs("div", { className: "mx-auto flex max-w-2xl flex-col items-center gap-4 text-center", children: [eyebrow ? (jsxRuntimeExports.jsx(FeatureGridEyebrow, { children: eyebrow })) : null, title ? jsxRuntimeExports.jsx(FeatureGridTitle, { children: title }) : null, subtitle ? (jsxRuntimeExports.jsx(FeatureGridSubtitle, { children: subtitle })) : null] })), features?.length ? (jsxRuntimeExports.jsx(FeatureGridItems, { items: features, className: eyebrow || title || subtitle ? 'mt-16' : undefined })) : null] })) })] }) }));
+});
+/* --------------------------------- Eyebrow -------------------------------- */
+const FeatureGridEyebrow = React.forwardRef(function FeatureGridEyebrow({ children, className, tw, ...rest }, ref) {
+    return (jsxRuntimeExports.jsx(Badge, { ref: ref, tw: mergeTw('gap-1.5 rounded-full bg-primary/10 px-3 py-1 font-mono text-[11px] font-medium uppercase tracking-widest text-primary ring-1 ring-primary/20', className, tw), ...rest, children: children }));
+});
+/* ---------------------------------- Title --------------------------------- */
+const FeatureGridTitle = React.forwardRef(function FeatureGridTitle({ children, className, tw, ...rest }, ref) {
+    return (jsxRuntimeExports.jsx("h2", { ref: ref, className: mergeTw('font-display text-3xl font-light leading-tight tracking-tight text-fg text-balance sm:text-4xl', className, tw), ...rest, children: children }));
+});
+/* -------------------------------- Subtitle -------------------------------- */
+const FeatureGridSubtitle = React.forwardRef(function FeatureGridSubtitle({ children, className, tw, ...rest }, ref) {
+    return (jsxRuntimeExports.jsx("p", { ref: ref, className: mergeTw('max-w-xl text-lg leading-relaxed text-fg-muted', className, tw), ...rest, children: children }));
+});
+const columnsFor = {
+    grid3: 'grid gap-6 sm:grid-cols-2 lg:grid-cols-3',
+    grid2: 'grid gap-6 sm:grid-cols-2',
+    alternating: 'flex flex-col gap-6',
+    iconLeft: 'grid gap-6 sm:grid-cols-2',
+    bordered: 'grid gap-px overflow-hidden rounded-2xl border border-edge/12 bg-edge/10 sm:grid-cols-2 lg:grid-cols-3',
+    spotlight: 'grid gap-6 sm:grid-cols-2 lg:grid-cols-3',
+};
+const FeatureGridItems = React.forwardRef(function FeatureGridItems({ items, children, className, tw, ...rest }, ref) {
+    const variant = useFeatureGridVariant();
+    return (jsxRuntimeExports.jsx("div", { ref: ref, className: mergeTw(columnsFor[variant], className, tw), ...rest, children: children ??
+            items?.map((feature, i) => (jsxRuntimeExports.jsx(FeatureItem, { ...feature }, i))) }));
+});
+/* ------------------------------- Feature item ----------------------------- */
+function DefaultFeatureIcon() {
+    return (jsxRuntimeExports.jsx("svg", { viewBox: "0 0 24 24", fill: "none", "aria-hidden": "true", className: "h-5 w-5", children: jsxRuntimeExports.jsx("path", { d: "m12 3 2.3 4.66 5.14.75-3.72 3.63.88 5.12L12 14.85l-4.6 2.42.88-5.12-3.72-3.63 5.14-.75L12 3Z", stroke: "currentColor", strokeWidth: "1.8", strokeLinecap: "round", strokeLinejoin: "round" }) }));
+}
+const FeatureItem = React.forwardRef(function FeatureItem({ icon, title, description, children, className, tw, ...rest }, ref) {
+    const variant = useFeatureGridVariant();
+    const horizontal = variant === 'iconLeft' || variant === 'alternating';
+    /* The bordered variant uses hairline-separated cells; others use cards. */
+    const cellSurface = variant === 'bordered'
+        ? 'bg-canvas'
+        : variant === 'spotlight'
+            ? surfaceVariants.elevated
+            : surfaceVariants.bordered;
+    return (jsxRuntimeExports.jsx("div", { ref: ref, className: mergeTw('group relative flex gap-4 rounded-2xl p-6 text-fg transition-colors', variant === 'bordered' && 'rounded-none', horizontal ? 'flex-row items-start' : 'flex-col', cellSurface, variant === 'spotlight' && 'hover:border-primary/30 hover:ring-1 hover:ring-primary/20', className, tw), ...rest, children: children ?? (jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [jsxRuntimeExports.jsx("span", { className: "inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary ring-1 ring-primary/15", children: icon ?? jsxRuntimeExports.jsx(DefaultFeatureIcon, {}) }), jsxRuntimeExports.jsxs("div", { className: "flex flex-col gap-1.5", children: [jsxRuntimeExports.jsx("h3", { className: "font-display text-base font-semibold text-fg", children: title }), jsxRuntimeExports.jsx("p", { className: "text-sm leading-relaxed text-fg-muted", children: description })] })] })) }));
+});
+const FeatureGrid = FeatureGridRoot;
+FeatureGrid.Eyebrow = FeatureGridEyebrow;
+FeatureGrid.Title = FeatureGridTitle;
+FeatureGrid.Subtitle = FeatureGridSubtitle;
+FeatureGrid.Items = FeatureGridItems;
+FeatureGrid.Item = FeatureItem;
+
+const PRICING_TABLE_VARIANTS = [
+    'cards',
+    'comparison',
+    'toggle',
+    'twoTier',
+    'glass',
+    'gradient',
+];
+/* PricingTable broadcasts its layout variant so sub-parts self-arrange. */
+const PricingTableVariantContext = React.createContext('cards');
+const usePricingTableVariant = () => React.useContext(PricingTableVariantContext);
+/* Section-level surface per layout — all theme-following via tokens. */
+const sectionSurface$3 = {
+    cards: 'bg-canvas',
+    comparison: 'bg-canvas',
+    toggle: 'bg-canvas',
+    twoTier: 'bg-canvas',
+    glass: 'mesh bg-canvas',
+    gradient: 'bg-gradient-to-b from-primary/8 via-canvas to-accent2/8',
+};
+/** Map the section variant to the per-card BlockVariant surface. */
+const cardVariantFor = {
+    cards: 'elevated',
+    comparison: 'bordered',
+    toggle: 'elevated',
+    twoTier: 'elevated',
+    glass: 'glass',
+    gradient: 'gradient',
+};
+/* ---------------------------------- Root ---------------------------------- */
+const PricingTableRoot = React.forwardRef(function PricingTable({ variant = 'cards', className, tw, children, eyebrow, title, tiers, ...rest }, ref) {
+    const hasChildren = React.Children.count(children) > 0;
+    return (jsxRuntimeExports.jsx(PricingTableVariantContext.Provider, { value: variant, children: jsxRuntimeExports.jsx(BlockVariantContext.Provider, { value: "elevated", children: jsxRuntimeExports.jsxs("section", { ref: ref, className: mergeTw('relative w-full overflow-hidden text-fg', sectionSurface$3[variant], className, tw), ...rest, children: [(variant === 'glass' || variant === 'gradient') && (jsxRuntimeExports.jsx("div", { "aria-hidden": true, className: "pointer-events-none absolute left-1/2 top-0 h-[420px] w-[760px] -translate-x-1/2 rounded-full bg-primary/10 blur-[120px]" })), jsxRuntimeExports.jsx("div", { className: "relative mx-auto max-w-6xl px-5 py-20 sm:px-6 sm:py-28", children: hasChildren ? (children) : (jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [(eyebrow || title) && (jsxRuntimeExports.jsxs("div", { className: "mx-auto flex max-w-2xl flex-col items-center gap-4 text-center", children: [eyebrow ? (jsxRuntimeExports.jsx(PricingTableEyebrow, { children: eyebrow })) : null, title ? (jsxRuntimeExports.jsx(PricingTableTitle, { children: title })) : null] })), tiers?.length ? (jsxRuntimeExports.jsx(PricingTableTiers, { tiers: tiers, className: eyebrow || title ? 'mt-14' : undefined })) : null] })) })] }) }) }));
+});
+/* --------------------------------- Eyebrow -------------------------------- */
+const PricingTableEyebrow = React.forwardRef(function PricingTableEyebrow({ children, className, tw, ...rest }, ref) {
+    return (jsxRuntimeExports.jsx(Badge, { ref: ref, tw: mergeTw('gap-1.5 rounded-full bg-primary/10 px-3 py-1 font-mono text-[11px] font-medium uppercase tracking-widest text-primary ring-1 ring-primary/20', className, tw), ...rest, children: children }));
+});
+/* ---------------------------------- Title --------------------------------- */
+const PricingTableTitle = React.forwardRef(function PricingTableTitle({ children, className, tw, ...rest }, ref) {
+    return (jsxRuntimeExports.jsx("h2", { ref: ref, className: mergeTw('font-display text-3xl font-light leading-tight tracking-tight text-fg text-balance sm:text-4xl', className, tw), ...rest, children: children }));
+});
+const PricingTableTiers = React.forwardRef(function PricingTableTiers({ tiers, children, className, tw, ...rest }, ref) {
+    const variant = usePricingTableVariant();
+    const [annual, setAnnual] = React.useState(false);
+    const cardVariant = cardVariantFor[variant];
+    /* Layout: twoTier centers a duo; everything else flows a responsive row. */
+    const cols = variant === 'twoTier'
+        ? 'mx-auto grid max-w-3xl gap-6 sm:grid-cols-2'
+        : 'grid items-stretch gap-6 md:grid-cols-3';
+    const resolvedTiers = React.useMemo(() => (tiers ?? []).map((tier) => {
+        const { annualPrice, variant: tierVariant, highlighted, ...cardProps } = tier;
+        const price = variant === 'toggle' && annual && annualPrice !== undefined
+            ? annualPrice
+            : cardProps.price;
+        return {
+            ...cardProps,
+            price,
+            period: variant === 'toggle'
+                ? annual
+                    ? '/mo, billed yearly'
+                    : '/mo'
+                : cardProps.period,
+            variant: tierVariant ?? (highlighted ? 'feature' : cardVariant),
+            highlighted,
+        };
+    }), [tiers, variant, annual, cardVariant]);
+    return (jsxRuntimeExports.jsxs("div", { ref: ref, className: mergeTw('flex flex-col gap-10', className, tw), ...rest, children: [variant === 'toggle' && !children ? (jsxRuntimeExports.jsxs("div", { className: "flex items-center justify-center gap-3 text-sm", children: [jsxRuntimeExports.jsx("span", { className: mergeTw(!annual ? 'text-fg' : 'text-fg-subtle'), children: "Monthly" }), jsxRuntimeExports.jsx(Toggle, { checked: annual, onChange: (e) => setAnnual(e.currentTarget.checked), "aria-label": "Bill annually" }), jsxRuntimeExports.jsx("span", { className: mergeTw(annual ? 'text-fg' : 'text-fg-subtle'), children: "Annual" }), jsxRuntimeExports.jsx("span", { className: mergeTw('ml-1 rounded-full bg-primary/10 px-2 py-0.5 text-xs font-medium text-primary ring-1 ring-primary/20'), children: "Save 20%" })] })) : null, jsxRuntimeExports.jsx("div", { className: cols, children: children ??
+                    resolvedTiers.map((tier, i) => (jsxRuntimeExports.jsx(PricingCard, { tw: "max-w-none", ...tier }, i))) })] }));
+});
+const PricingTable = PricingTableRoot;
+PricingTable.Eyebrow = PricingTableEyebrow;
+PricingTable.Title = PricingTableTitle;
+PricingTable.Tiers = PricingTableTiers;
+
+const CTA_SECTION_VARIANTS = [
+    'simple',
+    'centered',
+    'split',
+    'gradient',
+    'glass',
+    'card',
+];
+/* CTASection broadcasts its layout variant so sub-parts self-arrange. */
+const CTASectionVariantContext = React.createContext('simple');
+const useCTASectionVariant = () => React.useContext(CTASectionVariantContext);
+const isSplit$1 = (v) => v === 'split';
+const isCentered = (v) => v !== 'split';
+/* Section-level surface per layout — all theme-following via tokens. */
+const sectionSurface$2 = {
+    simple: 'bg-canvas',
+    centered: 'bg-canvas',
+    split: 'bg-canvas',
+    gradient: 'bg-gradient-to-br from-primary/14 via-canvas to-accent2/14',
+    glass: 'bg-canvas',
+    card: 'bg-canvas',
+};
+/* Inner panel surface for the panel-bearing variants. */
+const innerSurface = {
+    glass: mergeTw(surfaceVariants.glass, 'rounded-3xl'),
+    card: mergeTw(surfaceVariants.elevated, 'rounded-3xl shadow-luxe'),
+};
+/* ---------------------------------- Root ---------------------------------- */
+const CTASectionRoot = React.forwardRef(function CTASection({ variant = 'simple', className, tw, children, title, subtitle, primaryCta, secondaryCta, ...rest }, ref) {
+    const hasChildren = React.Children.count(children) > 0;
+    const split = isSplit$1(variant);
+    const inner = innerSurface[variant];
+    const body = hasChildren ? (children) : split ? (jsxRuntimeExports.jsxs("div", { className: "grid items-center gap-8 lg:grid-cols-[1fr_auto]", children: [jsxRuntimeExports.jsxs("div", { className: "flex flex-col items-start gap-3", children: [title ? jsxRuntimeExports.jsx(CTASectionTitle, { children: title }) : null, subtitle ? (jsxRuntimeExports.jsx(CTASectionSubtitle, { children: subtitle })) : null] }), jsxRuntimeExports.jsx(CTASectionActions, { primaryCta: primaryCta, secondaryCta: secondaryCta })] })) : (jsxRuntimeExports.jsxs("div", { className: "mx-auto flex max-w-2xl flex-col items-center gap-5 text-center", children: [title ? jsxRuntimeExports.jsx(CTASectionTitle, { children: title }) : null, subtitle ? jsxRuntimeExports.jsx(CTASectionSubtitle, { children: subtitle }) : null, jsxRuntimeExports.jsx(CTASectionActions, { primaryCta: primaryCta, secondaryCta: secondaryCta })] }));
+    return (jsxRuntimeExports.jsx(CTASectionVariantContext.Provider, { value: variant, children: jsxRuntimeExports.jsx(BlockVariantContext.Provider, { value: "elevated", children: jsxRuntimeExports.jsxs("section", { ref: ref, className: mergeTw('relative w-full overflow-hidden text-fg', sectionSurface$2[variant], variant === 'glass' && 'mesh', className, tw), ...rest, children: [(variant === 'gradient' || variant === 'glass') && (jsxRuntimeExports.jsx("div", { "aria-hidden": true, className: "pointer-events-none absolute left-1/2 top-1/2 h-[380px] w-[720px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-primary/10 blur-[120px]" })), jsxRuntimeExports.jsx("div", { className: "relative mx-auto max-w-6xl px-5 py-20 sm:px-6 sm:py-24", children: inner ? (jsxRuntimeExports.jsx("div", { className: mergeTw('relative overflow-hidden px-6 py-14 sm:px-12 sm:py-16', inner), children: body })) : (body) })] }) }) }));
+});
+/* ---------------------------------- Title --------------------------------- */
+const CTASectionTitle = React.forwardRef(function CTASectionTitle({ children, className, tw, ...rest }, ref) {
+    return (jsxRuntimeExports.jsx("h2", { ref: ref, className: mergeTw('font-display text-3xl font-light leading-tight tracking-tight text-fg text-balance sm:text-4xl', className, tw), ...rest, children: children }));
+});
+/* -------------------------------- Subtitle -------------------------------- */
+const CTASectionSubtitle = React.forwardRef(function CTASectionSubtitle({ children, className, tw, ...rest }, ref) {
+    return (jsxRuntimeExports.jsx("p", { ref: ref, className: mergeTw('max-w-xl text-lg leading-relaxed text-fg-muted', className, tw), ...rest, children: children }));
+});
+function ArrowIcon() {
+    return (jsxRuntimeExports.jsx("svg", { viewBox: "0 0 20 20", fill: "none", "aria-hidden": "true", className: "h-4 w-4", children: jsxRuntimeExports.jsx("path", { d: "M4 10h11m0 0-4-4m4 4-4 4", stroke: "currentColor", strokeWidth: "2", strokeLinecap: "round", strokeLinejoin: "round" }) }));
+}
+function ctaLabel(cta) {
+    if (cta && typeof cta === 'object' && 'label' in cta) {
+        return cta.label;
+    }
+    return cta;
+}
+const CTASectionActions = React.forwardRef(function CTASectionActions({ primaryCta, secondaryCta, children, className, tw, ...rest }, ref) {
+    const variant = useCTASectionVariant();
+    const centered = isCentered(variant);
+    const primary = ctaLabel(primaryCta);
+    const secondary = ctaLabel(secondaryCta);
+    if (!children && !primary && !secondary)
+        return null;
+    return (jsxRuntimeExports.jsx("div", { ref: ref, className: mergeTw('flex flex-col gap-3 sm:flex-row', centered && 'justify-center', className, tw), ...rest, children: children ?? (jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [primary ? (jsxRuntimeExports.jsxs(Button, { size: "lg", intent: "ghost", tw: mergeTw('group rounded-xl', accentSolid), children: [primary, jsxRuntimeExports.jsx(ArrowIcon, {})] })) : null, secondary ? (jsxRuntimeExports.jsx(Button, { size: "lg", intent: "ghost", tw: mergeTw('rounded-xl', ghostControl), children: secondary })) : null] })) }));
+});
+const CTASection = CTASectionRoot;
+CTASection.Title = CTASectionTitle;
+CTASection.Subtitle = CTASectionSubtitle;
+CTASection.Actions = CTASectionActions;
+
+const FAQ_VARIANTS = [
+    'accordion',
+    'twoColumn',
+    'bordered',
+    'cards',
+    'centered',
+    'split',
+];
+/* FAQ broadcasts its layout variant so sub-parts self-arrange. */
+const FAQVariantContext = React.createContext('accordion');
+const useFAQVariant = () => React.useContext(FAQVariantContext);
+const isSplit = (v) => v === 'split';
+/* Section-level surface per layout — all theme-following via tokens. */
+const sectionSurface$1 = {
+    accordion: 'bg-canvas',
+    twoColumn: 'bg-canvas',
+    bordered: 'bg-canvas',
+    cards: 'bg-canvas',
+    centered: 'bg-canvas',
+    split: 'bg-canvas',
+};
+/* ---------------------------------- Root ---------------------------------- */
+const FAQRoot = React.forwardRef(function FAQ({ variant = 'accordion', className, tw, children, eyebrow, title, items, ...rest }, ref) {
+    const hasChildren = React.Children.count(children) > 0;
+    const split = isSplit(variant);
+    const centered = variant === 'centered';
+    const header = eyebrow || title ? (jsxRuntimeExports.jsxs("div", { className: mergeTw('flex flex-col gap-4', centered && 'mx-auto max-w-2xl items-center text-center', split ? 'lg:sticky lg:top-24' : !centered && 'max-w-2xl'), children: [eyebrow ? jsxRuntimeExports.jsx(FAQEyebrow, { children: eyebrow }) : null, title ? jsxRuntimeExports.jsx(FAQTitle, { children: title }) : null] })) : null;
+    return (jsxRuntimeExports.jsx(FAQVariantContext.Provider, { value: variant, children: jsxRuntimeExports.jsx("section", { ref: ref, className: mergeTw('relative w-full overflow-hidden text-fg', sectionSurface$1[variant], className, tw), ...rest, children: jsxRuntimeExports.jsx("div", { className: "relative mx-auto max-w-6xl px-5 py-20 sm:px-6 sm:py-28", children: hasChildren ? (children) : split ? (jsxRuntimeExports.jsxs("div", { className: "grid gap-12 lg:grid-cols-[minmax(0,360px)_1fr]", children: [header, items?.length ? jsxRuntimeExports.jsx(FAQItems, { items: items }) : null] })) : (jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [header, items?.length ? (jsxRuntimeExports.jsx(FAQItems, { items: items, className: header ? 'mt-12' : undefined })) : null] })) }) }) }));
+});
+/* --------------------------------- Eyebrow -------------------------------- */
+const FAQEyebrow = React.forwardRef(function FAQEyebrow({ children, className, tw, ...rest }, ref) {
+    return (jsxRuntimeExports.jsx(Badge, { ref: ref, tw: mergeTw('gap-1.5 rounded-full bg-primary/10 px-3 py-1 font-mono text-[11px] font-medium uppercase tracking-widest text-primary ring-1 ring-primary/20', className, tw), ...rest, children: children }));
+});
+/* ---------------------------------- Title --------------------------------- */
+const FAQTitle = React.forwardRef(function FAQTitle({ children, className, tw, ...rest }, ref) {
+    return (jsxRuntimeExports.jsx("h2", { ref: ref, className: mergeTw('font-display text-3xl font-light leading-tight tracking-tight text-fg text-balance sm:text-4xl', className, tw), ...rest, children: children }));
+});
+/* Per-variant wrapper layout around the accordion(s). */
+const itemsLayout = {
+    accordion: 'mx-auto max-w-3xl',
+    twoColumn: 'grid gap-x-12 gap-y-2 md:grid-cols-2',
+    bordered: 'mx-auto max-w-3xl divide-y divide-edge/12 rounded-2xl border border-edge/12',
+    cards: 'grid gap-4 md:grid-cols-2',
+    centered: 'mx-auto max-w-3xl',
+    split: 'min-w-0',
+};
+/* Restyle the Accordion's light defaults onto theme tokens. */
+const triggerTw = 'py-5 text-base text-fg hover:text-primary focus-visible:ring-primary/40';
+const contentTw = 'text-sm leading-relaxed text-fg-muted';
+const FAQItems = React.forwardRef(function FAQItems({ items, children, className, tw, ...rest }, ref) {
+    const variant = useFAQVariant();
+    const cards = variant === 'cards';
+    if (children) {
+        return (jsxRuntimeExports.jsx("div", { ref: ref, className: mergeTw(itemsLayout[variant], className, tw), ...rest, children: children }));
+    }
+    /* `cards` renders each Q&A as its own surface card with a mini accordion. */
+    if (cards) {
+        return (jsxRuntimeExports.jsx("div", { ref: ref, className: mergeTw(itemsLayout[variant], className, tw), ...rest, children: items?.map((item, i) => (jsxRuntimeExports.jsx(Accordion.Root, { type: "single", collapsible: true, tw: mergeTw('rounded-2xl px-5 divide-y-0', surfaceVariants.bordered), children: jsxRuntimeExports.jsxs(Accordion.Item, { value: `q-${i}`, children: [jsxRuntimeExports.jsx(Accordion.Trigger, { tw: triggerTw, children: item.q }), jsxRuntimeExports.jsx(Accordion.Content, { tw: contentTw, children: item.a })] }) }, i))) }));
+    }
+    /* Everything else: a single accordion grouping all items. */
+    const rowPad = variant === 'bordered' ? 'px-5' : '';
+    return (jsxRuntimeExports.jsx(Accordion.Root, { ref: ref, type: "single", collapsible: true, className: mergeTw(itemsLayout[variant], 'divide-edge/12', className, tw), ...rest, children: items?.map((item, i) => (jsxRuntimeExports.jsxs(Accordion.Item, { value: `q-${i}`, tw: rowPad, children: [jsxRuntimeExports.jsx(Accordion.Trigger, { tw: triggerTw, children: item.q }), jsxRuntimeExports.jsx(Accordion.Content, { tw: contentTw, children: item.a })] }, i))) }));
+});
+const FAQ = FAQRoot;
+FAQ.Eyebrow = FAQEyebrow;
+FAQ.Title = FAQTitle;
+FAQ.Items = FAQItems;
+
+const TESTIMONIALS_VARIANTS = [
+    'grid',
+    'single',
+    'carousel',
+    'masonry',
+    'logos',
+    'gradient',
+];
+/* Testimonials broadcasts its layout variant so sub-parts self-arrange. */
+const TestimonialsVariantContext = React.createContext('grid');
+const useTestimonialsVariant = () => React.useContext(TestimonialsVariantContext);
+/* Section-level surface per layout — all theme-following via tokens. */
+const sectionSurface = {
+    grid: 'bg-canvas',
+    single: 'bg-canvas',
+    carousel: 'bg-canvas',
+    masonry: 'bg-canvas',
+    logos: 'bg-canvas',
+    gradient: 'bg-gradient-to-b from-primary/8 via-canvas to-accent2/8',
+};
+/* ---------------------------------- Root ---------------------------------- */
+const TestimonialsRoot = React.forwardRef(function Testimonials({ variant = 'grid', className, tw, children, eyebrow, title, items, ...rest }, ref) {
+    const hasChildren = React.Children.count(children) > 0;
+    return (jsxRuntimeExports.jsx(TestimonialsVariantContext.Provider, { value: variant, children: jsxRuntimeExports.jsxs("section", { ref: ref, className: mergeTw('relative w-full overflow-hidden text-fg', sectionSurface[variant], className, tw), ...rest, children: [variant === 'gradient' && (jsxRuntimeExports.jsx("div", { "aria-hidden": true, className: "pointer-events-none absolute left-1/2 top-0 h-[420px] w-[760px] -translate-x-1/2 rounded-full bg-primary/10 blur-[120px]" })), jsxRuntimeExports.jsx("div", { className: "relative mx-auto max-w-6xl px-5 py-20 sm:px-6 sm:py-28", children: hasChildren ? (children) : (jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [(eyebrow || title) && (jsxRuntimeExports.jsxs("div", { className: "mx-auto flex max-w-2xl flex-col items-center gap-4 text-center", children: [eyebrow ? (jsxRuntimeExports.jsx(TestimonialsEyebrow, { children: eyebrow })) : null, title ? (jsxRuntimeExports.jsx(TestimonialsTitle, { children: title })) : null] })), items?.length ? (jsxRuntimeExports.jsx(TestimonialsItems, { items: items, className: eyebrow || title ? 'mt-14' : undefined })) : null] })) })] }) }));
+});
+/* --------------------------------- Eyebrow -------------------------------- */
+const TestimonialsEyebrow = React.forwardRef(function TestimonialsEyebrow({ children, className, tw, ...rest }, ref) {
+    return (jsxRuntimeExports.jsx(Badge, { ref: ref, tw: mergeTw('gap-1.5 rounded-full bg-primary/10 px-3 py-1 font-mono text-[11px] font-medium uppercase tracking-widest text-primary ring-1 ring-primary/20', className, tw), ...rest, children: children }));
+});
+/* ---------------------------------- Title --------------------------------- */
+const TestimonialsTitle = React.forwardRef(function TestimonialsTitle({ children, className, tw, ...rest }, ref) {
+    return (jsxRuntimeExports.jsx("h2", { ref: ref, className: mergeTw('font-display text-3xl font-light leading-tight tracking-tight text-fg text-balance sm:text-4xl', className, tw), ...rest, children: children }));
+});
+const layoutFor = {
+    grid: 'grid gap-6 sm:grid-cols-2 lg:grid-cols-3',
+    single: 'mx-auto max-w-3xl',
+    carousel: 'scrollbar-luxe -mx-1 flex snap-x snap-mandatory gap-6 overflow-x-auto px-1 pb-4 [&>*]:w-[320px] [&>*]:shrink-0 [&>*]:snap-start',
+    masonry: 'gap-6 sm:columns-2 lg:columns-3 [&>*]:mb-6 [&>*]:break-inside-avoid',
+    logos: 'grid gap-6 sm:grid-cols-2',
+    gradient: 'grid gap-6 sm:grid-cols-2 lg:grid-cols-3',
+};
+const TestimonialsItems = React.forwardRef(function TestimonialsItems({ items, children, className, tw, ...rest }, ref) {
+    const variant = useTestimonialsVariant();
+    /* The `logos` variant pairs a quiet brand strip with featured quotes. */
+    if (variant === 'logos' && !children) {
+        return (jsxRuntimeExports.jsxs("div", { ref: ref, className: mergeTw('flex flex-col gap-12', className, tw), ...rest, children: [jsxRuntimeExports.jsx("div", { className: "flex flex-wrap items-center justify-center gap-x-12 gap-y-6 opacity-70", children: (items ?? []).map((t, i) => (jsxRuntimeExports.jsx("span", { className: "font-display text-lg font-semibold tracking-tight text-fg-muted", children: t.name }, i))) }), jsxRuntimeExports.jsx("div", { className: "grid gap-6 sm:grid-cols-2", children: (items ?? []).slice(0, 2).map((t, i) => (jsxRuntimeExports.jsx(TestimonialItem, { ...t }, i))) })] }));
+    }
+    return (jsxRuntimeExports.jsx("div", { ref: ref, className: mergeTw(layoutFor[variant], className, tw), ...rest, children: children ??
+            items?.map((t, i) => jsxRuntimeExports.jsx(TestimonialItem, { ...t }, i)) }));
+});
+/* ------------------------------ Stars + item ------------------------------ */
+function Stars({ count = 5 }) {
+    return (jsxRuntimeExports.jsx("div", { className: "flex gap-0.5 text-primary", "aria-hidden": "true", children: Array.from({ length: count }).map((_, i) => (jsxRuntimeExports.jsx("svg", { viewBox: "0 0 20 20", fill: "currentColor", className: "h-4 w-4", children: jsxRuntimeExports.jsx("path", { d: "m10 2 2.39 4.84 5.34.78-3.86 3.77.91 5.32L10 14.98l-4.78 2.51.91-5.32L2.27 7.62l5.34-.78L10 2Z" }) }, i))) }));
+}
+function initials(name) {
+    if (typeof name !== 'string')
+        return '';
+    return name
+        .split(' ')
+        .map((w) => w[0])
+        .filter(Boolean)
+        .slice(0, 2)
+        .join('')
+        .toUpperCase();
+}
+const TestimonialItem = React.forwardRef(function TestimonialItem({ quote, name, role, avatar, children, className, tw, ...rest }, ref) {
+    const variant = useTestimonialsVariant();
+    const big = variant === 'single';
+    const surface = variant === 'gradient'
+        ? surfaceVariants.gradient
+        : variant === 'single'
+            ? surfaceVariants.elevated
+            : surfaceVariants.bordered;
+    return (jsxRuntimeExports.jsx("figure", { ref: ref, className: mergeTw('flex flex-col gap-5 rounded-2xl p-6 text-fg', surface, big && 'items-center p-10 text-center', className, tw), ...rest, children: children ?? (jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [jsxRuntimeExports.jsx(Stars, {}), jsxRuntimeExports.jsx("blockquote", { className: mergeTw('leading-relaxed text-fg-muted', big
+                        ? 'font-display text-2xl font-light text-fg text-balance'
+                        : 'text-[15px]'), children: quote }), jsxRuntimeExports.jsxs("figcaption", { className: mergeTw('mt-auto flex items-center gap-3', big && 'justify-center'), children: [jsxRuntimeExports.jsx(Avatar, { size: big ? 'md' : 'sm', tw: "bg-primary/15 text-primary ring-1 ring-primary/20", children: avatar ? (jsxRuntimeExports.jsx("img", { src: avatar, alt: "", className: "h-full w-full object-cover" })) : (initials(name)) }), jsxRuntimeExports.jsxs("div", { className: "flex flex-col text-left", children: [jsxRuntimeExports.jsx("span", { className: "text-sm font-semibold text-fg", children: name }), role ? (jsxRuntimeExports.jsx("span", { className: "text-xs text-fg-subtle", children: role })) : null] })] })] })) }));
+});
+const Testimonials = TestimonialsRoot;
+Testimonials.Eyebrow = TestimonialsEyebrow;
+Testimonials.Title = TestimonialsTitle;
+Testimonials.Items = TestimonialsItems;
+Testimonials.Item = TestimonialItem;
+
+const NAVBAR_VARIANTS = [
+    'minimal',
+    'centered',
+    'split',
+    'glass',
+    'withSearch',
+    'mega',
+];
+/* ─────────────────────────────── Surfaces ──────────────────────────────── */
+const surfaces$8 = {
+    minimal: 'border-b border-edge/10 bg-canvas/80 backdrop-blur-xl',
+    centered: 'border-b border-edge/10 bg-canvas/80 backdrop-blur-xl',
+    split: 'border-b border-edge/10 bg-canvas/80 backdrop-blur-xl',
+    glass: 'glass border-b border-edge/10',
+    withSearch: 'border-b border-edge/10 bg-elevated/70 backdrop-blur-xl',
+    mega: 'border-b border-edge/10 bg-canvas/90 backdrop-blur-xl',
+};
+/* ──────────────────────────── Inline icons ──────────────────────────────── */
+function SearchIcon$1({ className }) {
+    return (jsxRuntimeExports.jsxs("svg", { viewBox: "0 0 20 20", fill: "none", "aria-hidden": "true", className: className, children: [jsxRuntimeExports.jsx("circle", { cx: "9", cy: "9", r: "5.5", stroke: "currentColor", strokeWidth: "1.6" }), jsxRuntimeExports.jsx("path", { d: "m17 17-3.5-3.5", stroke: "currentColor", strokeWidth: "1.6", strokeLinecap: "round" })] }));
+}
+function MenuIcon({ className }) {
+    return (jsxRuntimeExports.jsx("svg", { viewBox: "0 0 24 24", fill: "none", "aria-hidden": "true", className: className, children: jsxRuntimeExports.jsx("path", { d: "M4 7h16M4 12h16M4 17h16", stroke: "currentColor", strokeWidth: "1.8", strokeLinecap: "round" }) }));
+}
+/* ----------------------------------- Root --------------------------------- */
+const NavbarRoot = React.forwardRef(function Navbar({ variant = 'split', className, tw, children, brand, links, actions, ...rest }, ref) {
+    const [open, setOpen] = React.useState(false);
+    const hasChildren = React.Children.count(children) > 0;
+    const centered = variant === 'centered';
+    return (jsxRuntimeExports.jsx(BlockVariantContext.Provider, { value: variant, children: jsxRuntimeExports.jsxs("header", { ref: ref, className: mergeTw('sticky top-0 z-30 w-full text-fg', surfaces$8[variant], className, tw), ...rest, children: [jsxRuntimeExports.jsx("div", { className: "mx-auto flex h-16 w-full max-w-6xl items-center gap-4 px-5 sm:px-6", children: hasChildren ? (children) : (jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [jsxRuntimeExports.jsx("button", { type: "button", onClick: () => setOpen((o) => !o), "aria-label": "Toggle menu", "aria-expanded": open, className: "grid h-9 w-9 shrink-0 place-items-center rounded-lg border border-edge/12 bg-fg/[0.04] text-fg-muted hover:text-fg lg:hidden", children: jsxRuntimeExports.jsx(MenuIcon, { className: "h-5 w-5" }) }), jsxRuntimeExports.jsx(NavbarBrand, { children: brand }), centered ? (jsxRuntimeExports.jsx(NavbarLinks, { links: links, tw: "mx-auto" })) : (jsxRuntimeExports.jsx(NavbarLinks, { links: links })), variant === 'withSearch' ? (jsxRuntimeExports.jsx("div", { className: "ml-auto hidden md:block", children: jsxRuntimeExports.jsx(NavbarSearch, {}) })) : null, jsxRuntimeExports.jsx(NavbarActions, { tw: mergeTw(variant === 'withSearch' ? 'ml-2' : 'ml-auto'), children: actions ?? (jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [jsxRuntimeExports.jsx(Button, { intent: "ghost", tw: mergeTw('hidden rounded-lg sm:inline-flex', ghostControl), children: "Sign in" }), jsxRuntimeExports.jsx(Button, { intent: "ghost", tw: mergeTw('rounded-lg', accentSolid), children: "Get started" })] })) })] })) }), !hasChildren && open && links?.length ? (jsxRuntimeExports.jsx("div", { className: "border-t border-edge/10 bg-canvas/95 px-5 py-3 lg:hidden", children: jsxRuntimeExports.jsx("nav", { className: "flex flex-col gap-1", children: links.map((l, i) => (jsxRuntimeExports.jsx("a", { href: l.href ?? '#', onClick: (e) => !l.href && e.preventDefault(), className: mergeTw('rounded-lg px-3 py-2 text-sm transition-colors', l.active ? 'bg-fg/[0.06] text-fg' : 'text-fg-muted hover:text-fg'), children: l.label }, i))) }) })) : null, !hasChildren && variant === 'mega' ? (jsxRuntimeExports.jsx("div", { className: "hidden border-t border-edge/10 bg-elevated/40 lg:block", children: jsxRuntimeExports.jsx("div", { className: "mx-auto grid w-full max-w-6xl grid-cols-3 gap-6 px-6 py-5", children: [
+                            { t: 'Components', d: '60+ accessible primitives' },
+                            { t: 'Sections', d: 'Pre-built page chrome' },
+                            { t: 'Tokens', d: 'Theme across 4 palettes' },
+                        ].map((c) => (jsxRuntimeExports.jsxs("a", { href: "#", onClick: (e) => e.preventDefault(), className: "rounded-xl border border-edge/10 bg-fg/[0.03] p-4 transition hover:border-primary/40", children: [jsxRuntimeExports.jsx("p", { className: "text-sm font-semibold text-fg", children: c.t }), jsxRuntimeExports.jsx("p", { className: "mt-1 text-xs text-fg-muted", children: c.d })] }, c.t))) }) })) : null] }) }));
+});
+/* ----------------------------------- Brand -------------------------------- */
+const NavbarBrand = React.forwardRef(function NavbarBrand({ children, className, tw, ...rest }, ref) {
+    return (jsxRuntimeExports.jsx("div", { ref: ref, className: mergeTw('flex shrink-0 items-center gap-2.5', className, tw), ...rest, children: children ?? (jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [jsxRuntimeExports.jsx("span", { className: "grid h-8 w-8 place-items-center rounded-lg bg-primary text-primary-fg shadow-accent", children: jsxRuntimeExports.jsx("svg", { viewBox: "0 0 24 24", fill: "none", "aria-hidden": "true", className: "h-[18px] w-[18px]", children: jsxRuntimeExports.jsx("path", { d: "M12 2 14.5 9.5 22 12l-7.5 2.5L12 22l-2.5-7.5L2 12l7.5-2.5L12 2Z", fill: "currentColor" }) }) }), jsxRuntimeExports.jsx("span", { className: "font-display text-[17px] font-semibold tracking-tight text-fg", children: "comp\u00B7lib" })] })) }));
+});
+const NavbarLinks = React.forwardRef(function NavbarLinks({ links, children, className, tw, ...rest }, ref) {
+    return (jsxRuntimeExports.jsx("nav", { ref: ref, className: mergeTw('hidden items-center gap-1 lg:flex', className, tw), ...rest, children: children ??
+            links?.map((l, i) => (jsxRuntimeExports.jsx("a", { href: l.href ?? '#', onClick: (e) => !l.href && e.preventDefault(), "aria-current": l.active ? 'page' : undefined, className: mergeTw('rounded-lg px-3 py-2 text-sm transition-colors', l.active ? 'bg-fg/[0.06] text-fg' : 'text-fg-muted hover:text-fg'), children: l.label }, i))) }));
+});
+/* ----------------------------------- Search ------------------------------- */
+const NavbarSearch = React.forwardRef(function NavbarSearch({ className, tw }, ref) {
+    return (jsxRuntimeExports.jsx(Input, { ref: ref, placeholder: "Search\u2026", "aria-label": "Search", prefix: jsxRuntimeExports.jsx(SearchIcon$1, { className: "h-4 w-4" }), className: className, tw: mergeTw('h-9 w-64 rounded-lg border-edge/15 bg-fg/[0.04] text-fg placeholder:text-fg-subtle', 'focus:border-primary/60 focus:ring-primary/25 focus:ring-offset-0', tw) }));
+});
+/* ---------------------------------- Actions ------------------------------- */
+const NavbarActions = React.forwardRef(function NavbarActions({ children, className, tw, ...rest }, ref) {
+    const variant = useBlockVariant();
+    return (jsxRuntimeExports.jsx("div", { ref: ref, className: mergeTw('flex items-center gap-2.5', className, tw), "data-variant": variant, ...rest, children: children }));
+});
+const NavbarAvatar = React.forwardRef(function NavbarAvatar({ initials, children, className, tw, ...rest }, ref) {
+    return (jsxRuntimeExports.jsx(Avatar, { ref: ref, size: "sm", className: className, tw: mergeTw('bg-primary text-primary-fg text-xs font-semibold', tw), ...rest, children: children ?? initials ?? 'AL' }));
+});
+const Navbar = NavbarRoot;
+Navbar.Brand = NavbarBrand;
+Navbar.Links = NavbarLinks;
+Navbar.Search = NavbarSearch;
+Navbar.Actions = NavbarActions;
+Navbar.Avatar = NavbarAvatar;
+
+const SIDEBAR_VARIANTS = [
+    'minimal',
+    'grouped',
+    'iconRail',
+    'floating',
+    'glass',
+    'dark',
+];
+/* ─────────────────────────────── Surfaces ──────────────────────────────── */
+const surfaces$7 = {
+    minimal: 'border-r border-edge/10 bg-canvas/80 backdrop-blur-xl',
+    grouped: 'border-r border-edge/10 bg-panel/70 backdrop-blur-xl',
+    iconRail: 'border-r border-edge/10 bg-canvas/80 backdrop-blur-xl',
+    floating: 'm-3 rounded-2xl border border-edge/12 bg-elevated shadow-luxe-sm',
+    glass: 'glass border-r border-edge/10',
+    dark: 'border-r border-edge/10 bg-fg/[0.04] backdrop-blur-xl',
+};
+/* ──────────────────────────── Inline icons ──────────────────────────────── */
+function DefaultItemIcon({ className }) {
+    return (jsxRuntimeExports.jsxs("svg", { viewBox: "0 0 20 20", fill: "none", "aria-hidden": "true", className: className, children: [jsxRuntimeExports.jsx("rect", { x: "3", y: "3", width: "6", height: "6", rx: "1.5", stroke: "currentColor", strokeWidth: "1.6" }), jsxRuntimeExports.jsx("rect", { x: "11", y: "3", width: "6", height: "6", rx: "1.5", stroke: "currentColor", strokeWidth: "1.6" }), jsxRuntimeExports.jsx("rect", { x: "3", y: "11", width: "6", height: "6", rx: "1.5", stroke: "currentColor", strokeWidth: "1.6" }), jsxRuntimeExports.jsx("rect", { x: "11", y: "11", width: "6", height: "6", rx: "1.5", stroke: "currentColor", strokeWidth: "1.6" })] }));
+}
+/* ----------------------------------- Root --------------------------------- */
+const SidebarRoot = React.forwardRef(function Sidebar({ variant = 'grouped', className, tw, children, brand, groups, footer, ...rest }, ref) {
+    const hasChildren = React.Children.count(children) > 0;
+    const isRail = variant === 'iconRail';
+    return (jsxRuntimeExports.jsx(BlockVariantContext.Provider, { value: variant, children: jsxRuntimeExports.jsx("aside", { ref: ref, "data-variant": variant, className: mergeTw('flex h-full flex-col text-fg', isRail ? 'w-16' : 'w-64', surfaces$7[variant], className, tw), ...rest, children: hasChildren ? (children) : (jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [jsxRuntimeExports.jsx(SidebarBrand, { children: brand }), jsxRuntimeExports.jsx("nav", { className: "scrollbar-luxe flex-1 overflow-y-auto px-3 py-2", children: groups?.map((g, gi) => (jsxRuntimeExports.jsx(SidebarGroupBlock, { label: g.label, children: g.items.map((item, ii) => (jsxRuntimeExports.jsx(SidebarItemLink, { ...item }, ii))) }, gi))) }), footer !== undefined ? jsxRuntimeExports.jsx(SidebarFooter, { children: footer }) : null] })) }) }));
+});
+/* ----------------------------------- Brand -------------------------------- */
+const SidebarBrand = React.forwardRef(function SidebarBrand({ children, className, tw, ...rest }, ref) {
+    const variant = useBlockVariant();
+    const isRail = variant === 'iconRail';
+    return (jsxRuntimeExports.jsxs("div", { ref: ref, className: mergeTw('flex h-16 shrink-0 items-center gap-2.5 px-4', isRail && 'justify-center px-0', className, tw), ...rest, children: [jsxRuntimeExports.jsx("span", { className: "grid h-8 w-8 shrink-0 place-items-center rounded-lg bg-primary text-primary-fg shadow-accent", children: jsxRuntimeExports.jsx("svg", { viewBox: "0 0 24 24", fill: "none", "aria-hidden": "true", className: "h-[18px] w-[18px]", children: jsxRuntimeExports.jsx("path", { d: "M12 2 14.5 9.5 22 12l-7.5 2.5L12 22l-2.5-7.5L2 12l7.5-2.5L12 2Z", fill: "currentColor" }) }) }), !isRail ? (jsxRuntimeExports.jsx("span", { className: "truncate font-display text-[15px] font-semibold tracking-tight text-fg", children: children ?? 'comp·lib' })) : null] }));
+});
+const SidebarGroupBlock = React.forwardRef(function SidebarGroup({ label, children, className, tw, ...rest }, ref) {
+    const variant = useBlockVariant();
+    const isRail = variant === 'iconRail';
+    return (jsxRuntimeExports.jsxs("div", { ref: ref, className: mergeTw('mb-4 last:mb-0', className, tw), ...rest, children: [label && !isRail ? (jsxRuntimeExports.jsx("p", { className: "px-3 pb-1.5 pt-2 font-mono text-[10px] uppercase tracking-widest text-fg-subtle", children: label })) : null, jsxRuntimeExports.jsx("div", { className: "flex flex-col gap-0.5", children: children })] }));
+});
+const SidebarItemLink = React.forwardRef(function SidebarItem({ label, href, icon, active, badge, children, className, tw, ...rest }, ref) {
+    const variant = useBlockVariant();
+    const isRail = variant === 'iconRail';
+    const content = children ?? label;
+    return (jsxRuntimeExports.jsxs("a", { ref: ref, href: href ?? '#', onClick: (e) => !href && e.preventDefault(), "aria-current": active ? 'page' : undefined, title: isRail && typeof content === 'string' ? content : undefined, className: mergeTw('group flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-colors', isRail && 'justify-center px-0 py-2.5', active
+            ? 'bg-primary/12 font-medium text-fg ring-1 ring-inset ring-primary/20'
+            : 'text-fg-muted hover:bg-fg/[0.05] hover:text-fg', className, tw), ...rest, children: [jsxRuntimeExports.jsx("span", { className: mergeTw('grid h-5 w-5 shrink-0 place-items-center', active ? 'text-primary' : 'text-fg-subtle group-hover:text-fg-muted'), children: icon ?? jsxRuntimeExports.jsx(DefaultItemIcon, { className: "h-[18px] w-[18px]" }) }), !isRail ? (jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [jsxRuntimeExports.jsx("span", { className: "flex-1 truncate", children: content }), badge !== undefined && badge !== null ? (jsxRuntimeExports.jsx("span", { className: mergeTw('ml-auto inline-flex h-5 min-w-[1.25rem] items-center justify-center rounded-full px-1.5 text-[11px] font-semibold', accentSoft), children: badge })) : null] })) : null] }));
+});
+/* ----------------------------------- Footer ------------------------------- */
+const SidebarFooter = React.forwardRef(function SidebarFooter({ children, className, tw, ...rest }, ref) {
+    const variant = useBlockVariant();
+    const isRail = variant === 'iconRail';
+    return (jsxRuntimeExports.jsx("div", { ref: ref, className: mergeTw('mt-auto shrink-0 border-t border-edge/10 p-3 text-sm text-fg-muted', isRail && 'flex justify-center px-0', className, tw), ...rest, children: children }));
+});
+const Sidebar = SidebarRoot;
+Sidebar.Brand = SidebarBrand;
+Sidebar.Group = SidebarGroupBlock;
+Sidebar.Item = SidebarItemLink;
+Sidebar.Footer = SidebarFooter;
+
+const FOOTER_VARIANTS = [
+    'simple',
+    'columns',
+    'cta',
+    'newsletter',
+    'minimal',
+    'dark',
+];
+/* ─────────────────────────────── Surfaces ──────────────────────────────── */
+const surfaces$6 = {
+    simple: 'border-t border-edge/10 bg-canvas/80 backdrop-blur-xl',
+    columns: 'border-t border-edge/10 bg-panel/60 backdrop-blur-xl',
+    cta: 'border-t border-edge/10 bg-gradient-to-b from-primary/[0.06] to-canvas/80 backdrop-blur-xl',
+    newsletter: 'border-t border-edge/10 bg-elevated/70 backdrop-blur-xl',
+    minimal: 'border-t border-edge/10 bg-transparent',
+    dark: 'border-t border-edge/10 bg-fg/[0.04] backdrop-blur-xl',
+};
+/* ----------------------------------- Brand -------------------------------- */
+const FooterBrand = React.forwardRef(function FooterBrand({ children, className, tw, ...rest }, ref) {
+    return (jsxRuntimeExports.jsxs("div", { ref: ref, className: mergeTw('flex flex-col gap-3', className, tw), ...rest, children: [jsxRuntimeExports.jsxs("span", { className: "flex items-center gap-2.5", children: [jsxRuntimeExports.jsx("span", { className: "grid h-8 w-8 place-items-center rounded-lg bg-primary text-primary-fg shadow-accent", children: jsxRuntimeExports.jsx("svg", { viewBox: "0 0 24 24", fill: "none", "aria-hidden": "true", className: "h-[18px] w-[18px]", children: jsxRuntimeExports.jsx("path", { d: "M12 2 14.5 9.5 22 12l-7.5 2.5L12 22l-2.5-7.5L2 12l7.5-2.5L12 2Z", fill: "currentColor" }) }) }), jsxRuntimeExports.jsx("span", { className: "font-display text-[17px] font-semibold tracking-tight text-fg", children: "comp\u00B7lib" })] }), jsxRuntimeExports.jsx("p", { className: "max-w-xs text-sm text-fg-muted", children: children ?? 'A themeable component library that re-tints across every palette.' })] }));
+});
+const FooterColumnBlock = React.forwardRef(function FooterColumn({ title, links, children, className, tw, ...rest }, ref) {
+    return (jsxRuntimeExports.jsxs("div", { ref: ref, className: mergeTw('flex flex-col gap-3', className, tw), ...rest, children: [title ? (jsxRuntimeExports.jsx("p", { className: "font-mono text-[11px] uppercase tracking-widest text-fg-subtle", children: title })) : null, jsxRuntimeExports.jsx("nav", { className: "flex flex-col gap-2", children: children ??
+                    links?.map((l, i) => (jsxRuntimeExports.jsx("a", { href: l.href ?? '#', onClick: (e) => !l.href && e.preventDefault(), className: "text-sm text-fg-muted transition-colors hover:text-fg", children: l.label }, i))) })] }));
+});
+/* --------------------------------- Newsletter ----------------------------- */
+function FooterNewsletter() {
+    return (jsxRuntimeExports.jsxs("form", { onSubmit: (e) => e.preventDefault(), className: "flex w-full max-w-sm flex-col gap-3", children: [jsxRuntimeExports.jsxs("div", { children: [jsxRuntimeExports.jsx("p", { className: "text-sm font-semibold text-fg", children: "Subscribe to our newsletter" }), jsxRuntimeExports.jsx("p", { className: "mt-1 text-sm text-fg-muted", children: "Product updates and design notes. No spam." })] }), jsxRuntimeExports.jsxs("div", { className: "flex items-start gap-2", children: [jsxRuntimeExports.jsx(Input, { type: "email", placeholder: "you@example.com", "aria-label": "Email address", tw: mergeTw('h-10 rounded-lg border-edge/15 bg-fg/[0.04] text-fg placeholder:text-fg-subtle', 'focus:border-primary/60 focus:ring-primary/25 focus:ring-offset-0') }), jsxRuntimeExports.jsx(Button, { type: "submit", intent: "ghost", tw: mergeTw('h-10 shrink-0 rounded-lg', accentSolid), children: "Subscribe" })] })] }));
+}
+/* ----------------------------------- CTA ---------------------------------- */
+function FooterCta() {
+    return (jsxRuntimeExports.jsxs("div", { className: "flex flex-col items-start gap-5 rounded-2xl border border-primary/20 bg-primary/[0.06] p-8 md:flex-row md:items-center md:justify-between", children: [jsxRuntimeExports.jsxs("div", { children: [jsxRuntimeExports.jsx("h3", { className: "font-display text-2xl font-semibold tracking-tight text-fg", children: "Start building today" }), jsxRuntimeExports.jsx("p", { className: "mt-1 text-sm text-fg-muted", children: "Drop in pre-assembled blocks that follow your theme automatically." })] }), jsxRuntimeExports.jsxs("div", { className: "flex shrink-0 items-center gap-2.5", children: [jsxRuntimeExports.jsx(Button, { intent: "ghost", tw: mergeTw('rounded-lg', ghostControl), children: "Documentation" }), jsxRuntimeExports.jsx(Button, { intent: "ghost", tw: mergeTw('rounded-lg', accentSolid), children: "Get started" })] })] }));
+}
+/* ----------------------------------- Bottom ------------------------------- */
+const FooterBottom = React.forwardRef(function FooterBottom({ children, className, tw, ...rest }, ref) {
+    return (jsxRuntimeExports.jsx("div", { ref: ref, className: mergeTw('flex flex-col items-center justify-between gap-3 border-t border-edge/10 pt-6 text-sm text-fg-subtle sm:flex-row', className, tw), ...rest, children: children ?? (jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [jsxRuntimeExports.jsx("span", { children: "\u00A9 2026 comp\u00B7lib. All rights reserved." }), jsxRuntimeExports.jsx("nav", { className: "flex items-center gap-5", children: ['Privacy', 'Terms', 'Status'].map((l) => (jsxRuntimeExports.jsx("a", { href: "#", onClick: (e) => e.preventDefault(), className: "transition-colors hover:text-fg", children: l }, l))) })] })) }));
+});
+/* ----------------------------------- Root --------------------------------- */
+const FooterRoot = React.forwardRef(function Footer({ variant = 'columns', className, tw, children, brand, columns, bottom, ...rest }, ref) {
+    const hasChildren = React.Children.count(children) > 0;
+    const isMinimal = variant === 'minimal';
+    return (jsxRuntimeExports.jsx(BlockVariantContext.Provider, { value: variant, children: jsxRuntimeExports.jsx("footer", { ref: ref, "data-variant": variant, className: mergeTw('w-full text-fg', surfaces$6[variant], className, tw), ...rest, children: jsxRuntimeExports.jsx("div", { className: "mx-auto w-full max-w-6xl px-5 py-12 sm:px-6", children: hasChildren ? (children) : isMinimal ? (jsxRuntimeExports.jsx(FooterBottom, { tw: "border-t-0 pt-0", children: bottom })) : (jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [variant === 'cta' ? jsxRuntimeExports.jsx("div", { className: "mb-12", children: jsxRuntimeExports.jsx(FooterCta, {}) }) : null, jsxRuntimeExports.jsxs("div", { className: mergeTw('flex flex-col gap-10 pb-10 md:flex-row md:justify-between', variant === 'newsletter' && 'md:items-start'), children: [jsxRuntimeExports.jsx(FooterBrand, { children: brand }), variant === 'newsletter' ? (jsxRuntimeExports.jsx(FooterNewsletter, {})) : columns?.length ? (jsxRuntimeExports.jsx("div", { className: "grid flex-1 grid-cols-2 gap-8 sm:grid-cols-3 md:max-w-2xl", children: columns.map((c, i) => (jsxRuntimeExports.jsx(FooterColumnBlock, { title: c.title, links: c.links }, i))) })) : null] }), jsxRuntimeExports.jsx(FooterBottom, { children: bottom })] })) }) }) }));
+});
+const Footer = FooterRoot;
+Footer.Brand = FooterBrand;
+Footer.Column = FooterColumnBlock;
+Footer.Bottom = FooterBottom;
+
+const DASHBOARD_SHELL_VARIANTS = [
+    'sidebarLeft',
+    'sidebarRight',
+    'topnav',
+    'compact',
+    'glass',
+    'split',
+];
+/* ─────────────────────────────── Surfaces ──────────────────────────────── */
+const surfaces$5 = {
+    sidebarLeft: 'bg-canvas',
+    sidebarRight: 'bg-canvas',
+    topnav: 'bg-canvas',
+    compact: 'bg-canvas',
+    glass: 'mesh',
+    split: 'bg-gradient-to-br from-canvas via-canvas to-primary/[0.04]',
+};
+/* Whether the layout places the sidebar in a horizontal row (vs. stacked). */
+const ROW_LAYOUTS = [
+    'sidebarLeft',
+    'sidebarRight',
+    'compact',
+    'glass',
+    'split',
+];
+/* ----------------------------------- Sidebar ------------------------------ */
+const ShellSidebar = React.forwardRef(function DashboardShellSidebar({ children, className, tw, ...rest }, ref) {
+    const variant = useBlockVariant();
+    const isTopnav = variant === 'topnav';
+    const isCompact = variant === 'compact';
+    if (isTopnav)
+        return null;
+    return (jsxRuntimeExports.jsx("div", { ref: ref, "data-region": "sidebar", className: mergeTw('hidden shrink-0 md:block', isCompact ? 'md:w-16' : 'md:w-64', variant === 'split' && 'md:w-72', className, tw), ...rest, children: children ?? (jsxRuntimeExports.jsxs("div", { className: mergeTw('flex h-full flex-col gap-3 p-3', variant === 'glass'
+                ? 'glass m-3 rounded-2xl'
+                : 'border-r border-edge/10 bg-panel/60'), children: [jsxRuntimeExports.jsx(PlaceholderLabel, { children: "Sidebar" }), jsxRuntimeExports.jsx("div", { className: "flex flex-1 flex-col gap-2", children: Array.from({ length: 4 }).map((_, i) => (jsxRuntimeExports.jsx("div", { className: "h-9 rounded-lg bg-fg/[0.04] ring-1 ring-inset ring-edge/8" }, i))) })] })) }));
+});
+/* ----------------------------------- Topbar ------------------------------- */
+const ShellTopbar = React.forwardRef(function DashboardShellTopbar({ children, className, tw, ...rest }, ref) {
+    const variant = useBlockVariant();
+    return (jsxRuntimeExports.jsx("div", { ref: ref, "data-region": "topbar", className: mergeTw('shrink-0', variant === 'glass'
+            ? 'glass border-b border-edge/10'
+            : 'border-b border-edge/10 bg-canvas/80 backdrop-blur-xl', className, tw), ...rest, children: children ?? (jsxRuntimeExports.jsxs("div", { className: "flex h-16 items-center gap-3 px-5", children: [jsxRuntimeExports.jsx(PlaceholderLabel, { children: "Topbar" }), jsxRuntimeExports.jsx("div", { className: "ml-auto h-9 w-9 rounded-full bg-fg/[0.06] ring-1 ring-inset ring-edge/10" })] })) }));
+});
+/* ----------------------------------- Content ------------------------------ */
+const ShellContent = React.forwardRef(function DashboardShellContent({ children, className, tw, ...rest }, ref) {
+    const variant = useBlockVariant();
+    const isCompact = variant === 'compact';
+    return (jsxRuntimeExports.jsx("main", { ref: ref, "data-region": "content", className: mergeTw('scrollbar-luxe flex-1 overflow-y-auto', isCompact ? 'p-4' : 'p-6', className, tw), ...rest, children: children ?? (jsxRuntimeExports.jsxs("div", { className: "mx-auto flex w-full max-w-5xl flex-col gap-4", children: [jsxRuntimeExports.jsx(PlaceholderLabel, { children: "Content" }), jsxRuntimeExports.jsx("div", { className: "grid gap-4 sm:grid-cols-3", children: Array.from({ length: 3 }).map((_, i) => (jsxRuntimeExports.jsx("div", { className: "h-24 rounded-2xl border border-edge/10 bg-elevated/60 shadow-luxe-sm" }, i))) }), jsxRuntimeExports.jsx("div", { className: "h-64 rounded-2xl border border-edge/10 bg-elevated/40" })] })) }));
+});
+/* --------------------------------- Placeholder ---------------------------- */
+function PlaceholderLabel({ children }) {
+    return (jsxRuntimeExports.jsx("span", { className: "font-mono text-[10px] uppercase tracking-widest text-fg-subtle", children: children }));
+}
+/* ------------------------- Default region extraction ---------------------- */
+/* When rendering placeholders, find which slots the consumer passed so we can
+   keep the layout intact while filling the rest with default regions. */
+function findSlot(children, slot) {
+    let found = null;
+    React.Children.forEach(children, (child) => {
+        if (React.isValidElement(child) && child.type === slot)
+            found = child;
+    });
+    return found;
+}
+/* ----------------------------------- Root --------------------------------- */
+const DashboardShellRoot = React.forwardRef(function DashboardShell({ variant = 'sidebarLeft', className, tw, children, ...rest }, ref) {
+    const hasChildren = React.Children.count(children) > 0;
+    const isRow = ROW_LAYOUTS.includes(variant);
+    const sidebarRight = variant === 'sidebarRight';
+    // Resolve regions: use provided slots, else defaults.
+    const sidebar = hasChildren ? findSlot(children, ShellSidebar) : jsxRuntimeExports.jsx(ShellSidebar, {});
+    const topbar = hasChildren ? findSlot(children, ShellTopbar) : jsxRuntimeExports.jsx(ShellTopbar, {});
+    const content = hasChildren ? findSlot(children, ShellContent) : jsxRuntimeExports.jsx(ShellContent, {});
+    return (jsxRuntimeExports.jsx(BlockVariantContext.Provider, { value: variant, children: jsxRuntimeExports.jsx("div", { ref: ref, "data-variant": variant, className: mergeTw('flex h-full min-h-[28rem] w-full flex-col overflow-hidden text-fg', surfaces$5[variant], className, tw), ...rest, children: isRow ? (
+            /* Sidebar beside a column of [topbar, content]. */
+            jsxRuntimeExports.jsxs("div", { className: mergeTw('flex h-full flex-1', sidebarRight && 'flex-row-reverse'), children: [sidebar, jsxRuntimeExports.jsxs("div", { className: "flex h-full min-w-0 flex-1 flex-col", children: [topbar, content] })] })) : (
+            /* topnav: topbar on top, content below (no sidebar). */
+            jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [topbar, jsxRuntimeExports.jsx("div", { className: "flex h-full min-h-0 flex-1 flex-col", children: content })] })) }) }));
+});
+const DashboardShell = DashboardShellRoot;
+DashboardShell.Sidebar = ShellSidebar;
+DashboardShell.Topbar = ShellTopbar;
+DashboardShell.Content = ShellContent;
+
+const EMPTY_STATE_VARIANTS = [
+    'minimal',
+    'illustrated',
+    'card',
+    'cta',
+    'error',
+    'search',
+];
+/* ─────────────────────────────── Surfaces ──────────────────────────────── */
+const surfaces$4 = {
+    minimal: 'bg-transparent',
+    illustrated: 'bg-transparent',
+    card: 'rounded-2xl border border-edge/12 bg-panel/70 shadow-luxe-sm backdrop-blur-xl',
+    cta: 'rounded-2xl border border-primary/25 bg-primary/[0.06]',
+    error: 'rounded-2xl border border-danger/30 bg-danger/[0.06]',
+    search: 'bg-transparent',
+};
+/* ──────────────────────────── Inline illustrations ──────────────────────── */
+function BoxGlyph({ className }) {
+    return (jsxRuntimeExports.jsxs("svg", { viewBox: "0 0 48 48", fill: "none", "aria-hidden": "true", className: className, children: [jsxRuntimeExports.jsx("path", { d: "M6 16 24 6l18 10v16L24 42 6 32V16Z", stroke: "currentColor", strokeWidth: "2", strokeLinejoin: "round" }), jsxRuntimeExports.jsx("path", { d: "M6 16l18 10 18-10M24 26v16", stroke: "currentColor", strokeWidth: "2", strokeLinejoin: "round" })] }));
+}
+function SearchGlyph({ className }) {
+    return (jsxRuntimeExports.jsxs("svg", { viewBox: "0 0 48 48", fill: "none", "aria-hidden": "true", className: className, children: [jsxRuntimeExports.jsx("circle", { cx: "21", cy: "21", r: "13", stroke: "currentColor", strokeWidth: "2.4" }), jsxRuntimeExports.jsx("path", { d: "m31 31 9 9", stroke: "currentColor", strokeWidth: "2.4", strokeLinecap: "round" })] }));
+}
+function ErrorGlyph({ className }) {
+    return (jsxRuntimeExports.jsxs("svg", { viewBox: "0 0 48 48", fill: "none", "aria-hidden": "true", className: className, children: [jsxRuntimeExports.jsx("path", { d: "M24 5 44 41H4L24 5Z", stroke: "currentColor", strokeWidth: "2.4", strokeLinejoin: "round" }), jsxRuntimeExports.jsx("path", { d: "M24 19v10", stroke: "currentColor", strokeWidth: "2.6", strokeLinecap: "round" }), jsxRuntimeExports.jsx("circle", { cx: "24", cy: "35", r: "1.6", fill: "currentColor" })] }));
+}
+function SparkleGlyph({ className }) {
+    return (jsxRuntimeExports.jsx("svg", { viewBox: "0 0 48 48", fill: "none", "aria-hidden": "true", className: className, children: jsxRuntimeExports.jsx("path", { d: "M24 6 28 18.5 40.5 22 28 25.5 24 38l-4-12.5L7.5 22 20 18.5 24 6Z", stroke: "currentColor", strokeWidth: "2.2", strokeLinejoin: "round" }) }));
+}
+function defaultGlyph(variant, className) {
+    if (variant === 'search')
+        return jsxRuntimeExports.jsx(SearchGlyph, { className: className });
+    if (variant === 'error')
+        return jsxRuntimeExports.jsx(ErrorGlyph, { className: className });
+    if (variant === 'cta')
+        return jsxRuntimeExports.jsx(SparkleGlyph, { className: className });
+    return jsxRuntimeExports.jsx(BoxGlyph, { className: className });
+}
+/* ----------------------------------- Icon --------------------------------- */
+const EmptyStateIcon = React.forwardRef(function EmptyStateIcon({ children, className, tw, ...rest }, ref) {
+    const variant = useBlockVariant();
+    const isError = variant === 'error';
+    const isIllustrated = variant === 'illustrated';
+    return (jsxRuntimeExports.jsx("div", { ref: ref, className: mergeTw('grid place-items-center rounded-2xl', isIllustrated ? 'h-20 w-20' : 'h-14 w-14', isError
+            ? 'bg-danger/12 text-danger ring-1 ring-inset ring-danger/20'
+            : 'bg-primary/10 text-primary ring-1 ring-inset ring-primary/20', className, tw), ...rest, children: children ?? defaultGlyph(variant, isIllustrated ? 'h-10 w-10' : 'h-7 w-7') }));
+});
+/* ----------------------------------- Title -------------------------------- */
+const EmptyStateTitle = React.forwardRef(function EmptyStateTitle({ children, className, tw, ...rest }, ref) {
+    return (jsxRuntimeExports.jsx("h3", { ref: ref, className: mergeTw('font-display text-lg font-semibold tracking-tight text-fg', className, tw), ...rest, children: children }));
+});
+/* -------------------------------- Description ----------------------------- */
+const EmptyStateDescription = React.forwardRef(function EmptyStateDescription({ children, className, tw, ...rest }, ref) {
+    return (jsxRuntimeExports.jsx("p", { ref: ref, className: mergeTw('max-w-sm text-sm text-fg-muted', className, tw), ...rest, children: children }));
+});
+/* ----------------------------------- Action ------------------------------- */
+const EmptyStateAction = React.forwardRef(function EmptyStateAction({ children, className, tw, ...rest }, ref) {
+    return (jsxRuntimeExports.jsx("div", { ref: ref, className: mergeTw('mt-1 flex flex-wrap items-center justify-center gap-2.5', className, tw), ...rest, children: children }));
+});
+/* ----------------------------------- Root --------------------------------- */
+const EmptyStateRoot = React.forwardRef(function EmptyState({ variant = 'card', className, tw, children, icon, title, description, action, ...rest }, ref) {
+    const hasChildren = React.Children.count(children) > 0;
+    return (jsxRuntimeExports.jsx(BlockVariantContext.Provider, { value: variant, children: jsxRuntimeExports.jsx("div", { ref: ref, "data-variant": variant, className: mergeTw('flex flex-col items-center gap-4 px-6 py-12 text-center text-fg', surfaces$4[variant], className, tw), ...rest, children: hasChildren ? (children) : (jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [jsxRuntimeExports.jsx(EmptyStateIcon, { children: icon }), jsxRuntimeExports.jsxs("div", { className: "flex flex-col items-center gap-1.5", children: [title ? jsxRuntimeExports.jsx(EmptyStateTitle, { children: title }) : null, description ? (jsxRuntimeExports.jsx(EmptyStateDescription, { children: description })) : null] }), action ? (jsxRuntimeExports.jsx(EmptyStateAction, { children: action })) : variant === 'cta' ? (jsxRuntimeExports.jsx(EmptyStateAction, { children: jsxRuntimeExports.jsx(Button, { intent: "ghost", tw: mergeTw('rounded-lg', accentSolid), children: "Get started" }) })) : null] })) }) }));
+});
+const EmptyState = EmptyStateRoot;
+EmptyState.Icon = EmptyStateIcon;
+EmptyState.Title = EmptyStateTitle;
+EmptyState.Description = EmptyStateDescription;
+EmptyState.Action = EmptyStateAction;
+
+const COMMAND_PALETTE_VARIANTS = [
+    'minimal',
+    'grouped',
+    'withFooter',
+    'icons',
+    'recent',
+    'glass',
+];
+/* ─────────────────────────────── Surfaces ──────────────────────────────── */
+const contentSurfaces = {
+    minimal: 'border border-edge/12 bg-elevated shadow-luxe-sm',
+    grouped: 'border border-edge/12 bg-elevated shadow-luxe-sm',
+    withFooter: 'border border-edge/12 bg-elevated shadow-luxe-sm',
+    icons: 'border border-edge/12 bg-elevated shadow-luxe-sm',
+    recent: 'border border-edge/12 bg-elevated shadow-luxe-sm',
+    glass: 'glass',
+};
+/* ──────────────────────────── Inline icons ──────────────────────────────── */
+function SearchIcon({ className }) {
+    return (jsxRuntimeExports.jsxs("svg", { viewBox: "0 0 20 20", fill: "none", "aria-hidden": "true", className: className, children: [jsxRuntimeExports.jsx("circle", { cx: "9", cy: "9", r: "5.5", stroke: "currentColor", strokeWidth: "1.6" }), jsxRuntimeExports.jsx("path", { d: "m17 17-3.5-3.5", stroke: "currentColor", strokeWidth: "1.6", strokeLinecap: "round" })] }));
+}
+function DefaultCommandIcon({ className }) {
+    return (jsxRuntimeExports.jsxs("svg", { viewBox: "0 0 20 20", fill: "none", "aria-hidden": "true", className: className, children: [jsxRuntimeExports.jsx("rect", { x: "3.5", y: "3.5", width: "13", height: "13", rx: "3", stroke: "currentColor", strokeWidth: "1.6" }), jsxRuntimeExports.jsx("path", { d: "M7 10h6M10 7v6", stroke: "currentColor", strokeWidth: "1.6", strokeLinecap: "round" })] }));
+}
+const CommandPaletteInput = React.forwardRef(function CommandPaletteInput({ value, onValueChange, placeholder, className, tw }, ref) {
+    return (jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-2 border-b border-edge/10 px-3", children: [jsxRuntimeExports.jsx("span", { className: "text-fg-subtle", children: jsxRuntimeExports.jsx(SearchIcon, { className: "h-[18px] w-[18px]" }) }), jsxRuntimeExports.jsx(Input, { ref: ref, autoFocus: true, value: value, onChange: (e) => onValueChange?.(e.target.value), placeholder: placeholder ?? 'Type a command or search…', "aria-label": "Command", className: className, tw: mergeTw('h-12 border-0 bg-transparent px-0 text-fg shadow-none placeholder:text-fg-subtle', 'focus:ring-0 focus:ring-offset-0', tw) })] }));
+});
+const CommandPaletteGroup = React.forwardRef(function CommandPaletteGroup({ label, children, className, tw, ...rest }, ref) {
+    const variant = useBlockVariant();
+    const showLabel = label && variant !== 'minimal';
+    // Hide an empty group (all items filtered out).
+    if (React.Children.count(children) === 0)
+        return null;
+    return (jsxRuntimeExports.jsxs("div", { ref: ref, className: mergeTw('px-2 py-1.5', className, tw), ...rest, children: [showLabel ? (jsxRuntimeExports.jsx("p", { className: "px-2 pb-1 pt-1.5 font-mono text-[10px] uppercase tracking-widest text-fg-subtle", children: label })) : null, jsxRuntimeExports.jsx("div", { className: "flex flex-col gap-0.5", children: children })] }));
+});
+const CommandPaletteItem = React.forwardRef(function CommandPaletteItem({ label, icon, shortcut, onSelect, children, className, tw, ...rest }, ref) {
+    const variant = useBlockVariant();
+    const showIcon = variant === 'icons' || variant === 'recent' || icon;
+    return (jsxRuntimeExports.jsxs("button", { ref: ref, type: "button", onClick: onSelect, className: mergeTw('group flex w-full items-center gap-3 rounded-lg px-2.5 py-2 text-left text-sm text-fg-muted transition-colors', 'hover:bg-primary/12 hover:text-fg focus:bg-primary/12 focus:text-fg focus:outline-none', className, tw), ...rest, children: [showIcon ? (jsxRuntimeExports.jsx("span", { className: "grid h-5 w-5 shrink-0 place-items-center text-fg-subtle group-hover:text-primary group-focus:text-primary", children: icon ?? jsxRuntimeExports.jsx(DefaultCommandIcon, { className: "h-[18px] w-[18px]" }) })) : null, jsxRuntimeExports.jsx("span", { className: "flex-1 truncate", children: children ?? label }), shortcut ? (jsxRuntimeExports.jsx("span", { className: "ml-auto flex shrink-0 items-center gap-1", children: typeof shortcut === 'string'
+                    ? shortcut.split(' ').map((k, i) => jsxRuntimeExports.jsx(Kbd, { children: k }, i))
+                    : shortcut })) : null] }));
+});
+/* ----------------------------------- Footer ------------------------------- */
+const CommandPaletteFooter = React.forwardRef(function CommandPaletteFooter({ children, className, tw, ...rest }, ref) {
+    return (jsxRuntimeExports.jsx("div", { ref: ref, className: mergeTw('flex items-center gap-4 border-t border-edge/10 px-3 py-2 text-[11px] text-fg-subtle', className, tw), ...rest, children: children ?? (jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [jsxRuntimeExports.jsxs("span", { className: "flex items-center gap-1.5", children: [jsxRuntimeExports.jsx(Kbd, { children: "\u21B5" }), " to select"] }), jsxRuntimeExports.jsxs("span", { className: "flex items-center gap-1.5", children: [jsxRuntimeExports.jsx(Kbd, { children: "\u2191" }), jsxRuntimeExports.jsx(Kbd, { children: "\u2193" }), " to navigate"] }), jsxRuntimeExports.jsxs("span", { className: "ml-auto flex items-center gap-1.5", children: [jsxRuntimeExports.jsx(Kbd, { children: "esc" }), " to close"] })] })) }));
+});
+/* --------------------------------- Empty ---------------------------------- */
+function CommandEmpty({ query }) {
+    return (jsxRuntimeExports.jsx("div", { className: "px-4 py-10 text-center", children: jsxRuntimeExports.jsxs("p", { className: "text-sm text-fg-muted", children: ["No results for ", jsxRuntimeExports.jsxs("span", { className: "font-medium text-fg", children: ["\u201C", query, "\u201D"] })] }) }));
+}
+/* ----------------------------------- Root --------------------------------- */
+const CommandPaletteRoot = React.forwardRef(function CommandPalette({ variant = 'grouped', className, tw, open, onOpenChange, children, groups, placeholder, ...rest }, ref) {
+    const [query, setQuery] = React.useState('');
+    const hasChildren = React.Children.count(children) > 0;
+    const showFooter = variant === 'withFooter' || variant === 'glass';
+    const close = () => onOpenChange(false);
+    // Filter groups/items by the typed query (data-prop form only).
+    const filtered = React.useMemo(() => {
+        if (!groups)
+            return [];
+        const q = query.trim().toLowerCase();
+        if (!q)
+            return groups;
+        return groups
+            .map((g) => ({
+            ...g,
+            items: g.items.filter((it) => it.label.toLowerCase().includes(q)),
+        }))
+            .filter((g) => g.items.length > 0);
+    }, [groups, query]);
+    const isEmpty = !hasChildren && filtered.length === 0;
+    return (jsxRuntimeExports.jsx(BlockVariantContext.Provider, { value: variant, children: jsxRuntimeExports.jsxs(Dialog.Root, { open: open, onOpenChange: onOpenChange, children: [jsxRuntimeExports.jsx(Dialog.Overlay, { tw: "z-40 bg-canvas/70 backdrop-blur-md" }), jsxRuntimeExports.jsxs(Dialog.Content, { ref: ref, "data-variant": variant, className: className, tw: mergeTw('mt-[-12vh] w-full max-w-xl overflow-hidden rounded-2xl p-0 text-fg', contentSurfaces[variant], tw), ...rest, children: [jsxRuntimeExports.jsx(Dialog.Title, { tw: "sr-only", children: "Command palette" }), jsxRuntimeExports.jsx(Dialog.Description, { tw: "sr-only", children: "Search for a command or page and press Enter to run it." }), hasChildren ? (children) : (jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [jsxRuntimeExports.jsx(CommandPaletteInput, { value: query, onValueChange: setQuery, placeholder: placeholder }), jsxRuntimeExports.jsx("div", { className: "scrollbar-luxe max-h-[min(24rem,60vh)] overflow-y-auto py-1", children: isEmpty ? (jsxRuntimeExports.jsx(CommandEmpty, { query: query })) : (filtered.map((g, gi) => (jsxRuntimeExports.jsx(CommandPaletteGroup, { label: g.label, children: g.items.map((it, ii) => (jsxRuntimeExports.jsx(CommandPaletteItem, { label: it.label, icon: it.icon, shortcut: it.shortcut, onSelect: () => {
+                                                it.onSelect?.();
+                                                close();
+                                            } }, ii))) }, gi)))) }), showFooter ? jsxRuntimeExports.jsx(CommandPaletteFooter, {}) : null] }))] })] }) }));
+});
+const CommandPalette = CommandPaletteRoot;
+CommandPalette.Input = CommandPaletteInput;
+CommandPalette.Group = CommandPaletteGroup;
+CommandPalette.Item = CommandPaletteItem;
+CommandPalette.Footer = CommandPaletteFooter;
+
+const SIGNIN_VARIANTS = [
+    'centered',
+    'split',
+    'card',
+    'glass',
+    'minimal',
+    'social',
+];
+/* ──────────────────────────── Surfaces ──────────────────────────────────── */
+const surfaces$3 = {
+    centered: 'bg-elevated border border-edge/10 shadow-luxe',
+    split: 'bg-elevated border border-edge/10 shadow-luxe overflow-hidden',
+    card: 'bg-panel/80 border border-edge/12 shadow-luxe-sm backdrop-blur-xl',
+    glass: 'glass',
+    minimal: 'bg-transparent',
+    social: 'bg-elevated border border-edge/10 shadow-luxe-sm',
+};
+/* ──────────────────────────── Inline icons ──────────────────────────────── */
+function ProviderIcon$1({ provider, className }) {
+    if (provider === 'github') {
+        return (jsxRuntimeExports.jsx("svg", { viewBox: "0 0 24 24", fill: "currentColor", "aria-hidden": "true", className: className, children: jsxRuntimeExports.jsx("path", { d: "M12 2a10 10 0 0 0-3.16 19.49c.5.09.68-.22.68-.48l-.01-1.7c-2.78.6-3.37-1.34-3.37-1.34-.45-1.16-1.11-1.47-1.11-1.47-.91-.62.07-.6.07-.6 1 .07 1.53 1.03 1.53 1.03.9 1.53 2.34 1.09 2.91.83.09-.65.35-1.09.63-1.34-2.22-.25-4.55-1.11-4.55-4.94 0-1.09.39-1.98 1.03-2.68-.1-.25-.45-1.27.1-2.65 0 0 .84-.27 2.75 1.02a9.56 9.56 0 0 1 5 0c1.91-1.29 2.75-1.02 2.75-1.02.55 1.38.2 2.4.1 2.65.64.7 1.03 1.59 1.03 2.68 0 3.84-2.34 4.69-4.57 4.94.36.31.68.92.68 1.85l-.01 2.74c0 .27.18.58.69.48A10 10 0 0 0 12 2Z" }) }));
+    }
+    if (provider === 'apple') {
+        return (jsxRuntimeExports.jsx("svg", { viewBox: "0 0 24 24", fill: "currentColor", "aria-hidden": "true", className: className, children: jsxRuntimeExports.jsx("path", { d: "M16.37 12.7c.03 2.83 2.49 3.77 2.52 3.78-.02.07-.39 1.35-1.3 2.67-.78 1.14-1.6 2.28-2.89 2.3-1.26.03-1.67-.74-3.12-.74-1.45 0-1.9.72-3.1.77-1.24.05-2.19-1.23-2.98-2.37-1.61-2.33-2.85-6.59-1.19-9.46.82-1.42 2.3-2.32 3.9-2.35 1.22-.02 2.37.82 3.12.82.74 0 2.14-1.02 3.61-.87.61.03 2.35.25 3.46 1.86-.09.06-2.07 1.21-2.05 3.6ZM14.1 4.6c.66-.8 1.1-1.92.98-3.03-.95.04-2.1.63-2.78 1.43-.61.71-1.14 1.84-1 2.92 1.06.08 2.14-.54 2.8-1.32Z" }) }));
+    }
+    return (jsxRuntimeExports.jsxs("svg", { viewBox: "0 0 24 24", "aria-hidden": "true", className: className, children: [jsxRuntimeExports.jsx("path", { fill: "currentColor", d: "M21.6 12.23c0-.68-.06-1.34-.17-1.97H12v3.73h5.38a4.6 4.6 0 0 1-2 3.02v2.5h3.23c1.89-1.74 2.99-4.3 2.99-7.28Z", opacity: ".85" }), jsxRuntimeExports.jsx("path", { fill: "currentColor", d: "M12 22c2.7 0 4.96-.9 6.61-2.43l-3.23-2.5c-.9.6-2.05.95-3.38.95-2.6 0-4.8-1.75-5.59-4.11H3.07v2.58A10 10 0 0 0 12 22Z", opacity: ".6" }), jsxRuntimeExports.jsx("path", { fill: "currentColor", d: "M6.41 13.91a6 6 0 0 1 0-3.82V7.51H3.07a10 10 0 0 0 0 8.98l3.34-2.58Z", opacity: ".75" }), jsxRuntimeExports.jsx("path", { fill: "currentColor", d: "M12 5.98c1.47 0 2.78.5 3.81 1.49l2.85-2.85C16.95 2.99 14.69 2 12 2A10 10 0 0 0 3.07 7.51l3.34 2.58C7.2 7.73 9.4 5.98 12 5.98Z", opacity: ".5" })] }));
+}
+const providerLabels$1 = {
+    google: 'Continue with Google',
+    github: 'Continue with GitHub',
+    apple: 'Continue with Apple',
+};
+/* ──────────────────────────── Field labels ──────────────────────────────── */
+function fieldLabel(children) {
+    return (jsxRuntimeExports.jsx("span", { className: "mb-1.5 block text-sm font-medium text-fg-muted", children: children }));
+}
+/* ----------------------------------- Root --------------------------------- */
+const SignInRoot = React.forwardRef(function SignIn({ variant = 'card', className, tw, children, title = 'Welcome back', subtitle = 'Sign in to your account to continue.', onSubmit, socials, forgotHref, signupHref, ...rest }, ref) {
+    const hasChildren = React.Children.count(children) > 0;
+    const isSplit = variant === 'split';
+    const isSocialFirst = variant === 'social';
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        onSubmit?.(e);
+    };
+    const formBody = (jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [isSocialFirst && socials?.length ? (jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [jsxRuntimeExports.jsx(SignInSocial, { socials: socials }), jsxRuntimeExports.jsx(Divider$1, { children: "or sign in with email" })] })) : null, jsxRuntimeExports.jsx(SignInField, { type: "email", name: "email", label: "Email", placeholder: "you@example.com", autoComplete: "email" }), jsxRuntimeExports.jsx(SignInField, { type: "password", name: "password", label: "Password", placeholder: "\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022", autoComplete: "current-password", action: forgotHref ? jsxRuntimeExports.jsx("a", { href: forgotHref, className: "text-sm font-medium text-primary hover:underline", children: "Forgot?" }) : undefined }), jsxRuntimeExports.jsx(Checkbox, { name: "remember", label: "Remember me for 30 days", tw: "text-fg-muted" }), jsxRuntimeExports.jsx(SignInActions, { children: "Sign in" }), !isSocialFirst && socials?.length ? (jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [jsxRuntimeExports.jsx(Divider$1, { children: "or continue with" }), jsxRuntimeExports.jsx(SignInSocial, { socials: socials })] })) : null, jsxRuntimeExports.jsxs(SignInFooter, { children: ["New here?", ' ', jsxRuntimeExports.jsx("a", { href: signupHref ?? '#', onClick: (e) => !signupHref && e.preventDefault(), className: "font-medium text-primary hover:underline", children: "Create an account" })] })] }));
+    return (jsxRuntimeExports.jsx(BlockVariantContext.Provider, { value: variant, children: jsxRuntimeExports.jsx("div", { ref: ref, className: mergeTw('w-full text-fg', isSplit ? 'max-w-4xl' : 'max-w-md', 'rounded-2xl', surfaces$3[variant], className, tw), ...rest, children: hasChildren ? (jsxRuntimeExports.jsx("div", { className: mergeTw(variant === 'minimal' ? '' : 'p-7 sm:p-8'), children: children })) : isSplit ? (jsxRuntimeExports.jsxs("div", { className: "grid md:grid-cols-2", children: [jsxRuntimeExports.jsx(SignInPanel, { title: title, subtitle: subtitle }), jsxRuntimeExports.jsxs("form", { onSubmit: handleSubmit, className: "flex flex-col gap-4 p-7 sm:p-8", children: [jsxRuntimeExports.jsx(SignInHeader, { title: "Sign in", subtitle: "Use your account credentials." }), formBody] })] })) : (jsxRuntimeExports.jsxs("form", { onSubmit: handleSubmit, className: mergeTw('flex flex-col gap-4', variant === 'minimal' ? '' : 'p-7 sm:p-8'), children: [jsxRuntimeExports.jsx(SignInHeader, { title: title, subtitle: subtitle }), formBody] })) }) }));
+});
+/* ----------------------------------- Panel -------------------------------- */
+/* Side panel for the `split` design. */
+const SignInPanel = React.forwardRef(function SignInPanel({ title, subtitle, children, className, tw, ...rest }, ref) {
+    return (jsxRuntimeExports.jsx("div", { ref: ref, className: mergeTw('relative hidden flex-col justify-between gap-8 overflow-hidden bg-gradient-to-br from-primary/15 via-panel/40 to-accent2/10 p-8 md:flex', className, tw), ...rest, children: children ?? (jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [jsxRuntimeExports.jsx("span", { className: "grid h-10 w-10 place-items-center rounded-xl bg-primary text-primary-fg shadow-accent", children: jsxRuntimeExports.jsx("svg", { viewBox: "0 0 24 24", fill: "currentColor", "aria-hidden": "true", className: "h-5 w-5", children: jsxRuntimeExports.jsx("path", { d: "M12 2 14.5 9.5 22 12l-7.5 2.5L12 22l-2.5-7.5L2 12l7.5-2.5L12 2Z" }) }) }), jsxRuntimeExports.jsxs("div", { children: [jsxRuntimeExports.jsx("h3", { className: "font-display text-2xl font-semibold tracking-tight text-fg", children: title }), jsxRuntimeExports.jsx("p", { className: "mt-2 text-sm text-fg-muted", children: subtitle })] }), jsxRuntimeExports.jsx("p", { className: "font-mono text-[11px] uppercase tracking-widest text-fg-subtle", children: "comp\u00B7lib \u00B7 secure auth" })] })) }));
+});
+const SignInHeader = React.forwardRef(function SignInHeader({ title, subtitle, children, className, tw, ...rest }, ref) {
+    return (jsxRuntimeExports.jsx("div", { ref: ref, className: mergeTw('mb-2 flex flex-col gap-1.5', className, tw), ...rest, children: children ?? (jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [title ? (jsxRuntimeExports.jsx("h2", { className: "font-display text-2xl font-semibold tracking-tight text-fg", children: title })) : null, subtitle ? jsxRuntimeExports.jsx("p", { className: "text-sm text-fg-muted", children: subtitle }) : null] })) }));
+});
+const SignInField = React.forwardRef(function SignInField({ label, type = 'text', action, children, className, tw, ...rest }, ref) {
+    if (children) {
+        return (jsxRuntimeExports.jsx("div", { className: mergeTw('w-full', className, tw), children: children }));
+    }
+    return (jsxRuntimeExports.jsxs("div", { className: mergeTw('w-full', className), children: [(label || action) && (jsxRuntimeExports.jsxs("div", { className: "mb-1.5 flex items-center justify-between", children: [fieldLabel(label), action] })), jsxRuntimeExports.jsx(Input, { ref: ref, type: type, tw: mergeTw(inputSurface, 'h-11 rounded-xl', tw), ...rest })] }));
+});
+/* ----------------------------------- Actions ------------------------------ */
+const SignInActions = React.forwardRef(function SignInActions({ children, className, tw, ...rest }, ref) {
+    return (jsxRuntimeExports.jsx(Button, { ref: ref, type: "submit", fullWidth: true, intent: "ghost", tw: mergeTw('mt-1 h-11 rounded-xl', accentSolid, className, tw), ...rest, children: children }));
+});
+const SignInSocial = React.forwardRef(function SignInSocial({ socials, children, className, tw, ...rest }, ref) {
+    return (jsxRuntimeExports.jsx("div", { ref: ref, className: mergeTw('flex flex-col gap-2.5', className, tw), ...rest, children: children ??
+            socials?.map((s, i) => (jsxRuntimeExports.jsxs(Button, { intent: "ghost", fullWidth: true, as: "a", href: s.href ?? '#', onClick: (e) => !s.href && e.preventDefault(), tw: mergeTw('h-11 rounded-xl', ghostControl), children: [jsxRuntimeExports.jsx(ProviderIcon$1, { provider: s.provider, className: "h-[18px] w-[18px]" }), s.label ?? providerLabels$1[s.provider]] }, i))) }));
+});
+/* ----------------------------------- Footer ------------------------------- */
+const SignInFooter = React.forwardRef(function SignInFooter({ children, className, tw, ...rest }, ref) {
+    return (jsxRuntimeExports.jsx("p", { ref: ref, className: mergeTw('mt-1 text-center text-sm text-fg-muted', className, tw), ...rest, children: children }));
+});
+/* ----------------------------------- Divider ------------------------------ */
+function Divider$1({ children }) {
+    return (jsxRuntimeExports.jsxs("div", { className: "my-1 flex items-center gap-3 text-xs text-fg-subtle", children: [jsxRuntimeExports.jsx("span", { className: "h-px flex-1 bg-edge/15" }), jsxRuntimeExports.jsx("span", { className: "font-mono uppercase tracking-widest", children: children }), jsxRuntimeExports.jsx("span", { className: "h-px flex-1 bg-edge/15" })] }));
+}
+const SignIn = SignInRoot;
+SignIn.Panel = SignInPanel;
+SignIn.Header = SignInHeader;
+SignIn.Field = SignInField;
+SignIn.Actions = SignInActions;
+SignIn.Social = SignInSocial;
+SignIn.Footer = SignInFooter;
+
+const SIGNUP_VARIANTS = [
+    'centered',
+    'split',
+    'card',
+    'glass',
+    'steps',
+    'social',
+];
+/* ──────────────────────────── Surfaces ──────────────────────────────────── */
+const surfaces$2 = {
+    centered: 'bg-elevated border border-edge/10 shadow-luxe',
+    split: 'bg-elevated border border-edge/10 shadow-luxe overflow-hidden',
+    card: 'bg-panel/80 border border-edge/12 shadow-luxe-sm backdrop-blur-xl',
+    glass: 'glass',
+    steps: 'bg-elevated border border-edge/10 shadow-luxe',
+    social: 'bg-elevated border border-edge/10 shadow-luxe-sm',
+};
+/* ──────────────────────────── Inline icons ──────────────────────────────── */
+function ProviderIcon({ provider, className }) {
+    if (provider === 'github') {
+        return (jsxRuntimeExports.jsx("svg", { viewBox: "0 0 24 24", fill: "currentColor", "aria-hidden": "true", className: className, children: jsxRuntimeExports.jsx("path", { d: "M12 2a10 10 0 0 0-3.16 19.49c.5.09.68-.22.68-.48l-.01-1.7c-2.78.6-3.37-1.34-3.37-1.34-.45-1.16-1.11-1.47-1.11-1.47-.91-.62.07-.6.07-.6 1 .07 1.53 1.03 1.53 1.03.9 1.53 2.34 1.09 2.91.83.09-.65.35-1.09.63-1.34-2.22-.25-4.55-1.11-4.55-4.94 0-1.09.39-1.98 1.03-2.68-.1-.25-.45-1.27.1-2.65 0 0 .84-.27 2.75 1.02a9.56 9.56 0 0 1 5 0c1.91-1.29 2.75-1.02 2.75-1.02.55 1.38.2 2.4.1 2.65.64.7 1.03 1.59 1.03 2.68 0 3.84-2.34 4.69-4.57 4.94.36.31.68.92.68 1.85l-.01 2.74c0 .27.18.58.69.48A10 10 0 0 0 12 2Z" }) }));
+    }
+    if (provider === 'apple') {
+        return (jsxRuntimeExports.jsx("svg", { viewBox: "0 0 24 24", fill: "currentColor", "aria-hidden": "true", className: className, children: jsxRuntimeExports.jsx("path", { d: "M16.37 12.7c.03 2.83 2.49 3.77 2.52 3.78-.02.07-.39 1.35-1.3 2.67-.78 1.14-1.6 2.28-2.89 2.3-1.26.03-1.67-.74-3.12-.74-1.45 0-1.9.72-3.1.77-1.24.05-2.19-1.23-2.98-2.37-1.61-2.33-2.85-6.59-1.19-9.46.82-1.42 2.3-2.32 3.9-2.35 1.22-.02 2.37.82 3.12.82.74 0 2.14-1.02 3.61-.87.61.03 2.35.25 3.46 1.86-.09.06-2.07 1.21-2.05 3.6ZM14.1 4.6c.66-.8 1.1-1.92.98-3.03-.95.04-2.1.63-2.78 1.43-.61.71-1.14 1.84-1 2.92 1.06.08 2.14-.54 2.8-1.32Z" }) }));
+    }
+    return (jsxRuntimeExports.jsxs("svg", { viewBox: "0 0 24 24", "aria-hidden": "true", className: className, children: [jsxRuntimeExports.jsx("path", { fill: "currentColor", d: "M21.6 12.23c0-.68-.06-1.34-.17-1.97H12v3.73h5.38a4.6 4.6 0 0 1-2 3.02v2.5h3.23c1.89-1.74 2.99-4.3 2.99-7.28Z", opacity: ".85" }), jsxRuntimeExports.jsx("path", { fill: "currentColor", d: "M12 22c2.7 0 4.96-.9 6.61-2.43l-3.23-2.5c-.9.6-2.05.95-3.38.95-2.6 0-4.8-1.75-5.59-4.11H3.07v2.58A10 10 0 0 0 12 22Z", opacity: ".6" }), jsxRuntimeExports.jsx("path", { fill: "currentColor", d: "M6.41 13.91a6 6 0 0 1 0-3.82V7.51H3.07a10 10 0 0 0 0 8.98l3.34-2.58Z", opacity: ".75" }), jsxRuntimeExports.jsx("path", { fill: "currentColor", d: "M12 5.98c1.47 0 2.78.5 3.81 1.49l2.85-2.85C16.95 2.99 14.69 2 12 2A10 10 0 0 0 3.07 7.51l3.34 2.58C7.2 7.73 9.4 5.98 12 5.98Z", opacity: ".5" })] }));
+}
+const providerLabels = {
+    google: 'Sign up with Google',
+    github: 'Sign up with GitHub',
+    apple: 'Sign up with Apple',
+};
+/* ----------------------------------- Root --------------------------------- */
+const SignUpRoot = React.forwardRef(function SignUp({ variant = 'card', className, tw, children, title = 'Create your account', subtitle = 'Start your 14-day free trial — no card required.', onSubmit, socials, signinHref, ...rest }, ref) {
+    const hasChildren = React.Children.count(children) > 0;
+    const isSplit = variant === 'split';
+    const isSteps = variant === 'steps';
+    const isSocialFirst = variant === 'social';
+    const [step, setStep] = React.useState(1);
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        onSubmit?.(e);
+    };
+    const terms = (jsxRuntimeExports.jsx(Checkbox, { name: "terms", label: "I agree to the Terms of Service and Privacy Policy", tw: "text-fg-muted" }));
+    const footer = (jsxRuntimeExports.jsxs(SignUpFooter, { children: ["Already have an account?", ' ', jsxRuntimeExports.jsx("a", { href: signinHref ?? '#', onClick: (e) => !signinHref && e.preventDefault(), className: "font-medium text-primary hover:underline", children: "Sign in" })] }));
+    /* —— steps design: split the fields across two panes —— */
+    if (isSteps && !hasChildren) {
+        return (jsxRuntimeExports.jsx(BlockVariantContext.Provider, { value: variant, children: jsxRuntimeExports.jsx("div", { ref: ref, className: mergeTw('w-full max-w-md rounded-2xl text-fg', surfaces$2[variant], className, tw), ...rest, children: jsxRuntimeExports.jsxs("form", { onSubmit: handleSubmit, className: "flex flex-col gap-4 p-7 sm:p-8", children: [jsxRuntimeExports.jsx(Stepper$1, { step: step, steps: ['Account', 'Profile'] }), jsxRuntimeExports.jsx(SignUpHeader, { title: title, subtitle: subtitle }), step === 1 ? (jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [jsxRuntimeExports.jsx(SignUpField, { type: "email", name: "email", label: "Email", placeholder: "you@example.com", autoComplete: "email" }), jsxRuntimeExports.jsx(SignUpField, { type: "password", name: "password", label: "Password", placeholder: "\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022", autoComplete: "new-password" }), jsxRuntimeExports.jsx(Button, { type: "button", fullWidth: true, intent: "ghost", onClick: () => setStep(2), tw: mergeTw('mt-1 h-11 rounded-xl', accentSolid), children: "Continue" })] })) : (jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [jsxRuntimeExports.jsx(SignUpField, { type: "text", name: "name", label: "Full name", placeholder: "Ada Lovelace", autoComplete: "name" }), jsxRuntimeExports.jsx(SignUpField, { type: "text", name: "company", label: "Company (optional)", placeholder: "Analytical Engines Ltd." }), terms, jsxRuntimeExports.jsxs("div", { className: "mt-1 flex gap-2.5", children: [jsxRuntimeExports.jsx(Button, { type: "button", intent: "ghost", onClick: () => setStep(1), tw: mergeTw('h-11 rounded-xl', ghostControl), children: "Back" }), jsxRuntimeExports.jsx(SignUpActions, { children: "Create account" })] })] })), footer] }) }) }));
+    }
+    const formBody = (jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [isSocialFirst && socials?.length ? (jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [jsxRuntimeExports.jsx(SignUpSocial, { socials: socials }), jsxRuntimeExports.jsx(Divider, { children: "or sign up with email" })] })) : null, jsxRuntimeExports.jsx(SignUpField, { type: "text", name: "name", label: "Full name", placeholder: "Ada Lovelace", autoComplete: "name" }), jsxRuntimeExports.jsx(SignUpField, { type: "email", name: "email", label: "Email", placeholder: "you@example.com", autoComplete: "email" }), jsxRuntimeExports.jsx(SignUpField, { type: "password", name: "password", label: "Password", placeholder: "\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022", autoComplete: "new-password" }), terms, jsxRuntimeExports.jsx(SignUpActions, { children: "Create account" }), !isSocialFirst && socials?.length ? (jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [jsxRuntimeExports.jsx(Divider, { children: "or continue with" }), jsxRuntimeExports.jsx(SignUpSocial, { socials: socials })] })) : null, footer] }));
+    return (jsxRuntimeExports.jsx(BlockVariantContext.Provider, { value: variant, children: jsxRuntimeExports.jsx("div", { ref: ref, className: mergeTw('w-full text-fg', isSplit ? 'max-w-4xl' : 'max-w-md', 'rounded-2xl', surfaces$2[variant], className, tw), ...rest, children: hasChildren ? (jsxRuntimeExports.jsx("div", { className: "p-7 sm:p-8", children: children })) : isSplit ? (jsxRuntimeExports.jsxs("div", { className: "grid md:grid-cols-2", children: [jsxRuntimeExports.jsx(SignUpPanel, { title: title, subtitle: subtitle }), jsxRuntimeExports.jsxs("form", { onSubmit: handleSubmit, className: "flex flex-col gap-4 p-7 sm:p-8", children: [jsxRuntimeExports.jsx(SignUpHeader, { title: "Get started", subtitle: "It only takes a minute." }), formBody] })] })) : (jsxRuntimeExports.jsxs("form", { onSubmit: handleSubmit, className: "flex flex-col gap-4 p-7 sm:p-8", children: [jsxRuntimeExports.jsx(SignUpHeader, { title: title, subtitle: subtitle }), formBody] })) }) }));
+});
+/* ----------------------------------- Stepper ------------------------------ */
+function Stepper$1({ step, steps }) {
+    return (jsxRuntimeExports.jsx("div", { className: "mb-2 flex items-center gap-3", children: steps.map((label, i) => {
+            const n = i + 1;
+            const done = n < step;
+            const active = n === step;
+            return (jsxRuntimeExports.jsxs(React.Fragment, { children: [jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-2", children: [jsxRuntimeExports.jsx("span", { className: mergeTw('grid h-7 w-7 place-items-center rounded-full border text-xs font-semibold transition', active || done
+                                    ? 'border-primary bg-primary text-primary-fg'
+                                    : 'border-edge/20 bg-fg/[0.04] text-fg-subtle'), children: n }), jsxRuntimeExports.jsx("span", { className: mergeTw('text-sm font-medium', active ? 'text-fg' : 'text-fg-subtle'), children: label })] }), n < steps.length ? jsxRuntimeExports.jsx("span", { className: "h-px flex-1 bg-edge/15" }) : null] }, label));
+        }) }));
+}
+/* ----------------------------------- Panel -------------------------------- */
+const SignUpPanel = React.forwardRef(function SignUpPanel({ title, subtitle, children, className, tw, ...rest }, ref) {
+    return (jsxRuntimeExports.jsx("div", { ref: ref, className: mergeTw('relative hidden flex-col justify-between gap-8 overflow-hidden bg-gradient-to-br from-primary/15 via-panel/40 to-accent2/10 p-8 md:flex', className, tw), ...rest, children: children ?? (jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [jsxRuntimeExports.jsx("span", { className: "grid h-10 w-10 place-items-center rounded-xl bg-primary text-primary-fg shadow-accent", children: jsxRuntimeExports.jsx("svg", { viewBox: "0 0 24 24", fill: "currentColor", "aria-hidden": "true", className: "h-5 w-5", children: jsxRuntimeExports.jsx("path", { d: "M12 2 14.5 9.5 22 12l-7.5 2.5L12 22l-2.5-7.5L2 12l7.5-2.5L12 2Z" }) }) }), jsxRuntimeExports.jsxs("div", { children: [jsxRuntimeExports.jsx("h3", { className: "font-display text-2xl font-semibold tracking-tight text-fg", children: title }), jsxRuntimeExports.jsx("p", { className: "mt-2 text-sm text-fg-muted", children: subtitle }), jsxRuntimeExports.jsx("ul", { className: "mt-5 flex flex-col gap-2.5 text-sm text-fg-muted", children: ['Unlimited components', 'Theme across 4 palettes', 'Cancel anytime'].map((f) => (jsxRuntimeExports.jsxs("li", { className: "flex items-center gap-2.5", children: [jsxRuntimeExports.jsx("span", { className: "grid h-5 w-5 place-items-center rounded-full bg-primary/15 text-primary", children: jsxRuntimeExports.jsx("svg", { viewBox: "0 0 20 20", fill: "none", "aria-hidden": "true", className: "h-3 w-3", children: jsxRuntimeExports.jsx("path", { d: "m4 10 4 4 8-9", stroke: "currentColor", strokeWidth: "2", strokeLinecap: "round", strokeLinejoin: "round" }) }) }), f] }, f))) })] }), jsxRuntimeExports.jsx("p", { className: "font-mono text-[11px] uppercase tracking-widest text-fg-subtle", children: "comp\u00B7lib \u00B7 join 12k builders" })] })) }));
+});
+const SignUpHeader = React.forwardRef(function SignUpHeader({ title, subtitle, children, className, tw, ...rest }, ref) {
+    return (jsxRuntimeExports.jsx("div", { ref: ref, className: mergeTw('mb-2 flex flex-col gap-1.5', className, tw), ...rest, children: children ?? (jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [title ? jsxRuntimeExports.jsx("h2", { className: "font-display text-2xl font-semibold tracking-tight text-fg", children: title }) : null, subtitle ? jsxRuntimeExports.jsx("p", { className: "text-sm text-fg-muted", children: subtitle }) : null] })) }));
+});
+const SignUpField = React.forwardRef(function SignUpField({ label, type = 'text', children, className, tw, ...rest }, ref) {
+    if (children) {
+        return jsxRuntimeExports.jsx("div", { className: mergeTw('w-full', className, tw), children: children });
+    }
+    return (jsxRuntimeExports.jsxs("div", { className: mergeTw('w-full', className), children: [label ? jsxRuntimeExports.jsx("span", { className: "mb-1.5 block text-sm font-medium text-fg-muted", children: label }) : null, jsxRuntimeExports.jsx(Input, { ref: ref, type: type, tw: mergeTw(inputSurface, 'h-11 rounded-xl', tw), ...rest })] }));
+});
+/* ----------------------------------- Actions ------------------------------ */
+const SignUpActions = React.forwardRef(function SignUpActions({ children, className, tw, ...rest }, ref) {
+    return (jsxRuntimeExports.jsx(Button, { ref: ref, type: "submit", fullWidth: true, intent: "ghost", tw: mergeTw('mt-1 h-11 rounded-xl', accentSolid, className, tw), ...rest, children: children }));
+});
+const SignUpSocial = React.forwardRef(function SignUpSocial({ socials, children, className, tw, ...rest }, ref) {
+    return (jsxRuntimeExports.jsx("div", { ref: ref, className: mergeTw('flex flex-col gap-2.5', className, tw), ...rest, children: children ??
+            socials?.map((s, i) => (jsxRuntimeExports.jsxs(Button, { intent: "ghost", fullWidth: true, as: "a", href: s.href ?? '#', onClick: (e) => !s.href && e.preventDefault(), tw: mergeTw('h-11 rounded-xl', ghostControl), children: [jsxRuntimeExports.jsx(ProviderIcon, { provider: s.provider, className: "h-[18px] w-[18px]" }), s.label ?? providerLabels[s.provider]] }, i))) }));
+});
+/* ----------------------------------- Footer ------------------------------- */
+const SignUpFooter = React.forwardRef(function SignUpFooter({ children, className, tw, ...rest }, ref) {
+    return (jsxRuntimeExports.jsx("p", { ref: ref, className: mergeTw('mt-1 text-center text-sm text-fg-muted', className, tw), ...rest, children: children }));
+});
+/* ----------------------------------- Divider ------------------------------ */
+function Divider({ children }) {
+    return (jsxRuntimeExports.jsxs("div", { className: "my-1 flex items-center gap-3 text-xs text-fg-subtle", children: [jsxRuntimeExports.jsx("span", { className: "h-px flex-1 bg-edge/15" }), jsxRuntimeExports.jsx("span", { className: "font-mono uppercase tracking-widest", children: children }), jsxRuntimeExports.jsx("span", { className: "h-px flex-1 bg-edge/15" })] }));
+}
+const SignUp = SignUpRoot;
+SignUp.Panel = SignUpPanel;
+SignUp.Header = SignUpHeader;
+SignUp.Field = SignUpField;
+SignUp.Actions = SignUpActions;
+SignUp.Social = SignUpSocial;
+SignUp.Footer = SignUpFooter;
+
+const SETTINGSFORM_VARIANTS = [
+    'tabs',
+    'sections',
+    'sidebar',
+    'cards',
+    'inline',
+    'split',
+];
+const GROUPS = ['Profile', 'Account', 'Notifications'];
+/* ──────────────────────────── Field labels ──────────────────────────────── */
+function fieldClasses(extra) {
+    return mergeTw(inputSurface, 'h-11 rounded-xl', extra);
+}
+const SettingsField = React.forwardRef(function SettingsField({ label, hint, children, className, tw, ...rest }, ref) {
+    return (jsxRuntimeExports.jsxs("div", { ref: ref, className: mergeTw('w-full', className, tw), ...rest, children: [label ? jsxRuntimeExports.jsx("span", { className: "mb-1.5 block text-sm font-medium text-fg-muted", children: label }) : null, children, hint ? jsxRuntimeExports.jsx("p", { className: "mt-1.5 text-xs text-fg-subtle", children: hint }) : null] }));
+});
+const SettingsGroup = React.forwardRef(function SettingsGroup({ title, description, carded, children, className, tw, ...rest }, ref) {
+    return (jsxRuntimeExports.jsxs("section", { ref: ref, className: mergeTw(carded ? 'rounded-2xl border border-edge/12 bg-panel/60 p-6 shadow-luxe-sm' : '', className, tw), ...rest, children: [(title || description) && (jsxRuntimeExports.jsxs("header", { className: "mb-4", children: [title ? jsxRuntimeExports.jsx("h3", { className: "font-display text-lg font-semibold tracking-tight text-fg", children: title }) : null, description ? jsxRuntimeExports.jsx("p", { className: "mt-1 text-sm text-fg-muted", children: description }) : null] })), jsxRuntimeExports.jsx("div", { className: "flex flex-col gap-5", children: children })] }));
+});
+/* ------------------------------ Group bodies ------------------------------ */
+/* The default field sets per group, reused across every design. */
+function ProfileFields() {
+    return (jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-4", children: [jsxRuntimeExports.jsx(Avatar, { size: "xl", tw: "bg-primary/15 text-primary font-semibold", children: "AL" }), jsxRuntimeExports.jsxs("div", { className: "flex flex-col gap-2", children: [jsxRuntimeExports.jsx(Button, { intent: "ghost", tw: mergeTw('h-9 rounded-lg', ghostControl), children: "Upload new photo" }), jsxRuntimeExports.jsx("p", { className: "text-xs text-fg-subtle", children: "PNG or JPG, up to 2MB." })] })] }), jsxRuntimeExports.jsxs("div", { className: "grid gap-5 sm:grid-cols-2", children: [jsxRuntimeExports.jsx(SettingsField, { label: "First name", children: jsxRuntimeExports.jsx(Input, { defaultValue: "Ada", tw: fieldClasses() }) }), jsxRuntimeExports.jsx(SettingsField, { label: "Last name", children: jsxRuntimeExports.jsx(Input, { defaultValue: "Lovelace", tw: fieldClasses() }) })] }), jsxRuntimeExports.jsx(SettingsField, { label: "Bio", hint: "Brief description for your profile.", children: jsxRuntimeExports.jsx(Textarea, { rows: 3, defaultValue: "Building delightful interfaces with comp\u00B7lib.", tw: mergeTw(inputSurface, 'rounded-xl') }) })] }));
+}
+function AccountFields() {
+    return (jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [jsxRuntimeExports.jsx(SettingsField, { label: "Email", children: jsxRuntimeExports.jsx(Input, { type: "email", defaultValue: "ada@example.com", tw: fieldClasses() }) }), jsxRuntimeExports.jsxs("div", { className: "grid gap-5 sm:grid-cols-2", children: [jsxRuntimeExports.jsx(SettingsField, { label: "Language", children: jsxRuntimeExports.jsxs(Select, { defaultValue: "en", tw: fieldClasses('bg-elevated/70'), children: [jsxRuntimeExports.jsx("option", { value: "en", children: "English" }), jsxRuntimeExports.jsx("option", { value: "es", children: "Espa\u00F1ol" }), jsxRuntimeExports.jsx("option", { value: "fr", children: "Fran\u00E7ais" })] }) }), jsxRuntimeExports.jsx(SettingsField, { label: "Timezone", children: jsxRuntimeExports.jsxs(Select, { defaultValue: "utc", tw: fieldClasses('bg-elevated/70'), children: [jsxRuntimeExports.jsx("option", { value: "utc", children: "UTC" }), jsxRuntimeExports.jsx("option", { value: "est", children: "Eastern (EST)" }), jsxRuntimeExports.jsx("option", { value: "pst", children: "Pacific (PST)" })] }) })] })] }));
+}
+function NotificationFields() {
+    const rows = [
+        { label: 'Product updates', desc: 'News about features and improvements.', on: true },
+        { label: 'Security alerts', desc: 'Critical alerts about your account.', on: true },
+        { label: 'Weekly digest', desc: 'A summary of activity every Monday.', on: false },
+    ];
+    return (jsxRuntimeExports.jsx(jsxRuntimeExports.Fragment, { children: rows.map((r) => (jsxRuntimeExports.jsx(ToggleRow, { label: r.label, description: r.desc, defaultChecked: r.on }, r.label))) }));
+}
+const groupBodies = {
+    Profile: ProfileFields,
+    Account: AccountFields,
+    Notifications: NotificationFields,
+};
+const groupDescriptions = {
+    Profile: 'Update your photo and personal details.',
+    Account: 'Manage your email, language, and region.',
+    Notifications: 'Choose what we email you about.',
+};
+const ToggleRow = React.forwardRef(function ToggleRow({ label, description, defaultChecked, className, tw, ...rest }, ref) {
+    const [on, setOn] = React.useState(!!defaultChecked);
+    return (jsxRuntimeExports.jsxs("div", { className: mergeTw('flex items-center justify-between gap-4 rounded-xl border border-edge/10 bg-fg/[0.03] px-4 py-3', className, tw), children: [jsxRuntimeExports.jsxs("div", { className: "flex flex-col", children: [label ? jsxRuntimeExports.jsx("span", { className: "text-sm font-medium text-fg", children: label }) : null, description ? jsxRuntimeExports.jsx("span", { className: "text-xs text-fg-subtle", children: description }) : null] }), jsxRuntimeExports.jsx(Toggle, { ref: ref, checked: on, onChange: (e) => setOn(e.currentTarget.checked), ...rest })] }));
+});
+const SettingsSaveBar = React.forwardRef(function SettingsSaveBar({ sticky = true, children, className, tw, ...rest }, ref) {
+    return (jsxRuntimeExports.jsx("div", { ref: ref, className: mergeTw('z-10 flex items-center justify-end gap-3 border-t border-edge/10 bg-canvas/80 px-1 py-4 backdrop-blur-xl', sticky ? 'sticky bottom-0' : '', className, tw), ...rest, children: children ?? (jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [jsxRuntimeExports.jsx(Button, { type: "button", intent: "ghost", tw: mergeTw('h-10 rounded-xl', ghostControl), children: "Cancel" }), jsxRuntimeExports.jsx(Button, { type: "submit", intent: "ghost", tw: mergeTw('h-10 rounded-xl', accentSolid), children: "Save changes" })] })) }));
+});
+/* ----------------------------------- Root --------------------------------- */
+const SettingsFormRoot = React.forwardRef(function SettingsForm({ variant = 'sections', className, tw, children, onSubmit, ...rest }, ref) {
+    const hasChildren = React.Children.count(children) > 0;
+    const [active, setActive] = React.useState('Profile');
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        onSubmit?.(e);
+    };
+    const renderGroup = (key, carded = false) => {
+        const Body = groupBodies[key];
+        return (jsxRuntimeExports.jsx(SettingsGroup, { title: key, description: groupDescriptions[key], carded: carded, children: jsxRuntimeExports.jsx(Body, {}) }, key));
+    };
+    let body;
+    if (hasChildren) {
+        body = children;
+    }
+    else if (variant === 'tabs') {
+        body = (jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [jsxRuntimeExports.jsxs(Tabs.Root, { defaultValue: "Profile", children: [jsxRuntimeExports.jsx(Tabs.TabList, { tw: "gap-1 border-edge/12", children: GROUPS.map((g) => (jsxRuntimeExports.jsx(Tabs.Tab, { value: g, tw: "rounded-none border-b-2 border-transparent px-4 py-2.5 text-fg-muted aria-selected:border-primary aria-selected:text-fg hover:text-fg", children: g }, g))) }), jsxRuntimeExports.jsx(Tabs.TabPanels, { tw: "mt-6", children: GROUPS.map((g) => (jsxRuntimeExports.jsx(Tabs.TabPanel, { value: g, children: renderGroup(g) }, g))) })] }), jsxRuntimeExports.jsx(SettingsSaveBar, { tw: "mt-6" })] }));
+    }
+    else if (variant === 'sidebar' || variant === 'split') {
+        body = (jsxRuntimeExports.jsxs("div", { className: "grid gap-8 md:grid-cols-[200px_1fr]", children: [jsxRuntimeExports.jsx("nav", { className: "flex flex-row gap-1 md:flex-col", children: GROUPS.map((g) => (jsxRuntimeExports.jsx("button", { type: "button", onClick: () => setActive(g), "aria-current": active === g ? 'true' : undefined, className: mergeTw('rounded-lg px-3 py-2 text-left text-sm font-medium transition-colors', active === g ? 'bg-primary/10 text-primary' : 'text-fg-muted hover:bg-fg/[0.05] hover:text-fg'), children: g }, g))) }), jsxRuntimeExports.jsxs("div", { children: [variant === 'split'
+                            ? GROUPS.map((g) => renderGroup(g, true))
+                            : renderGroup(active), jsxRuntimeExports.jsx(SettingsSaveBar, { tw: "mt-6" })] })] }));
+    }
+    else if (variant === 'cards') {
+        body = (jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [jsxRuntimeExports.jsx("div", { className: "flex flex-col gap-6", children: GROUPS.map((g) => renderGroup(g, true)) }), jsxRuntimeExports.jsx(SettingsSaveBar, { tw: "mt-6" })] }));
+    }
+    else if (variant === 'inline') {
+        body = (jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [jsxRuntimeExports.jsx("div", { className: "flex flex-col divide-y divide-edge/10", children: GROUPS.map((g) => (jsxRuntimeExports.jsx("div", { className: "py-6 first:pt-0", children: renderGroup(g) }, g))) }), jsxRuntimeExports.jsx(SettingsSaveBar, { tw: "mt-2" })] }));
+    }
+    else {
+        /* sections (default) */
+        body = (jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [jsxRuntimeExports.jsx("div", { className: "flex flex-col gap-10", children: GROUPS.map((g) => renderGroup(g)) }), jsxRuntimeExports.jsx(SettingsSaveBar, { tw: "mt-8" })] }));
+    }
+    const split = variant === 'split';
+    return (jsxRuntimeExports.jsx(BlockVariantContext.Provider, { value: variant, children: jsxRuntimeExports.jsx("form", { ref: ref, onSubmit: handleSubmit, className: mergeTw('w-full text-fg', split ? 'max-w-4xl' : 'max-w-2xl', 'rounded-2xl border border-edge/10 bg-elevated p-6 shadow-luxe-sm sm:p-8', className, tw), ...rest, children: body }) }));
+});
+const SettingsForm = SettingsFormRoot;
+SettingsForm.Group = SettingsGroup;
+SettingsForm.Field = SettingsField;
+SettingsForm.ToggleRow = ToggleRow;
+SettingsForm.SaveBar = SettingsSaveBar;
+
+const CONTACTFORM_VARIANTS = [
+    'simple',
+    'split',
+    'card',
+    'glass',
+    'withDetails',
+    'minimal',
+];
+/* ──────────────────────────── Surfaces ──────────────────────────────────── */
+const surfaces$1 = {
+    simple: 'bg-elevated border border-edge/10 shadow-luxe-sm',
+    split: 'bg-elevated border border-edge/10 shadow-luxe overflow-hidden',
+    card: 'bg-panel/80 border border-edge/12 shadow-luxe-sm backdrop-blur-xl',
+    glass: 'glass',
+    withDetails: 'bg-elevated border border-edge/10 shadow-luxe overflow-hidden',
+    minimal: 'bg-transparent',
+};
+/* ──────────────────────────── Inline icons ──────────────────────────────── */
+function MailIcon({ className }) {
+    return (jsxRuntimeExports.jsxs("svg", { viewBox: "0 0 24 24", fill: "none", "aria-hidden": "true", className: className, children: [jsxRuntimeExports.jsx("rect", { x: "3", y: "5", width: "18", height: "14", rx: "2", stroke: "currentColor", strokeWidth: "1.6" }), jsxRuntimeExports.jsx("path", { d: "m4 7 8 6 8-6", stroke: "currentColor", strokeWidth: "1.6", strokeLinecap: "round", strokeLinejoin: "round" })] }));
+}
+function PhoneIcon({ className }) {
+    return (jsxRuntimeExports.jsx("svg", { viewBox: "0 0 24 24", fill: "none", "aria-hidden": "true", className: className, children: jsxRuntimeExports.jsx("path", { d: "M5 4h3l1.5 4-2 1.5a12 12 0 0 0 5 5l1.5-2 4 1.5v3a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2Z", stroke: "currentColor", strokeWidth: "1.6", strokeLinejoin: "round" }) }));
+}
+function PinIcon({ className }) {
+    return (jsxRuntimeExports.jsxs("svg", { viewBox: "0 0 24 24", fill: "none", "aria-hidden": "true", className: className, children: [jsxRuntimeExports.jsx("path", { d: "M12 21s7-5.5 7-11a7 7 0 1 0-14 0c0 5.5 7 11 7 11Z", stroke: "currentColor", strokeWidth: "1.6", strokeLinejoin: "round" }), jsxRuntimeExports.jsx("circle", { cx: "12", cy: "10", r: "2.5", stroke: "currentColor", strokeWidth: "1.6" })] }));
+}
+/* ----------------------------------- Root --------------------------------- */
+const ContactFormRoot = React.forwardRef(function ContactForm({ variant = 'simple', className, tw, children, title = 'Get in touch', subtitle = 'We usually reply within one business day.', onSubmit, details = { email: 'hello@comp-lib.dev', phone: '+1 (555) 012-3456', address: '500 Market St, San Francisco' }, ...rest }, ref) {
+    const hasChildren = React.Children.count(children) > 0;
+    const withSidebar = variant === 'split' || variant === 'withDetails';
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        onSubmit?.(e);
+    };
+    const fields = (jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [jsxRuntimeExports.jsxs("div", { className: "grid gap-4 sm:grid-cols-2", children: [jsxRuntimeExports.jsx(ContactField, { label: "Name", children: jsxRuntimeExports.jsx(Input, { name: "name", placeholder: "Ada Lovelace", autoComplete: "name", tw: mergeTw(inputSurface, 'h-11 rounded-xl') }) }), jsxRuntimeExports.jsx(ContactField, { label: "Email", children: jsxRuntimeExports.jsx(Input, { type: "email", name: "email", placeholder: "you@example.com", autoComplete: "email", tw: mergeTw(inputSurface, 'h-11 rounded-xl') }) })] }), jsxRuntimeExports.jsx(ContactField, { label: "Subject", children: jsxRuntimeExports.jsx(Input, { name: "subject", placeholder: "How can we help?", tw: mergeTw(inputSurface, 'h-11 rounded-xl') }) }), jsxRuntimeExports.jsx(ContactField, { label: "Message", children: jsxRuntimeExports.jsx(Textarea, { name: "message", rows: 5, placeholder: "Tell us a bit more\u2026", tw: mergeTw(inputSurface, 'rounded-xl') }) }), jsxRuntimeExports.jsx(ContactSubmit, { children: "Send message" })] }));
+    const form = (jsxRuntimeExports.jsxs("form", { onSubmit: handleSubmit, className: mergeTw('flex flex-col gap-4', variant === 'minimal' ? '' : 'p-7 sm:p-8'), children: [!withSidebar ? jsxRuntimeExports.jsx(ContactHeader, { title: title, subtitle: subtitle }) : null, fields] }));
+    return (jsxRuntimeExports.jsx(BlockVariantContext.Provider, { value: variant, children: jsxRuntimeExports.jsx("div", { ref: ref, className: mergeTw('w-full text-fg', withSidebar ? 'max-w-4xl' : 'max-w-xl', 'rounded-2xl', surfaces$1[variant], className, tw), ...rest, children: hasChildren ? (jsxRuntimeExports.jsx("div", { className: mergeTw(variant === 'minimal' ? '' : 'p-7 sm:p-8'), children: children })) : withSidebar ? (jsxRuntimeExports.jsxs("div", { className: mergeTw('grid md:grid-cols-2', variant === 'withDetails' && 'md:grid-cols-[1fr_1.2fr]'), children: [jsxRuntimeExports.jsx(ContactDetailsPanel, { title: title, subtitle: subtitle, details: details }), form] })) : (form) }) }));
+});
+const ContactHeader = React.forwardRef(function ContactHeader({ title, subtitle, children, className, tw, ...rest }, ref) {
+    return (jsxRuntimeExports.jsx("div", { ref: ref, className: mergeTw('mb-2 flex flex-col gap-1.5', className, tw), ...rest, children: children ?? (jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [title ? jsxRuntimeExports.jsx("h2", { className: "font-display text-2xl font-semibold tracking-tight text-fg", children: title }) : null, subtitle ? jsxRuntimeExports.jsx("p", { className: "text-sm text-fg-muted", children: subtitle }) : null] })) }));
+});
+const ContactField = React.forwardRef(function ContactField({ label, children, className, tw, ...rest }, ref) {
+    return (jsxRuntimeExports.jsxs("div", { ref: ref, className: mergeTw('w-full', className, tw), ...rest, children: [label ? jsxRuntimeExports.jsx("span", { className: "mb-1.5 block text-sm font-medium text-fg-muted", children: label }) : null, children] }));
+});
+/* ----------------------------------- Submit ------------------------------- */
+const ContactSubmit = React.forwardRef(function ContactSubmit({ children, className, tw, ...rest }, ref) {
+    return (jsxRuntimeExports.jsx(Button, { ref: ref, type: "submit", intent: "ghost", tw: mergeTw('mt-1 h-11 rounded-xl px-6 sm:self-start', accentSolid, className, tw), ...rest, children: children }));
+});
+const ContactDetailsPanel = React.forwardRef(function ContactDetailsPanel({ title, subtitle, details, children, className, tw, ...rest }, ref) {
+    const rows = [
+        details?.email ? { icon: jsxRuntimeExports.jsx(MailIcon, { className: "h-[18px] w-[18px]" }), label: 'Email', value: details.email } : null,
+        details?.phone ? { icon: jsxRuntimeExports.jsx(PhoneIcon, { className: "h-[18px] w-[18px]" }), label: 'Phone', value: details.phone } : null,
+        details?.address ? { icon: jsxRuntimeExports.jsx(PinIcon, { className: "h-[18px] w-[18px]" }), label: 'Office', value: details.address } : null,
+    ].filter(Boolean);
+    return (jsxRuntimeExports.jsx("div", { ref: ref, className: mergeTw('relative flex flex-col gap-7 overflow-hidden bg-gradient-to-br from-primary/15 via-panel/40 to-accent2/10 p-7 sm:p-8', className, tw), ...rest, children: children ?? (jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [jsxRuntimeExports.jsxs("div", { children: [title ? jsxRuntimeExports.jsx("h2", { className: "font-display text-2xl font-semibold tracking-tight text-fg", children: title }) : null, subtitle ? jsxRuntimeExports.jsx("p", { className: "mt-2 text-sm text-fg-muted", children: subtitle }) : null] }), jsxRuntimeExports.jsx("ul", { className: "flex flex-col gap-5", children: rows.map((r) => (jsxRuntimeExports.jsxs("li", { className: "flex items-start gap-3.5", children: [jsxRuntimeExports.jsx("span", { className: "grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-primary/10 text-primary", children: r.icon }), jsxRuntimeExports.jsxs("div", { children: [jsxRuntimeExports.jsx("p", { className: "font-mono text-[11px] uppercase tracking-widest text-fg-subtle", children: r.label }), jsxRuntimeExports.jsx("p", { className: "mt-0.5 text-sm font-medium text-fg", children: r.value })] })] }, r.label))) })] })) }));
+});
+const ContactForm = ContactFormRoot;
+ContactForm.Header = ContactHeader;
+ContactForm.Field = ContactField;
+ContactForm.Submit = ContactSubmit;
+ContactForm.Details = ContactDetailsPanel;
+
+const CHECKOUTFORM_VARIANTS = [
+    'single',
+    'twoColumn',
+    'steps',
+    'card',
+    'glass',
+    'compact',
+];
+/* ──────────────────────────── Surfaces ──────────────────────────────────── */
+const surfaces = {
+    single: 'bg-elevated border border-edge/10 shadow-luxe-sm',
+    twoColumn: 'bg-transparent',
+    steps: 'bg-elevated border border-edge/10 shadow-luxe-sm',
+    card: 'bg-panel/80 border border-edge/12 shadow-luxe-sm backdrop-blur-xl',
+    glass: 'glass',
+    compact: 'bg-elevated border border-edge/10 shadow-luxe-sm',
+};
+const DEFAULT_ITEMS = [
+    { name: 'Aero Runner — Carbon', price: 129, qty: 1 },
+    { name: 'Trail Socks (3-pack)', price: 24, qty: 2 },
+];
+function money(n, currency) {
+    return `${currency}${n.toFixed(2)}`;
+}
+/* ----------------------------------- Field -------------------------------- */
+function field(extra) {
+    return mergeTw(inputSurface, 'h-11 rounded-xl', extra);
+}
+const CheckoutField = React.forwardRef(function CheckoutField({ label, children, className, tw, ...rest }, ref) {
+    return (jsxRuntimeExports.jsxs("div", { ref: ref, className: mergeTw('w-full', className, tw), ...rest, children: [label ? jsxRuntimeExports.jsx("span", { className: "mb-1.5 block text-sm font-medium text-fg-muted", children: label }) : null, children] }));
+});
+const CheckoutSection = React.forwardRef(function CheckoutSection({ title, step, children, className, tw, ...rest }, ref) {
+    return (jsxRuntimeExports.jsxs("section", { ref: ref, className: mergeTw('flex flex-col gap-4', className, tw), ...rest, children: [title ? (jsxRuntimeExports.jsxs("h3", { className: "flex items-center gap-2.5 font-display text-base font-semibold tracking-tight text-fg", children: [typeof step === 'number' ? (jsxRuntimeExports.jsx("span", { className: "grid h-6 w-6 place-items-center rounded-full bg-primary/12 text-xs font-semibold text-primary", children: step })) : null, title] })) : null, children] }));
+});
+/* ------------------------------ Default sections -------------------------- */
+function ContactSection({ step }) {
+    return (jsxRuntimeExports.jsx(CheckoutSection, { title: "Contact", step: step, children: jsxRuntimeExports.jsx(CheckoutField, { label: "Email", children: jsxRuntimeExports.jsx(Input, { type: "email", name: "email", placeholder: "you@example.com", autoComplete: "email", tw: field() }) }) }));
+}
+function ShippingSection({ step }) {
+    return (jsxRuntimeExports.jsxs(CheckoutSection, { title: "Shipping", step: step, children: [jsxRuntimeExports.jsxs("div", { className: "grid gap-4 sm:grid-cols-2", children: [jsxRuntimeExports.jsx(CheckoutField, { label: "First name", children: jsxRuntimeExports.jsx(Input, { name: "firstName", autoComplete: "given-name", tw: field() }) }), jsxRuntimeExports.jsx(CheckoutField, { label: "Last name", children: jsxRuntimeExports.jsx(Input, { name: "lastName", autoComplete: "family-name", tw: field() }) })] }), jsxRuntimeExports.jsx(CheckoutField, { label: "Address", children: jsxRuntimeExports.jsx(Input, { name: "address", placeholder: "500 Market St", autoComplete: "street-address", tw: field() }) }), jsxRuntimeExports.jsxs("div", { className: "grid gap-4 sm:grid-cols-3", children: [jsxRuntimeExports.jsx(CheckoutField, { label: "City", children: jsxRuntimeExports.jsx(Input, { name: "city", autoComplete: "address-level2", tw: field() }) }), jsxRuntimeExports.jsx(CheckoutField, { label: "ZIP", children: jsxRuntimeExports.jsx(Input, { name: "zip", autoComplete: "postal-code", tw: field() }) }), jsxRuntimeExports.jsx(CheckoutField, { label: "Country", children: jsxRuntimeExports.jsxs(Select, { name: "country", defaultValue: "us", tw: field('bg-elevated/70'), children: [jsxRuntimeExports.jsx("option", { value: "us", children: "United States" }), jsxRuntimeExports.jsx("option", { value: "ca", children: "Canada" }), jsxRuntimeExports.jsx("option", { value: "uk", children: "United Kingdom" })] }) })] })] }));
+}
+function PaymentSection({ step }) {
+    return (jsxRuntimeExports.jsxs(CheckoutSection, { title: "Payment", step: step, children: [jsxRuntimeExports.jsx(CheckoutField, { label: "Card number", children: jsxRuntimeExports.jsx(Input, { name: "card", placeholder: "1234 5678 9012 3456", inputMode: "numeric", autoComplete: "cc-number", tw: field() }) }), jsxRuntimeExports.jsxs("div", { className: "grid gap-4 sm:grid-cols-2", children: [jsxRuntimeExports.jsx(CheckoutField, { label: "Expiry", children: jsxRuntimeExports.jsx(Input, { name: "expiry", placeholder: "MM / YY", autoComplete: "cc-exp", tw: field() }) }), jsxRuntimeExports.jsx(CheckoutField, { label: "CVC", children: jsxRuntimeExports.jsx(Input, { name: "cvc", placeholder: "123", inputMode: "numeric", autoComplete: "cc-csc", tw: field() }) })] })] }));
+}
+const CheckoutSummary = React.forwardRef(function CheckoutSummary({ items = DEFAULT_ITEMS, shipping = 9, currency = '$', cta, children, className, tw, ...rest }, ref) {
+    const subtotal = items.reduce((s, i) => s + i.price * (i.qty ?? 1), 0);
+    const total = subtotal + shipping;
+    return (jsxRuntimeExports.jsx("div", { ref: ref, className: mergeTw('flex flex-col gap-5 rounded-2xl border border-edge/12 bg-panel/60 p-6', className, tw), ...rest, children: children ?? (jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [jsxRuntimeExports.jsx("h3", { className: "font-display text-base font-semibold tracking-tight text-fg", children: "Order summary" }), jsxRuntimeExports.jsx("ul", { className: "flex flex-col gap-3", children: items.map((it, i) => (jsxRuntimeExports.jsxs("li", { className: "flex items-center gap-3", children: [jsxRuntimeExports.jsx("span", { className: "grid h-12 w-12 shrink-0 place-items-center overflow-hidden rounded-lg border border-edge/10 bg-canvas/40", children: it.image ? (jsxRuntimeExports.jsx("img", { src: it.image, alt: "", className: "h-full w-full object-cover" })) : (jsxRuntimeExports.jsx("svg", { viewBox: "0 0 24 24", fill: "none", "aria-hidden": "true", className: "h-5 w-5 text-fg-subtle", children: jsxRuntimeExports.jsx("path", { d: "M6 7h12l-1 13H7L6 7Zm3 0V5a3 3 0 0 1 6 0v2", stroke: "currentColor", strokeWidth: "1.5", strokeLinecap: "round", strokeLinejoin: "round" }) })) }), jsxRuntimeExports.jsxs("div", { className: "min-w-0 flex-1", children: [jsxRuntimeExports.jsx("p", { className: "truncate text-sm font-medium text-fg", children: it.name }), jsxRuntimeExports.jsxs("p", { className: "text-xs text-fg-subtle", children: ["Qty ", it.qty ?? 1] })] }), jsxRuntimeExports.jsx("span", { className: "text-sm font-medium text-fg", children: money(it.price * (it.qty ?? 1), currency) })] }, i))) }), jsxRuntimeExports.jsxs("div", { className: "flex flex-col gap-2 border-t border-edge/10 pt-4 text-sm", children: [jsxRuntimeExports.jsxs("div", { className: "flex justify-between text-fg-muted", children: [jsxRuntimeExports.jsx("span", { children: "Subtotal" }), jsxRuntimeExports.jsx("span", { children: money(subtotal, currency) })] }), jsxRuntimeExports.jsxs("div", { className: "flex justify-between text-fg-muted", children: [jsxRuntimeExports.jsx("span", { children: "Shipping" }), jsxRuntimeExports.jsx("span", { children: money(shipping, currency) })] }), jsxRuntimeExports.jsxs("div", { className: "mt-1 flex justify-between border-t border-edge/10 pt-3 text-base font-semibold text-fg", children: [jsxRuntimeExports.jsx("span", { children: "Total" }), jsxRuntimeExports.jsx("span", { children: money(total, currency) })] })] }), cta !== null ? (jsxRuntimeExports.jsx(Button, { type: "submit", fullWidth: true, intent: "ghost", tw: mergeTw('h-11 rounded-xl', accentSolid), children: cta ?? `Pay ${money(total, currency)}` })) : null] })) }));
+});
+/* ----------------------------------- Stepper ------------------------------ */
+function Stepper({ step, steps }) {
+    return (jsxRuntimeExports.jsx("div", { className: "mb-2 flex items-center gap-3", children: steps.map((label, i) => {
+            const n = i + 1;
+            const reached = n <= step;
+            return (jsxRuntimeExports.jsxs(React.Fragment, { children: [jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-2", children: [jsxRuntimeExports.jsx("span", { className: mergeTw('grid h-7 w-7 place-items-center rounded-full border text-xs font-semibold transition', reached ? 'border-primary bg-primary text-primary-fg' : 'border-edge/20 bg-fg/[0.04] text-fg-subtle'), children: n }), jsxRuntimeExports.jsx("span", { className: mergeTw('text-sm font-medium', n === step ? 'text-fg' : 'text-fg-subtle'), children: label })] }), n < steps.length ? jsxRuntimeExports.jsx("span", { className: "h-px flex-1 bg-edge/15" }) : null] }, label));
+        }) }));
+}
+/* ----------------------------------- Root --------------------------------- */
+const CheckoutFormRoot = React.forwardRef(function CheckoutForm({ variant = 'single', className, tw, children, onSubmit, items = DEFAULT_ITEMS, shipping = 9, currency = '$', ...rest }, ref) {
+    const hasChildren = React.Children.count(children) > 0;
+    const [step, setStep] = React.useState(1);
+    const numbered = variant === 'steps' || variant === 'compact';
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        onSubmit?.(e);
+    };
+    const wrapper = (inner, padded = true) => (jsxRuntimeExports.jsx(BlockVariantContext.Provider, { value: variant, children: jsxRuntimeExports.jsx("div", { ref: ref, className: mergeTw('w-full text-fg', variant === 'twoColumn' ? 'max-w-5xl' : variant === 'compact' ? 'max-w-md' : 'max-w-xl', 'rounded-2xl', surfaces[variant], padded && variant !== 'twoColumn' ? 'p-6 sm:p-8' : '', className, tw), ...rest, children: inner }) }));
+    if (hasChildren) {
+        return wrapper(children);
+    }
+    /* —— steps design —— */
+    if (variant === 'steps') {
+        const stepLabels = ['Contact', 'Shipping', 'Payment'];
+        return wrapper(jsxRuntimeExports.jsxs("form", { onSubmit: handleSubmit, className: "flex flex-col gap-6", children: [jsxRuntimeExports.jsx(Stepper, { step: step, steps: stepLabels }), step === 1 ? jsxRuntimeExports.jsx(ContactSection, {}) : step === 2 ? jsxRuntimeExports.jsx(ShippingSection, {}) : jsxRuntimeExports.jsx(PaymentSection, {}), step === 3 ? jsxRuntimeExports.jsx(CheckoutSummary, { items: items, shipping: shipping, currency: currency, cta: null }) : null, jsxRuntimeExports.jsxs("div", { className: "flex gap-2.5", children: [step > 1 ? (jsxRuntimeExports.jsx(Button, { type: "button", intent: "ghost", onClick: () => setStep((s) => s - 1), tw: mergeTw('h-11 rounded-xl', ghostControl), children: "Back" })) : null, step < 3 ? (jsxRuntimeExports.jsx(Button, { type: "button", fullWidth: true, intent: "ghost", onClick: () => setStep((s) => s + 1), tw: mergeTw('h-11 rounded-xl', accentSolid), children: "Continue" })) : (jsxRuntimeExports.jsx(Button, { type: "submit", fullWidth: true, intent: "ghost", tw: mergeTw('h-11 rounded-xl', accentSolid), children: "Place order" }))] })] }));
+    }
+    /* —— twoColumn design: form left, sticky summary right —— */
+    if (variant === 'twoColumn') {
+        return wrapper(jsxRuntimeExports.jsxs("div", { className: "grid items-start gap-8 lg:grid-cols-[1.4fr_1fr]", children: [jsxRuntimeExports.jsxs("form", { onSubmit: handleSubmit, className: "flex flex-col gap-8 rounded-2xl border border-edge/10 bg-elevated p-6 shadow-luxe-sm sm:p-8", children: [jsxRuntimeExports.jsx(ContactSection, { step: 1 }), jsxRuntimeExports.jsx(ShippingSection, { step: 2 }), jsxRuntimeExports.jsx(PaymentSection, { step: 3 })] }), jsxRuntimeExports.jsx("div", { className: "lg:sticky lg:top-6", children: jsxRuntimeExports.jsx(CheckoutSummary, { items: items, shipping: shipping, currency: currency }) })] }), false);
+    }
+    /* —— single / card / glass / compact —— */
+    return wrapper(jsxRuntimeExports.jsxs("form", { onSubmit: handleSubmit, className: "flex flex-col gap-8", children: [jsxRuntimeExports.jsx(ContactSection, { step: numbered ? 1 : undefined }), jsxRuntimeExports.jsx(ShippingSection, { step: numbered ? 2 : undefined }), jsxRuntimeExports.jsx(PaymentSection, { step: numbered ? 3 : undefined }), jsxRuntimeExports.jsx(CheckoutSummary, { items: items, shipping: shipping, currency: currency })] }));
+});
+const CheckoutForm = CheckoutFormRoot;
+CheckoutForm.Section = CheckoutSection;
+CheckoutForm.Field = CheckoutField;
+CheckoutForm.Summary = CheckoutSummary;
+
+const PRODUCTGRID_VARIANTS = [
+    'grid3',
+    'grid4',
+    'list',
+    'masonry',
+    'compact',
+    'featured',
+];
+/* ──────────────────────────── Layout maps ───────────────────────────────── */
+const gridCols = {
+    1: 'grid-cols-1',
+    2: 'grid-cols-1 sm:grid-cols-2',
+    3: 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3',
+    4: 'grid-cols-2 lg:grid-cols-4',
+    5: 'grid-cols-2 lg:grid-cols-5',
+};
+/* ──────────────────────────── Inline icons ──────────────────────────────── */
+function Star({ fill }) {
+    const id = React.useId();
+    return (jsxRuntimeExports.jsxs("svg", { viewBox: "0 0 20 20", "aria-hidden": "true", className: "h-3.5 w-3.5 text-primary", children: [fill === 'half' ? (jsxRuntimeExports.jsx("defs", { children: jsxRuntimeExports.jsxs("linearGradient", { id: id, children: [jsxRuntimeExports.jsx("stop", { offset: "50%", stopColor: "currentColor" }), jsxRuntimeExports.jsx("stop", { offset: "50%", stopColor: "currentColor", stopOpacity: "0.25" })] }) })) : null, jsxRuntimeExports.jsx("path", { d: "M10 1.5l2.47 5.01 5.53.8-4 3.9.94 5.5L10 14.1l-4.95 2.6.94-5.5-4-3.9 5.53-.8L10 1.5z", fill: fill === 'full' ? 'currentColor' : fill === 'half' ? `url(#${id})` : 'currentColor', fillOpacity: fill === 'empty' ? 0.25 : 1 })] }));
+}
+function Rating({ value }) {
+    return (jsxRuntimeExports.jsxs("span", { className: "flex items-center gap-1.5 text-xs", children: [jsxRuntimeExports.jsx("span", { className: "flex items-center gap-0.5", children: Array.from({ length: 5 }, (_, i) => {
+                    const fill = value >= i + 1 ? 'full' : value >= i + 0.5 ? 'half' : 'empty';
+                    return jsxRuntimeExports.jsx(Star, { fill: fill }, i);
+                }) }), jsxRuntimeExports.jsx("span", { className: "font-medium text-fg-muted", children: value.toFixed(1) })] }));
+}
+function ImageFallback({ className }) {
+    return (jsxRuntimeExports.jsx("div", { className: mergeTw('grid h-full w-full place-items-center text-fg-subtle', className), children: jsxRuntimeExports.jsx("svg", { viewBox: "0 0 24 24", fill: "none", "aria-hidden": "true", className: "h-9 w-9", children: jsxRuntimeExports.jsx("path", { d: "M3 6a2 2 0 012-2h14a2 2 0 012 2v12a2 2 0 01-2 2H5a2 2 0 01-2-2V6zM3 16l4.5-4.5a2 2 0 012.8 0L15 16M14 13l1.5-1.5a2 2 0 012.8 0L21 14M9 9.5a1 1 0 11-2 0 1 1 0 012 0z", stroke: "currentColor", strokeWidth: "1.5", strokeLinecap: "round", strokeLinejoin: "round" }) }) }));
+}
+function formatPrice(amount, currency) {
+    if (amount == null)
+        return null;
+    return typeof amount === 'number' ? `${currency}${amount}` : amount;
+}
+const ProductGridItem = React.forwardRef(function ProductGridItem({ image, title, price, originalPrice, badge, rating, row, feature, currency = '$', cta = 'Add to cart', children, className, tw, ...rest }, ref) {
+    const variant = useBlockVariant();
+    if (children) {
+        return (jsxRuntimeExports.jsx("div", { ref: ref, className: mergeTw('group/item', className, tw), ...rest, children: children }));
+    }
+    return (jsxRuntimeExports.jsxs("div", { ref: ref, className: mergeTw('group/item flex overflow-hidden rounded-2xl border border-edge/10 bg-elevated text-fg shadow-luxe-sm transition-shadow hover:shadow-luxe', row ? 'flex-row items-stretch' : 'flex-col', className, tw), ...rest, children: [jsxRuntimeExports.jsxs("div", { className: mergeTw('relative shrink-0 overflow-hidden bg-canvas/40', row ? 'aspect-square w-32 sm:w-40' : feature ? 'aspect-[16/10]' : 'aspect-[4/3]'), children: [image ? (jsxRuntimeExports.jsx("img", { src: image, alt: typeof title === 'string' ? title : '', className: "h-full w-full object-cover transition-transform duration-500 group-hover/item:scale-105" })) : (jsxRuntimeExports.jsx(ImageFallback, {})), badge ? (jsxRuntimeExports.jsx(Badge, { tw: "absolute left-3 top-3 border border-primary/20 bg-primary/15 text-primary backdrop-blur-sm", children: badge })) : null] }), jsxRuntimeExports.jsxs("div", { className: mergeTw('flex flex-1 flex-col gap-2 p-4', feature && 'gap-3 p-5'), children: [typeof rating === 'number' ? jsxRuntimeExports.jsx(Rating, { value: rating }) : null, jsxRuntimeExports.jsx("h3", { className: mergeTw('font-display font-semibold leading-snug text-fg', feature ? 'text-lg' : 'text-sm'), children: title }), jsxRuntimeExports.jsxs("div", { className: "mt-auto flex items-baseline gap-2 pt-1", children: [jsxRuntimeExports.jsx("span", { className: mergeTw('font-display font-semibold tracking-tight text-fg', feature ? 'text-2xl' : 'text-lg'), children: formatPrice(price, currency) }), originalPrice != null ? (jsxRuntimeExports.jsx("span", { className: "text-sm font-medium text-fg-subtle line-through", children: formatPrice(originalPrice, currency) })) : null] }), jsxRuntimeExports.jsx(Button, { intent: "ghost", fullWidth: true, tw: mergeTw('mt-2 h-10 rounded-xl', feature || variant === 'featured' ? accentSolid : ghostControl), children: cta })] })] }));
+});
+/* ----------------------------------- Root --------------------------------- */
+const SAMPLE = [
+    { title: 'Aero Runner', price: 129, originalPrice: 189, badge: 'Sale', rating: 4.5 },
+    { title: 'Trail Blazer', price: 149, rating: 4.8 },
+    { title: 'Court Classic', price: 99, rating: 4.2 },
+    { title: 'Studio Flex', price: 89, badge: 'New', rating: 4.6 },
+];
+const ProductGridRoot = React.forwardRef(function ProductGrid({ variant = 'grid3', className, tw, children, products = SAMPLE, columns, currency = '$', cta, ...rest }, ref) {
+    const hasChildren = React.Children.count(children) > 0;
+    const isList = variant === 'list';
+    const isMasonry = variant === 'masonry';
+    const isFeatured = variant === 'featured';
+    const cols = columns ?? (variant === 'grid4' ? 4 : variant === 'compact' ? 4 : 3);
+    let containerClass;
+    if (isList) {
+        containerClass = 'flex flex-col gap-4';
+    }
+    else if (isMasonry) {
+        containerClass = 'columns-1 gap-5 sm:columns-2 lg:columns-3 [&>*]:mb-5 [&>*]:break-inside-avoid';
+    }
+    else if (isFeatured) {
+        containerClass = 'grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3';
+    }
+    else {
+        containerClass = mergeTw('grid gap-5', gridCols[cols] ?? gridCols[3]);
+    }
+    return (jsxRuntimeExports.jsx(BlockVariantContext.Provider, { value: variant, children: jsxRuntimeExports.jsx("div", { ref: ref, className: mergeTw('w-full text-fg', className, tw), ...rest, children: jsxRuntimeExports.jsx("div", { className: containerClass, children: hasChildren
+                    ? children
+                    : products.map((p, i) => (jsxRuntimeExports.jsx(ProductGridItem, { ...p, currency: currency, cta: cta, row: isList, feature: isFeatured && i === 0, className: mergeTw(isFeatured && i === 0 && 'sm:col-span-2 lg:row-span-2', variant === 'compact' && 'shadow-none') }, i))) }) }) }));
+});
+const ProductGrid = ProductGridRoot;
+ProductGrid.Item = ProductGridItem;
+
 exports.Accordion = Accordion;
 exports.Alert = Alert;
 exports.Avatar = Avatar;
+exports.BLOCK_VARIANTS = BLOCK_VARIANTS;
 exports.Badge = Badge;
+exports.BlockVariantContext = BlockVariantContext;
+exports.BlogCard = BlogCard;
 exports.Breadcrumb = Breadcrumb;
 exports.Button = Button;
+exports.CHECKOUTFORM_VARIANTS = CHECKOUTFORM_VARIANTS;
+exports.COMMAND_PALETTE_VARIANTS = COMMAND_PALETTE_VARIANTS;
+exports.CONTACTFORM_VARIANTS = CONTACTFORM_VARIANTS;
+exports.CTASection = CTASection;
+exports.CTA_SECTION_VARIANTS = CTA_SECTION_VARIANTS;
 exports.Card = Card;
 exports.Carousel = Carousel;
 exports.CarouselImage = CarouselImage;
 exports.CarouselSlide = CarouselSlide;
 exports.Checkbox = Checkbox;
+exports.CheckoutForm = CheckoutForm;
 exports.Code = Code;
+exports.CommandPalette = CommandPalette;
+exports.ContactForm = ContactForm;
+exports.DASHBOARD_SHELL_VARIANTS = DASHBOARD_SHELL_VARIANTS;
+exports.DashboardShell = DashboardShell;
 exports.Dialog = Dialog;
 exports.Drawer = Drawer;
 exports.DropdownMenu = DropdownMenu;
+exports.EMPTY_STATE_VARIANTS = EMPTY_STATE_VARIANTS;
+exports.EmptyState = EmptyState;
 exports.Eyebrow = Eyebrow;
+exports.FAQ = FAQ;
+exports.FAQ_VARIANTS = FAQ_VARIANTS;
+exports.FEATURE_GRID_VARIANTS = FEATURE_GRID_VARIANTS;
+exports.FOOTER_VARIANTS = FOOTER_VARIANTS;
+exports.FeatureGrid = FeatureGrid;
+exports.Footer = Footer;
 exports.Gallery = Gallery;
 exports.GalleryImage = GalleryImage;
 exports.GalleryLightbox = GalleryLightbox;
+exports.HERO_VARIANTS = HERO_VARIANTS;
+exports.Hero = Hero;
 exports.Icon = Icon;
 exports.IconButton = IconButton;
 exports.Input = Input;
 exports.Kbd = Kbd;
 exports.LoadingOverlay = LoadingOverlay;
 exports.Modal = Dialog;
+exports.NAVBAR_VARIANTS = NAVBAR_VARIANTS;
+exports.Navbar = Navbar;
+exports.PRICING_TABLE_VARIANTS = PRICING_TABLE_VARIANTS;
+exports.PRODUCTGRID_VARIANTS = PRODUCTGRID_VARIANTS;
 exports.Pagination = Pagination;
 exports.Popover = Popover;
+exports.PricingCard = PricingCard;
+exports.PricingTable = PricingTable;
+exports.ProductCard = ProductCard;
+exports.ProductGrid = ProductGrid;
+exports.ProfileCard = ProfileCard;
 exports.Progress = Progress;
 exports.Radio = Radio;
+exports.SETTINGSFORM_VARIANTS = SETTINGSFORM_VARIANTS;
+exports.SIDEBAR_VARIANTS = SIDEBAR_VARIANTS;
+exports.SIGNIN_VARIANTS = SIGNIN_VARIANTS;
+exports.SIGNUP_VARIANTS = SIGNUP_VARIANTS;
 exports.Select = Select;
+exports.SettingsForm = SettingsForm;
+exports.Sidebar = Sidebar;
+exports.SignIn = SignIn;
+exports.SignUp = SignUp;
 exports.Skeleton = Skeleton;
 exports.Spinner = Spinner;
 exports.Stat = Stat;
+exports.StatCard = StatCard;
+exports.TESTIMONIALS_VARIANTS = TESTIMONIALS_VARIANTS;
 exports.Table = Table;
 exports.Tabs = Tabs;
+exports.TestimonialCard = TestimonialCard;
+exports.Testimonials = Testimonials;
 exports.Textarea = Textarea;
 exports.ToastProvider = ToastProvider;
 exports.Toggle = Toggle;
 exports.Tooltip = Tooltip;
+exports.accentSoft = accentSoft;
+exports.accentSolid = accentSolid;
 exports.createComponent = createComponent;
 exports.createSlots = createSlots;
 exports.cx = cx;
+exports.ghostControl = ghostControl;
 exports.icons = icons;
+exports.inputSurface = inputSurface;
 exports.mergeTw = mergeTw;
+exports.surfaceVariants = surfaceVariants;
 exports.tv = tv;
+exports.useBlockVariant = useBlockVariant;
 exports.useCarousel = useCarousel;
 exports.useFocusReturn = useFocusReturn;
 exports.useFocusTrap = useFocusTrap;

@@ -57,3 +57,6 @@ export * from './components/Code';
 // Media Components
 export * from './components/Gallery';
 export * from './components/Carousel';
+
+// Blocks — pre-assembled, multi-design component suites (Cards, Marketing, App, Forms)
+export * from './components/blocks';
